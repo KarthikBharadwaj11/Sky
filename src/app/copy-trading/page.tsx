@@ -116,6 +116,8 @@ export default function CopyTrading() {
 
   // Current settings being edited in modal
   const [currentSettings, setCurrentSettings] = useState<CopySettings>(defaultCopySettings);
+  const [copyDuration, setCopyDuration] = useState<'until-cancelled' | '7-days' | '30-days' | '90-days' | 'custom'>('until-cancelled');
+  const [customEndDate, setCustomEndDate] = useState<string>('');
 
   const copyTradingTestimonials = [
     {
@@ -2368,7 +2370,7 @@ export default function CopyTrading() {
           <div className="card max-w-4xl w-full my-8">
             <div className="card-body">
               <h2 className="text-xl font-bold text-gradient mb-6">
-                Follow {selectedExpert.name}
+                Copy {selectedExpert.name}
               </h2>
 
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -2470,52 +2472,93 @@ export default function CopyTrading() {
                         </p>
                       </div>
 
-                      {/* Settings specific to Automatic mode */}
-                      {autoCopyEnabled && (
-                        <>
-                          {/* Stop Loss & Take Profit */}
-                          <div className="grid grid-cols-2 gap-3">
-                            <div>
-                              <label className="block text-sm font-semibold mb-2" style={{ color: 'var(--text-secondary)' }}>
-                                Stop Loss (%)
-                              </label>
-                              <input
-                                type="number"
-                                min="1"
-                                max="50"
-                                value={currentSettings.stopLossPercentage}
-                                onChange={(e) => setCurrentSettings({...currentSettings, stopLossPercentage: Math.max(1, parseInt(e.target.value) || 5)})}
-                                className="form-input"
-                              />
-                            </div>
-                            <div>
-                              <label className="block text-sm font-semibold mb-2" style={{ color: 'var(--text-secondary)' }}>
-                                Take Profit (%)
-                              </label>
-                              <input
-                                type="number"
-                                min="1"
-                                max="100"
-                                value={currentSettings.takeProfitPercentage}
-                                onChange={(e) => setCurrentSettings({...currentSettings, takeProfitPercentage: Math.max(1, parseInt(e.target.value) || 10)})}
-                                className="form-input"
-                              />
-                            </div>
-                          </div>
-                          <p className="text-xs" style={{ color: 'var(--text-tertiary)' }}>
-                            Automatically exit positions at these thresholds
-                          </p>
-                        </>
-                      )}
-
-                      {/* Settings for Manual mode */}
-                      {!autoCopyEnabled && (
-                        <div className="p-3 rounded-lg" style={{ background: 'rgba(168, 85, 247, 0.1)' }}>
-                          <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>
-                            In manual mode, you'll receive notifications for trades matching your filters. You can set stop-loss and take-profit when approving each trade.
-                          </p>
+                      {/* Copy Duration - shown for both modes */}
+                      <div>
+                        <label className="block text-sm font-semibold mb-3" style={{ color: 'var(--text-secondary)' }}>
+                          {autoCopyEnabled ? 'Copy Duration' : 'Notification Duration'}
+                        </label>
+                        <div className="space-y-2">
+                          <label className="flex items-center gap-2 cursor-pointer">
+                            <input
+                              type="radio"
+                              name="duration"
+                              value="until-cancelled"
+                              checked={copyDuration === 'until-cancelled'}
+                              onChange={(e) => setCopyDuration(e.target.value as any)}
+                              className="w-4 h-4"
+                            />
+                            <span className="text-sm" style={{ color: 'var(--text-secondary)' }}>
+                              Until Cancelled
+                            </span>
+                          </label>
+                          <label className="flex items-center gap-2 cursor-pointer">
+                            <input
+                              type="radio"
+                              name="duration"
+                              value="7-days"
+                              checked={copyDuration === '7-days'}
+                              onChange={(e) => setCopyDuration(e.target.value as any)}
+                              className="w-4 h-4"
+                            />
+                            <span className="text-sm" style={{ color: 'var(--text-secondary)' }}>
+                              7 Days
+                            </span>
+                          </label>
+                          <label className="flex items-center gap-2 cursor-pointer">
+                            <input
+                              type="radio"
+                              name="duration"
+                              value="30-days"
+                              checked={copyDuration === '30-days'}
+                              onChange={(e) => setCopyDuration(e.target.value as any)}
+                              className="w-4 h-4"
+                            />
+                            <span className="text-sm" style={{ color: 'var(--text-secondary)' }}>
+                              30 Days
+                            </span>
+                          </label>
+                          <label className="flex items-center gap-2 cursor-pointer">
+                            <input
+                              type="radio"
+                              name="duration"
+                              value="90-days"
+                              checked={copyDuration === '90-days'}
+                              onChange={(e) => setCopyDuration(e.target.value as any)}
+                              className="w-4 h-4"
+                            />
+                            <span className="text-sm" style={{ color: 'var(--text-secondary)' }}>
+                              90 Days
+                            </span>
+                          </label>
+                          <label className="flex items-center gap-2 cursor-pointer">
+                            <input
+                              type="radio"
+                              name="duration"
+                              value="custom"
+                              checked={copyDuration === 'custom'}
+                              onChange={(e) => setCopyDuration(e.target.value as any)}
+                              className="w-4 h-4"
+                            />
+                            <span className="text-sm" style={{ color: 'var(--text-secondary)' }}>
+                              Custom End Date
+                            </span>
+                          </label>
+                          {copyDuration === 'custom' && (
+                            <input
+                              type="date"
+                              value={customEndDate}
+                              onChange={(e) => setCustomEndDate(e.target.value)}
+                              min={new Date().toISOString().split('T')[0]}
+                              className="form-input mt-2"
+                            />
+                          )}
                         </div>
-                      )}
+                        <p className="text-xs mt-2" style={{ color: 'var(--text-tertiary)' }}>
+                          {autoCopyEnabled
+                            ? 'How long should trades be automatically copied'
+                            : 'How long should you receive trade notifications'}
+                        </p>
+                      </div>
 
                       {/* Trade Type Filters - shown for both modes */}
                       <div>
@@ -2570,19 +2613,9 @@ export default function CopyTrading() {
               </div>
 
               <div className="glass-morphism p-5 rounded-xl mb-5">
-                <div className="text-base space-y-4">
-                  <div className="flex justify-between">
-                    <span style={{ color: 'var(--text-secondary)' }}>Monthly Fee:</span>
-                    <span className="font-bold" style={{ color: 'var(--text-primary)' }}>${selectedExpert.monthlyFee}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span style={{ color: 'var(--text-secondary)' }}>Copy Amount:</span>
-                    <span className="font-bold" style={{ color: 'var(--text-primary)' }}>${subscriptionAmount}</span>
-                  </div>
-                  <div className="flex justify-between font-bold text-base border-t pt-4" style={{ borderColor: 'var(--glass-border)' }}>
-                    <span style={{ color: 'var(--text-accent)' }}>Total Cost:</span>
-                    <span style={{ color: 'var(--success)' }}>${selectedExpert.monthlyFee}</span>
-                  </div>
+                <div className="flex justify-between items-center text-lg">
+                  <span className="font-semibold" style={{ color: 'var(--text-secondary)' }}>Total Amount Allocated:</span>
+                  <span className="font-bold text-2xl" style={{ color: 'var(--success)' }}>${subscriptionAmount}</span>
                 </div>
               </div>
 
