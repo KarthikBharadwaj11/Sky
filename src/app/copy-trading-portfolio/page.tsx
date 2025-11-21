@@ -808,6 +808,8 @@ export default function CopyTradingPortfolio() {
           </div>
         )}
       </div>
+          </>
+        )}
 
         {/* Pending Actions Tab */}
         {activeTab === 'pending-actions' && (
