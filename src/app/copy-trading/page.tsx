@@ -2600,7 +2600,7 @@ export default function CopyTrading() {
                   onClick={() => handleSubscribe(selectedExpert)}
                   className="btn-primary flex-1 py-4"
                 >
-                  Follow Trader
+                  Copy
                 </button>
               </div>
             </div>
