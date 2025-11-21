@@ -595,7 +595,6 @@ export default function CopyTradingPortfolio() {
             </div>
           </div>
         </div>
-      </div>
 
       {/* Filters */}
       <div className="card mb-8">
