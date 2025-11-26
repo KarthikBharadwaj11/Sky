@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { PiggyBank, ArrowRight, X } from 'lucide-react';
+import { ArrowRight, X } from 'lucide-react';
 import AccountTypeSelection from '../accounts/AccountTypeSelection';
 import AccountFunding from '../accounts/AccountFunding';
 
@@ -11,27 +11,43 @@ interface AddAccountPromptProps {
   previewMode?: boolean;
 }
 
-type FlowStep = 'prompt' | 'select-type' | 'funding' | 'complete';
+type FlowStep = 'account-prompt' | 'select-type' | 'account-details' | 'funding-prompt' | 'select-funding' | 'funding-details';
 
 export default function AddAccountPrompt({ data, onComplete, previewMode = false }: AddAccountPromptProps) {
-  const [flowStep, setFlowStep] = useState<FlowStep>('prompt');
+  const [flowStep, setFlowStep] = useState<FlowStep>('account-prompt');
   const [accountData, setAccountData] = useState<any>({
     accountType: null,
     accountSubType: null,
+    fullName: '',
+    ssn: '',
+    dateOfBirth: '',
+    fundingSource: '',
+    initialDeposit: '',
+    employmentInfo: '',
+    incomeRange: '',
+    investmentExperience: '',
+    riskTolerance: '',
+    trustName: '',
+    trusteeInfo: '',
     fundingMethod: null,
     fundingData: null
   });
 
-  const handleSkip = () => {
+  const handleSkipAll = () => {
     onComplete({
       ...data,
       accountCreated: false,
-      skippedAccountCreation: true
+      fundingCompleted: false,
+      skipped: true
     });
   };
 
   const handleStartAccountCreation = () => {
     setFlowStep('select-type');
+  };
+
+  const handleSkipAccountCreation = () => {
+    setFlowStep('funding-prompt');
   };
 
   const handleAccountTypeSelected = (type: 'individual' | 'ira' | 'trust', subType?: 'traditional' | 'roth') => {
@@ -40,13 +56,37 @@ export default function AddAccountPrompt({ data, onComplete, previewMode = false
       accountType: type,
       accountSubType: subType
     });
-    setFlowStep('funding');
+    setFlowStep('account-details');
+  };
+
+  const handleAccountDetailsComplete = () => {
+    // Move to funding prompt after account details
+    setFlowStep('funding-prompt');
+  };
+
+  const handleStartFunding = () => {
+    setFlowStep('select-funding');
+  };
+
+  const handleSkipFundingFlow = () => {
+    // Complete onboarding with account but no funding
+    const finalData = {
+      ...data,
+      accountCreated: true,
+      fundingCompleted: false,
+      account: {
+        ...accountData,
+        createdAt: new Date().toISOString()
+      }
+    };
+    onComplete(finalData);
   };
 
   const handleFundingComplete = (method: string, fundingData: any) => {
     const finalData = {
       ...data,
       accountCreated: true,
+      fundingCompleted: true,
       account: {
         ...accountData,
         fundingMethod: method,
@@ -57,48 +97,29 @@ export default function AddAccountPrompt({ data, onComplete, previewMode = false
     onComplete(finalData);
   };
 
-  const handleSkipFunding = () => {
-    const finalData = {
-      ...data,
-      accountCreated: true,
-      account: {
-        ...accountData,
-        fundingMethod: null,
-        fundingData: null,
-        createdAt: new Date().toISOString(),
-        fundingSkipped: true
-      }
-    };
-    onComplete(finalData);
-  };
-
   if (flowStep === 'select-type') {
     return (
       <div className="card max-w-4xl mx-auto">
         <div className="card-body">
-          <div className="flex items-center justify-between mb-6">
-            <div></div>
-            <button
-              onClick={handleSkip}
-              className="text-sm font-medium hover:text-red-400 transition-colors flex items-center gap-2"
-              style={{ color: 'var(--text-tertiary)' }}
-            >
-              <X className="w-4 h-4" />
-              Skip for now
-            </button>
-          </div>
+          <button
+            onClick={() => setFlowStep('account-prompt')}
+            className="text-sm font-medium hover:text-blue-400 transition-colors mb-6"
+            style={{ color: 'var(--text-tertiary)' }}
+          >
+            ← Back
+          </button>
 
           <AccountTypeSelection
             onSelectType={handleAccountTypeSelected}
-            onSkip={handleSkip}
-            showSkipOption={false}
+            onSkip={handleSkipAccountCreation}
+            showSkipOption={true}
           />
         </div>
       </div>
     );
   }
 
-  if (flowStep === 'funding') {
+  if (flowStep === 'account-details') {
     const accountTypeName = accountData.accountSubType
       ? `${accountData.accountSubType === 'traditional' ? 'Traditional' : 'Roth'} IRA`
       : accountData.accountType === 'individual'
@@ -108,30 +129,321 @@ export default function AddAccountPrompt({ data, onComplete, previewMode = false
           : accountData.accountType;
 
     return (
-      <div className="card max-w-4xl mx-auto">
+      <div className="card max-w-2xl mx-auto">
         <div className="card-body">
-          <div className="flex items-center justify-between mb-6">
-            <button
-              onClick={() => setFlowStep('select-type')}
-              className="text-sm font-medium hover:text-blue-400 transition-colors"
-              style={{ color: 'var(--text-tertiary)' }}
-            >
-              ← Change account type
-            </button>
-            <button
-              onClick={handleSkip}
-              className="text-sm font-medium hover:text-red-400 transition-colors flex items-center gap-2"
-              style={{ color: 'var(--text-tertiary)' }}
-            >
-              <X className="w-4 h-4" />
-              Skip account creation
-            </button>
+          <button
+            onClick={() => setFlowStep('select-type')}
+            className="text-sm font-medium hover:text-blue-400 transition-colors mb-6"
+            style={{ color: 'var(--text-tertiary)' }}
+          >
+            ← Change account type
+          </button>
+
+          <h2 className="text-2xl font-bold mb-2" style={{ color: 'var(--text-primary)' }}>
+            Account Details
+          </h2>
+          <p className="mb-6" style={{ color: 'var(--text-secondary)' }}>
+            Enter the details for your {accountTypeName} account (Optional)
+          </p>
+
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              handleAccountDetailsComplete();
+            }}
+            className="space-y-4"
+          >
+            {/* Common fields for all account types */}
+            <div>
+              <label className="block text-sm font-medium mb-2" style={{ color: 'var(--text-secondary)' }}>
+                Full Legal Name
+              </label>
+              <input
+                type="text"
+                placeholder="Enter your full legal name"
+                value={accountData.fullName || ''}
+                onChange={(e) => setAccountData({ ...accountData, fullName: e.target.value })}
+                className="form-input"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium mb-2" style={{ color: 'var(--text-secondary)' }}>
+                Social Security Number
+              </label>
+              <input
+                type="text"
+                placeholder="XXX-XX-XXXX"
+                value={accountData.ssn || ''}
+                onChange={(e) => setAccountData({ ...accountData, ssn: e.target.value })}
+                className="form-input"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium mb-2" style={{ color: 'var(--text-secondary)' }}>
+                Date of Birth
+              </label>
+              <input
+                type="date"
+                value={accountData.dateOfBirth || ''}
+                onChange={(e) => setAccountData({ ...accountData, dateOfBirth: e.target.value })}
+                className="form-input"
+              />
+            </div>
+
+            {/* Individual/Trust Account specific fields */}
+            {(accountData.accountType === 'individual' || accountData.accountType === 'trust') && (
+              <>
+                <div>
+                  <label className="block text-sm font-medium mb-2" style={{ color: 'var(--text-secondary)' }}>
+                    Employment Information
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="Employer name and position"
+                    value={accountData.employmentInfo || ''}
+                    onChange={(e) => setAccountData({ ...accountData, employmentInfo: e.target.value })}
+                    className="form-input"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium mb-2" style={{ color: 'var(--text-secondary)' }}>
+                    Annual Income Range
+                  </label>
+                  <select
+                    value={accountData.incomeRange || ''}
+                    onChange={(e) => setAccountData({ ...accountData, incomeRange: e.target.value })}
+                    className="form-input"
+                  >
+                    <option value="">Select income range</option>
+                    <option value="0-25000">$0 - $25,000</option>
+                    <option value="25000-50000">$25,000 - $50,000</option>
+                    <option value="50000-100000">$50,000 - $100,000</option>
+                    <option value="100000-250000">$100,000 - $250,000</option>
+                    <option value="250000+">$250,000+</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium mb-2" style={{ color: 'var(--text-secondary)' }}>
+                    Investment Experience
+                  </label>
+                  <select
+                    value={accountData.investmentExperience || ''}
+                    onChange={(e) => setAccountData({ ...accountData, investmentExperience: e.target.value })}
+                    className="form-input"
+                  >
+                    <option value="">Select experience level</option>
+                    <option value="beginner">Beginner (0-2 years)</option>
+                    <option value="intermediate">Intermediate (3-5 years)</option>
+                    <option value="advanced">Advanced (5+ years)</option>
+                    <option value="expert">Expert (10+ years)</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium mb-2" style={{ color: 'var(--text-secondary)' }}>
+                    Initial Deposit Amount
+                  </label>
+                  <input
+                    type="number"
+                    placeholder="e.g., 5000"
+                    value={accountData.initialDeposit || ''}
+                    onChange={(e) => setAccountData({ ...accountData, initialDeposit: e.target.value })}
+                    className="form-input"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium mb-2" style={{ color: 'var(--text-secondary)' }}>
+                    Funding Source
+                  </label>
+                  <select
+                    value={accountData.fundingSource || ''}
+                    onChange={(e) => setAccountData({ ...accountData, fundingSource: e.target.value })}
+                    className="form-input"
+                  >
+                    <option value="">Select funding source</option>
+                    <option value="bank-transfer">Bank Transfer</option>
+                    <option value="wire-transfer">Wire Transfer</option>
+                    <option value="check">Check</option>
+                  </select>
+                </div>
+              </>
+            )}
+
+            {/* Trust specific field */}
+            {accountData.accountType === 'trust' && (
+              <>
+                <div>
+                  <label className="block text-sm font-medium mb-2" style={{ color: 'var(--text-secondary)' }}>
+                    Trust Name
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="Name of the trust"
+                    value={accountData.trustName || ''}
+                    onChange={(e) => setAccountData({ ...accountData, trustName: e.target.value })}
+                    className="form-input"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium mb-2" style={{ color: 'var(--text-secondary)' }}>
+                    Trustee Information
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="Trustee name and contact"
+                    value={accountData.trusteeInfo || ''}
+                    onChange={(e) => setAccountData({ ...accountData, trusteeInfo: e.target.value })}
+                    className="form-input"
+                  />
+                </div>
+              </>
+            )}
+
+            {/* IRA specific fields */}
+            {accountData.accountType === 'ira' && (
+              <>
+                <div>
+                  <label className="block text-sm font-medium mb-2" style={{ color: 'var(--text-secondary)' }}>
+                    Funding Source
+                  </label>
+                  <select
+                    value={accountData.fundingSource || ''}
+                    onChange={(e) => setAccountData({ ...accountData, fundingSource: e.target.value })}
+                    className="form-input"
+                  >
+                    <option value="">Select funding source</option>
+                    <option value="bank-transfer">Bank Transfer</option>
+                    <option value="wire-transfer">Wire Transfer</option>
+                    <option value="check">Check</option>
+                    <option value="rollover">IRA Rollover</option>
+                  </select>
+                </div>
+
+                <div className="p-4 rounded-xl" style={{ background: 'rgba(59, 130, 246, 0.1)' }}>
+                  <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>
+                    <strong>Note:</strong> {accountData.accountSubType === 'traditional' ? 'Traditional IRA contributions may be tax-deductible.' : 'Roth IRA contributions are made with after-tax dollars.'} Annual contribution limit is $7,000 ($8,000 if age 50+).
+                  </p>
+                </div>
+              </>
+            )}
+
+            <div className="pt-4 space-y-3">
+              <button
+                type="submit"
+                className="btn-primary w-full py-3"
+              >
+                Continue
+              </button>
+              <button
+                type="button"
+                onClick={handleSkipAccountCreation}
+                className="w-full py-3 rounded-xl font-medium transition-colors"
+                style={{
+                  background: 'var(--glass-bg)',
+                  color: 'var(--text-secondary)'
+                }}
+              >
+                Skip account creation
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    );
+  }
+
+  if (flowStep === 'funding-prompt') {
+    return (
+      <div className="card max-w-2xl mx-auto">
+        <div className="card-body">
+          <h2 className="text-2xl font-bold mb-2" style={{ color: 'var(--text-primary)' }}>
+            Fund Your Account
+          </h2>
+
+          <p className="mb-6" style={{ color: 'var(--text-secondary)' }}>
+            Add funds to your trading account. You can choose from multiple funding methods or skip and add funds later.
+          </p>
+
+          <div className="space-y-3 mb-6">
+            <div className="flex items-start gap-3">
+              <div className="w-5 h-5 rounded-full border-2 border-blue-500 flex items-center justify-center flex-shrink-0 mt-0.5">
+                <div className="w-2 h-2 rounded-full bg-blue-500"></div>
+              </div>
+              <div>
+                <p className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>
+                  Wire transfer for same-day funding
+                </p>
+              </div>
+            </div>
+            <div className="flex items-start gap-3">
+              <div className="w-5 h-5 rounded-full border-2 border-blue-500 flex items-center justify-center flex-shrink-0 mt-0.5">
+                <div className="w-2 h-2 rounded-full bg-blue-500"></div>
+              </div>
+              <div>
+                <p className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>
+                  Bank transfer (ACH), check, or account rollover options
+                </p>
+              </div>
+            </div>
+            <div className="flex items-start gap-3">
+              <div className="w-5 h-5 rounded-full border-2 border-blue-500 flex items-center justify-center flex-shrink-0 mt-0.5">
+                <div className="w-2 h-2 rounded-full bg-blue-500"></div>
+              </div>
+              <div>
+                <p className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>
+                  You can always add funds later from your profile
+                </p>
+              </div>
+            </div>
           </div>
 
+          <div className="space-y-3">
+            <button
+              onClick={handleStartFunding}
+              className="btn-primary w-full py-3 flex items-center justify-center gap-2"
+            >
+              Add Funds Now
+              <ArrowRight className="w-4 h-4" />
+            </button>
+
+            <button
+              onClick={handleSkipFundingFlow}
+              className="w-full py-3 rounded-xl font-medium transition-colors"
+              style={{
+                background: 'var(--glass-bg)',
+                color: 'var(--text-secondary)'
+              }}
+            >
+              Skip funding
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (flowStep === 'select-funding') {
+    return (
+      <div className="card max-w-4xl mx-auto">
+        <div className="card-body">
+          <button
+            onClick={() => setFlowStep('funding-prompt')}
+            className="text-sm font-medium hover:text-blue-400 transition-colors mb-6"
+            style={{ color: 'var(--text-tertiary)' }}
+          >
+            ← Back
+          </button>
+
           <AccountFunding
-            accountType={accountTypeName}
+            accountType="Your Account"
             onComplete={handleFundingComplete}
-            onSkip={handleSkipFunding}
+            onSkip={handleSkipFundingFlow}
             showSkipOption={true}
           />
         </div>
@@ -139,66 +451,70 @@ export default function AddAccountPrompt({ data, onComplete, previewMode = false
     );
   }
 
-  // Prompt step
+  // Account Prompt step
   return (
     <div className="card max-w-2xl mx-auto">
-      <div className="card-body text-center">
-        <div className="w-20 h-20 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 flex items-center justify-center mx-auto mb-6">
-          <PiggyBank className="w-10 h-10 text-white" />
-        </div>
-
-        <h2 className="text-3xl font-bold text-gradient mb-4">
-          Ready to Start Trading?
+      <div className="card-body">
+        <h2 className="text-2xl font-bold mb-2" style={{ color: 'var(--text-primary)' }}>
+          Create Your Trading Account
         </h2>
 
-        <p className="text-lg mb-8" style={{ color: 'var(--text-secondary)' }}>
-          Create your trading account now to start investing. You can add funds immediately or do it later.
+        <p className="mb-6" style={{ color: 'var(--text-secondary)' }}>
+          Set up your account to start investing. You can choose from multiple account types and configure your account details.
         </p>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
-          <div className="glass-morphism p-5 rounded-xl text-left">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-r from-green-500 to-emerald-500 flex items-center justify-center mb-3">
-              <span className="text-white font-bold">✓</span>
+        <div className="space-y-3 mb-6">
+          <div className="flex items-start gap-3">
+            <div className="w-5 h-5 rounded-full border-2 border-blue-500 flex items-center justify-center flex-shrink-0 mt-0.5">
+              <div className="w-2 h-2 rounded-full bg-blue-500"></div>
             </div>
-            <h3 className="font-bold mb-2" style={{ color: 'var(--text-primary)' }}>Multiple Account Types</h3>
-            <p className="text-sm" style={{ color: 'var(--text-tertiary)' }}>
-              Individual, IRA, and Trust accounts available
-            </p>
+            <div>
+              <p className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>
+                Choose from Individual, IRA, or Trust accounts
+              </p>
+            </div>
           </div>
-
-          <div className="glass-morphism p-5 rounded-xl text-left">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-r from-blue-500 to-cyan-500 flex items-center justify-center mb-3">
-              <span className="text-white font-bold">✓</span>
+          <div className="flex items-start gap-3">
+            <div className="w-5 h-5 rounded-full border-2 border-blue-500 flex items-center justify-center flex-shrink-0 mt-0.5">
+              <div className="w-2 h-2 rounded-full bg-blue-500"></div>
             </div>
-            <h3 className="font-bold mb-2" style={{ color: 'var(--text-primary)' }}>Flexible Funding</h3>
-            <p className="text-sm" style={{ color: 'var(--text-tertiary)' }}>
-              Wire, ACH, check, or rollover options
-            </p>
+            <div>
+              <p className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>
+                Provide account details (all optional)
+              </p>
+            </div>
+          </div>
+          <div className="flex items-start gap-3">
+            <div className="w-5 h-5 rounded-full border-2 border-blue-500 flex items-center justify-center flex-shrink-0 mt-0.5">
+              <div className="w-2 h-2 rounded-full bg-blue-500"></div>
+            </div>
+            <div>
+              <p className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>
+                You can add additional accounts later from your profile
+              </p>
+            </div>
           </div>
         </div>
 
         <div className="space-y-3">
           <button
             onClick={handleStartAccountCreation}
-            className="btn-primary w-full py-4 text-lg flex items-center justify-center gap-2"
+            className="btn-primary w-full py-3 flex items-center justify-center gap-2"
           >
-            Create Account Now
-            <ArrowRight className="w-5 h-5" />
+            Create Account
+            <ArrowRight className="w-4 h-4" />
           </button>
 
           <button
-            onClick={handleSkip}
-            className="text-sm font-medium hover:text-blue-400 transition-colors"
-            style={{ color: 'var(--text-tertiary)' }}
+            onClick={handleSkipAll}
+            className="w-full py-3 rounded-xl font-medium transition-colors"
+            style={{
+              background: 'var(--glass-bg)',
+              color: 'var(--text-secondary)'
+            }}
           >
-            I'll do this later
+            Skip for now
           </button>
-        </div>
-
-        <div className="mt-6 p-4 rounded-xl" style={{ background: 'rgba(59, 130, 246, 0.1)' }}>
-          <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>
-            Don't worry! You can always create additional accounts or add funds later from your profile.
-          </p>
         </div>
       </div>
     </div>

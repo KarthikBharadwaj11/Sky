@@ -434,31 +434,27 @@ Reference: ${wireInfo.reference}
 
   return (
     <div className="space-y-6">
-      <div className="text-center mb-8">
-        <h2 className="text-3xl font-bold text-gradient mb-3">Fund Your Account</h2>
-        <p className="text-lg" style={{ color: 'var(--text-secondary)' }}>
+      <div className="mb-6">
+        <h2 className="text-2xl font-bold mb-2" style={{ color: 'var(--text-primary)' }}>Fund Your Account</h2>
+        <p style={{ color: 'var(--text-secondary)' }}>
           Choose how you'd like to add funds to your {accountType} account
         </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {fundingMethods.map((method) => {
           const Icon = method.icon;
           return (
             <button
               key={method.id}
               onClick={() => setSelectedMethod(method.id)}
-              className="card hover:scale-105 transition-all duration-300 text-left group"
+              className="card hover:border-blue-500 transition-all text-left group"
             >
               <div className="card-body">
-                <div className="flex items-start gap-4 mb-4">
-                  <div
-                    className={`w-12 h-12 rounded-xl bg-gradient-to-r ${method.color} flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform`}
-                  >
-                    <Icon className="w-6 h-6 text-white" />
-                  </div>
+                <div className="flex items-start gap-3 mb-3">
+                  <Icon className="w-5 h-5 flex-shrink-0 mt-0.5" style={{ color: 'var(--text-secondary)' }} />
                   <div className="flex-1">
-                    <h3 className="text-lg font-bold mb-1" style={{ color: 'var(--text-primary)' }}>
+                    <h3 className="text-base font-bold mb-1" style={{ color: 'var(--text-primary)' }}>
                       {method.title}
                     </h3>
                     <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>
@@ -467,22 +463,15 @@ Reference: ${wireInfo.reference}
                   </div>
                 </div>
 
-                <div className="flex items-center justify-between text-xs">
+                <div className="flex items-center justify-between text-xs ml-8">
                   <div>
                     <span style={{ color: 'var(--text-tertiary)' }}>Time: </span>
-                    <span className="font-semibold" style={{ color: 'var(--text-primary)' }}>{method.time}</span>
+                    <span className="font-medium" style={{ color: 'var(--text-primary)' }}>{method.time}</span>
                   </div>
                   <div>
                     <span style={{ color: 'var(--text-tertiary)' }}>Fee: </span>
-                    <span className="font-semibold text-green-400">{method.fee}</span>
+                    <span className="font-medium text-green-400">{method.fee}</span>
                   </div>
-                </div>
-
-                <div className="mt-3 pt-3 border-t flex items-center justify-between" style={{ borderColor: 'var(--glass-border)' }}>
-                  <span className="text-sm font-semibold text-gradient">
-                    Select
-                  </span>
-                  <ArrowRight className="w-4 h-4" style={{ color: 'var(--text-tertiary)' }} />
                 </div>
               </div>
             </button>
@@ -491,7 +480,7 @@ Reference: ${wireInfo.reference}
       </div>
 
       {showSkipOption && onSkip && (
-        <div className="text-center mt-8">
+        <div className="text-center mt-6">
           <button
             onClick={onSkip}
             className="text-sm font-medium hover:text-blue-400 transition-colors"

@@ -435,8 +435,8 @@ export default function OverviewDashboard() {
 
   return (
     <div className="flex min-h-screen" style={{ background: 'var(--background-primary)' }}>
-      {/* Left Sidebar - Watchlist - Fixed - 30% wider */}
-      <div className="w-[26rem] glass-morphism border-r border-white/10 fixed left-0 top-[120px] h-[calc(100vh-120px)] overflow-hidden z-20 flex flex-col">
+      {/* Left Sidebar - Watchlist - Fixed */}
+      <div className="w-[20.8rem] glass-morphism border-r border-white/10 fixed left-0 top-[120px] h-[calc(100vh-120px)] overflow-hidden z-20 flex flex-col">
         {/* Watchlist Header */}
         <div className="p-4 border-b border-white/10">
           <div className="flex items-center justify-between mb-3">
@@ -607,7 +607,7 @@ export default function OverviewDashboard() {
       </div>
 
       {/* Main Content - with left margin to account for sidebar */}
-      <div className="flex-1 ml-[26rem] px-8 pt-8 pb-8">
+      <div className="flex-1 ml-[20.8rem] px-8 pt-8 pb-8">
         {/* 1. Stats Cards */}
         <div className="mb-6">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
