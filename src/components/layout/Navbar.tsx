@@ -63,6 +63,9 @@ export default function Navbar() {
                 <Link href="/market" className="nav-link px-4 py-2">
                   Market
                 </Link>
+                <Link href="/options" className="nav-link px-4 py-2">
+                  Options
+                </Link>
                 <Link href="/copy-trading" className="nav-link px-4 py-2">
                   Copy Trading
                 </Link>

@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/components/auth/AuthProvider';
-import { User, CreditCard, Settings, Gift, Share2, MapPin, Mail, Briefcase, DollarSign, Target, TrendingUp, Plus, X, Building2, PiggyBank, TrendingUpIcon, Activity, Copy, Check, Users, Bell, Moon, Sun, Lock, Globe, Eye, Download, Smartphone, Trash2, Edit, Star } from 'lucide-react';
+import { User, CreditCard, Settings, Gift, Share2, MapPin, Mail, Briefcase, DollarSign, Target, TrendingUp, Plus, X, Building2, PiggyBank, TrendingUpIcon, Activity, Copy, Check, Users, Bell, Moon, Sun, Lock, Globe, Eye, Download, Smartphone, Trash2, Edit, Star, Unlock, Phone } from 'lucide-react';
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recharts';
 import TransferFundsModal from '@/components/accounts/TransferFundsModal';
 import AddPaymentMethodModal, { BankAccountData, CardData } from '@/components/accounts/AddPaymentMethodModal';
@@ -80,6 +80,19 @@ export default function Profile() {
   const [accountSection, setAccountSection] = useState<'brokerage' | 'bank'>('brokerage');
   const [bankAccounts, setBankAccounts] = useState<BankAccount[]>([]);
   const [showAddBankAccountModal, setShowAddBankAccountModal] = useState(false);
+
+  // Shared Portfolio state
+  const [showAddMemberModal, setShowAddMemberModal] = useState(false);
+  const [sharedMembers, setSharedMembers] = useState<any[]>([]);
+  const [sharedWithMe, setSharedWithMe] = useState<any[]>([]);
+  const [memberFormData, setMemberFormData] = useState({
+    fullName: '',
+    email: '',
+    phone: '',
+    relationship: '',
+    otherRelationship: '',
+    accessLevel: '' as 'view-only' | 'full-access' | ''
+  });
 
   // Settings state
   const [settings, setSettings] = useState({
@@ -247,6 +260,59 @@ export default function Profile() {
     }
   }, [settings, user]);
 
+  // Initialize shared portfolio dummy data
+  useEffect(() => {
+    // Dummy data: People I've shared my portfolio with
+    setSharedMembers([
+      {
+        id: '1',
+        fullName: 'Tony Stark',
+        email: 'tony.stark@starkindustries.com',
+        phone: '+1 (555) 123-4567',
+        relationship: 'Father',
+        accessLevel: 'view-only',
+        addedDate: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString(),
+        lastAccessed: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
+        status: 'active'
+      },
+      {
+        id: '2',
+        fullName: 'Hermione Granger',
+        email: 'hermione.granger@hogwarts.edu',
+        phone: '+1 (555) 987-6543',
+        relationship: 'Trading Advisor',
+        accessLevel: 'full-access',
+        addedDate: new Date(Date.now() - 90 * 24 * 60 * 60 * 1000).toISOString(),
+        lastAccessed: new Date(Date.now() - 1 * 60 * 60 * 1000).toISOString(),
+        status: 'active'
+      }
+    ]);
+
+    // Dummy data: People who have shared their portfolio with me
+    setSharedWithMe([
+      {
+        id: '3',
+        ownerName: 'Natasha Romanoff',
+        ownerEmail: 'natasha.romanoff@shield.gov',
+        relationship: 'Spouse',
+        accessLevel: 'full-access',
+        sharedDate: new Date(Date.now() - 60 * 24 * 60 * 60 * 1000).toISOString(),
+        portfolioValue: 125430.50,
+        portfolioReturn: 12.5
+      },
+      {
+        id: '4',
+        ownerName: 'Harry Potter',
+        ownerEmail: 'harry.potter@hogwarts.edu',
+        relationship: 'Son',
+        accessLevel: 'view-only',
+        sharedDate: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000).toISOString(),
+        portfolioValue: 45200.25,
+        portfolioReturn: -3.2
+      }
+    ]);
+  }, []);
+
   const generateReferralCode = (username: string) => {
     const prefix = username.substring(0, 3).toUpperCase();
     const randomChars = Math.random().toString(36).substring(2, 8).toUpperCase();
@@ -257,8 +323,8 @@ export default function Profile() {
     return [
       {
         id: '1',
-        name: 'John Smith',
-        email: 'john.smith@example.com',
+        name: 'Steve Rogers',
+        email: 'steve.rogers@avengers.com',
         joinedDate: new Date(Date.now() - 45 * 24 * 60 * 60 * 1000).toISOString(),
         status: 'rewarded',
         firstTradeDate: new Date(Date.now() - 40 * 24 * 60 * 60 * 1000).toISOString(),
@@ -266,8 +332,8 @@ export default function Profile() {
       },
       {
         id: '2',
-        name: 'Sarah Johnson',
-        email: 'sarah.j@example.com',
+        name: 'Luna Lovegood',
+        email: 'luna.lovegood@ravenclaw.edu',
         joinedDate: new Date(Date.now() - 20 * 24 * 60 * 60 * 1000).toISOString(),
         status: 'rewarded',
         firstTradeDate: new Date(Date.now() - 18 * 24 * 60 * 60 * 1000).toISOString(),
@@ -275,8 +341,8 @@ export default function Profile() {
       },
       {
         id: '3',
-        name: 'Michael Chen',
-        email: 'mchen@example.com',
+        name: 'Peter Parker',
+        email: 'peter.parker@dailybugle.com',
         joinedDate: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
         status: 'active',
         firstTradeDate: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
@@ -284,8 +350,8 @@ export default function Profile() {
       },
       {
         id: '4',
-        name: 'Emily Davis',
-        email: 'emily.davis@example.com',
+        name: 'Ron Weasley',
+        email: 'ron.weasley@hogwarts.edu',
         joinedDate: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
         status: 'pending'
       }
@@ -2306,26 +2372,441 @@ export default function Profile() {
     );
   };
 
-  const renderSharedPortfolio = () => (
-    <div className="space-y-4">
-      <div className="card">
-        <div className="card-header">
-          <h2 className="text-lg font-bold text-gradient">Shared Portfolio</h2>
-        </div>
-        <div className="card-body">
-          <div className="text-center py-10">
-            <Share2 className="w-16 h-16 mx-auto mb-4" style={{ color: 'var(--text-tertiary)' }} />
-            <p className="text-lg font-bold mb-2" style={{ color: 'var(--text-primary)' }}>
-              Shared Portfolio Section
-            </p>
-            <p className="text-lg" style={{ color: 'var(--text-tertiary)' }}>
-              Portfolio sharing features coming soon
+  const renderSharedPortfolio = () => {
+    const formatDate = (dateString: string) => {
+      return new Date(dateString).toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric'
+      });
+    };
+
+    const formatLastAccessed = (dateString: string) => {
+      const now = Date.now();
+      const then = new Date(dateString).getTime();
+      const diffInHours = Math.floor((now - then) / (1000 * 60 * 60));
+
+      if (diffInHours < 1) return 'Just now';
+      if (diffInHours < 24) return `${diffInHours}h ago`;
+      const diffInDays = Math.floor(diffInHours / 24);
+      if (diffInDays === 1) return 'Yesterday';
+      if (diffInDays < 7) return `${diffInDays} days ago`;
+      return formatDate(dateString);
+    };
+
+    return (
+      <div className="max-w-5xl mx-auto space-y-6">
+        {/* Header with Add Member Button */}
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 p-6 rounded-xl border" style={{ borderColor: 'var(--glass-border)', background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.05) 0%, rgba(147, 51, 234, 0.05) 100%)' }}>
+          <div>
+            <h2 className="text-xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">Shared Portfolio</h2>
+            <p className="text-sm mt-1" style={{ color: 'var(--text-tertiary)' }}>
+              Manage who has access to your portfolio
             </p>
           </div>
+          <button
+            onClick={() => setShowAddMemberModal(true)}
+            className="btn-primary px-5 py-2.5 text-sm flex items-center gap-2 shadow-lg shadow-blue-500/20 hover:shadow-xl hover:shadow-blue-500/30 transition-all hover:scale-105"
+          >
+            <Plus className="w-4 h-4" />
+            Add Member
+          </button>
         </div>
+
+        {/* Section 1: Portfolio Shared By Me */}
+        <div className="rounded-lg border overflow-hidden" style={{ borderColor: 'var(--glass-border)', background: 'var(--background-secondary)' }}>
+          <div className="px-5 py-4 border-b flex items-center gap-2" style={{ borderColor: 'var(--glass-border)' }}>
+            <Share2 className="w-4 h-4 text-blue-400" />
+            <h3 className="text-base font-semibold" style={{ color: 'var(--text-primary)' }}>
+              Shared by Me
+            </h3>
+            <span className="text-xs px-2 py-0.5 rounded-full" style={{ background: 'var(--background-primary)', color: 'var(--text-tertiary)' }}>
+              {sharedMembers.length}
+            </span>
+          </div>
+          <div className="p-5">
+            {sharedMembers.length > 0 ? (
+              <div className="space-y-4">
+                {sharedMembers.map((member) => (
+                  <div
+                    key={member.id}
+                    className="p-4 rounded-lg border hover:border-blue-500/40 transition-all group hover:shadow-lg hover:shadow-blue-500/10"
+                    style={{
+                      background: 'var(--background-primary)',
+                      borderColor: 'var(--glass-border)'
+                    }}
+                  >
+                    <div className="flex items-center justify-between mb-3">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-lg flex items-center justify-center text-sm font-semibold bg-gradient-to-br from-blue-500/20 to-purple-500/20 border border-blue-500/30">
+                          <span className="bg-gradient-to-br from-blue-400 to-purple-400 bg-clip-text text-transparent">
+                            {member.fullName.split(' ').map((n: string) => n[0]).join('')}
+                          </span>
+                        </div>
+                        <div>
+                          <h4 className="text-sm font-semibold mb-0.5" style={{ color: 'var(--text-primary)' }}>
+                            {member.fullName}
+                          </h4>
+                          <p className="text-xs" style={{ color: 'var(--text-tertiary)' }}>
+                            {member.relationship}
+                          </p>
+                        </div>
+                      </div>
+
+                      {member.accessLevel === 'view-only' ? (
+                        <span className="px-3 py-1 rounded-full text-xs font-medium bg-blue-500/10 text-blue-400 flex items-center gap-1.5">
+                          <Eye className="w-3 h-3" />
+                          View Only
+                        </span>
+                      ) : (
+                        <span className="px-3 py-1 rounded-full text-xs font-medium bg-purple-500/10 text-purple-400 flex items-center gap-1.5">
+                          <Unlock className="w-3 h-3" />
+                          Full Access
+                        </span>
+                      )}
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mb-3">
+                      <div className="flex items-center gap-2 text-xs" style={{ color: 'var(--text-tertiary)' }}>
+                        <Mail className="w-3.5 h-3.5" />
+                        <span>{member.email}</span>
+                      </div>
+                      <div className="flex items-center gap-2 text-xs" style={{ color: 'var(--text-tertiary)' }}>
+                        <Phone className="w-3.5 h-3.5" />
+                        <span>{member.phone}</span>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center justify-between pt-3 border-t" style={{ borderColor: 'var(--glass-border)' }}>
+                      <span className="text-xs" style={{ color: 'var(--text-tertiary)' }}>
+                        Last active {formatLastAccessed(member.lastAccessed)}
+                      </span>
+
+                      <div className="flex items-center gap-1">
+                        <button className="p-1.5 rounded-lg hover:bg-white/5 transition-colors" title="Edit access">
+                          <Edit className="w-4 h-4" style={{ color: 'var(--text-secondary)' }} />
+                        </button>
+                        <button className="p-1.5 rounded-lg hover:bg-red-500/10 transition-colors" title="Revoke access">
+                          <Trash2 className="w-4 h-4 text-red-400" />
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-8">
+                <Users className="w-12 h-12 mx-auto mb-3" style={{ color: 'var(--text-tertiary)' }} />
+                <p className="text-sm font-medium mb-1" style={{ color: 'var(--text-primary)' }}>
+                  No Members Added
+                </p>
+                <p className="text-xs" style={{ color: 'var(--text-tertiary)' }}>
+                  Click "Add Member" to share your portfolio
+                </p>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Section 2: Portfolios Shared With Me */}
+        <div className="rounded-lg border overflow-hidden" style={{ borderColor: 'var(--glass-border)', background: 'var(--background-secondary)' }}>
+          <div className="px-5 py-4 border-b flex items-center gap-2" style={{ borderColor: 'var(--glass-border)' }}>
+            <Users className="w-4 h-4 text-green-400" />
+            <h3 className="text-base font-semibold" style={{ color: 'var(--text-primary)' }}>
+              Shared with Me
+            </h3>
+            <span className="text-xs px-2 py-0.5 rounded-full" style={{ background: 'var(--background-primary)', color: 'var(--text-tertiary)' }}>
+              {sharedWithMe.length}
+            </span>
+          </div>
+          <div className="p-5">
+            {sharedWithMe.length > 0 ? (
+              <div className="space-y-4">
+                {sharedWithMe.map((portfolio) => (
+                  <div
+                    key={portfolio.id}
+                    className="p-4 rounded-lg border cursor-pointer hover:border-green-500/40 transition-all group hover:shadow-lg hover:shadow-green-500/10"
+                    style={{
+                      background: 'var(--background-primary)',
+                      borderColor: 'var(--glass-border)'
+                    }}
+                  >
+                    <div className="flex items-center justify-between mb-3">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-lg flex items-center justify-center text-sm font-semibold bg-gradient-to-br from-green-500/20 to-blue-500/20 border border-green-500/30">
+                          <span className="bg-gradient-to-br from-green-400 to-blue-400 bg-clip-text text-transparent">
+                            {portfolio.ownerName.split(' ').map((n: string) => n[0]).join('')}
+                          </span>
+                        </div>
+                        <div>
+                          <h4 className="text-sm font-semibold mb-0.5" style={{ color: 'var(--text-primary)' }}>
+                            {portfolio.ownerName}
+                          </h4>
+                          <p className="text-xs" style={{ color: 'var(--text-tertiary)' }}>
+                            {portfolio.relationship}
+                          </p>
+                        </div>
+                      </div>
+
+                      {portfolio.accessLevel === 'view-only' ? (
+                        <span className="px-3 py-1 rounded-full text-xs font-medium bg-blue-500/10 text-blue-400 flex items-center gap-1.5">
+                          <Eye className="w-3 h-3" />
+                          View Only
+                        </span>
+                      ) : (
+                        <span className="px-3 py-1 rounded-full text-xs font-medium bg-purple-500/10 text-purple-400 flex items-center gap-1.5">
+                          <Unlock className="w-3 h-3" />
+                          Full Access
+                        </span>
+                      )}
+                    </div>
+
+                    <div className="grid grid-cols-3 gap-3 mb-3">
+                      <div>
+                        <p className="text-xs mb-0.5" style={{ color: 'var(--text-tertiary)' }}>Value</p>
+                        <p className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>
+                          ${portfolio.portfolioValue.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-xs mb-0.5" style={{ color: 'var(--text-tertiary)' }}>Return</p>
+                        <p className={`text-sm font-semibold ${portfolio.portfolioReturn >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                          {portfolio.portfolioReturn >= 0 ? '+' : ''}{portfolio.portfolioReturn.toFixed(1)}%
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-xs mb-0.5" style={{ color: 'var(--text-tertiary)' }}>Shared</p>
+                        <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>
+                          {formatDate(portfolio.sharedDate)}
+                        </p>
+                      </div>
+                    </div>
+
+                    <button className="w-full py-2 rounded-lg btn-primary text-sm group-hover:shadow-lg group-hover:shadow-green-500/20 transition-all">
+                      View Portfolio →
+                    </button>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-8">
+                <Share2 className="w-12 h-12 mx-auto mb-3" style={{ color: 'var(--text-tertiary)' }} />
+                <p className="text-sm font-medium mb-1" style={{ color: 'var(--text-primary)' }}>
+                  No Shared Portfolios
+                </p>
+                <p className="text-xs" style={{ color: 'var(--text-tertiary)' }}>
+                  No one has shared their portfolio with you yet
+                </p>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Add Member Modal */}
+        {showAddMemberModal && (
+          <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+            <div className="card max-w-xl w-full max-h-[90vh] overflow-y-auto">
+              <div className="card-header flex items-center justify-between">
+                <h3 className="text-lg font-bold text-gradient">Add Family Member / Advisor</h3>
+                <button
+                  onClick={() => {
+                    setShowAddMemberModal(false);
+                    setMemberFormData({
+                      fullName: '',
+                      email: '',
+                      phone: '',
+                      relationship: '',
+                      otherRelationship: '',
+                      accessLevel: '' as 'view-only' | 'full-access' | ''
+                    });
+                  }}
+                  className="p-1.5 rounded-lg glass-morphism hover:bg-white/5 transition-all"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+              <div className="card-body">
+                <form
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    // Add the new member
+                    const newMember = {
+                      id: (sharedMembers.length + 1).toString(),
+                      fullName: memberFormData.fullName,
+                      email: memberFormData.email,
+                      phone: memberFormData.phone,
+                      relationship: memberFormData.relationship === 'other' ? memberFormData.otherRelationship : memberFormData.relationship,
+                      accessLevel: memberFormData.accessLevel,
+                      addedDate: new Date().toISOString(),
+                      lastAccessed: new Date().toISOString(),
+                      status: 'active'
+                    };
+                    setSharedMembers([...sharedMembers, newMember]);
+                    setShowAddMemberModal(false);
+                    setMemberFormData({
+                      fullName: '',
+                      email: '',
+                      phone: '',
+                      relationship: '',
+                      otherRelationship: '',
+                      accessLevel: '' as 'view-only' | 'full-access' | ''
+                    });
+                  }}
+                  className="space-y-4"
+                >
+                  {/* Relationship */}
+                  <div>
+                    <label className="block text-sm font-medium mb-2" style={{ color: 'var(--text-secondary)' }}>
+                      Relationship
+                    </label>
+                    <select
+                      className="form-input"
+                      value={memberFormData.relationship}
+                      onChange={(e) => setMemberFormData({ ...memberFormData, relationship: e.target.value })}
+                      required
+                    >
+                      <option value="">Select relationship</option>
+                      <option value="Father">Father</option>
+                      <option value="Mother">Mother</option>
+                      <option value="Son">Son</option>
+                      <option value="Daughter">Daughter</option>
+                      <option value="Spouse">Spouse</option>
+                      <option value="Trading Advisor">Trading Advisor</option>
+                      <option value="other">Other</option>
+                    </select>
+                  </div>
+
+                  {memberFormData.relationship === 'other' && (
+                    <div>
+                      <label className="block text-sm font-medium mb-2" style={{ color: 'var(--text-secondary)' }}>
+                        Specify Relationship
+                      </label>
+                      <input
+                        type="text"
+                        className="form-input"
+                        value={memberFormData.otherRelationship}
+                        onChange={(e) => setMemberFormData({ ...memberFormData, otherRelationship: e.target.value })}
+                        placeholder="e.g., Brother, Financial Advisor"
+                        required
+                      />
+                    </div>
+                  )}
+
+                  {/* Full Name */}
+                  <div>
+                    <label className="block text-sm font-medium mb-2" style={{ color: 'var(--text-secondary)' }}>
+                      Full Name
+                    </label>
+                    <input
+                      type="text"
+                      className="form-input"
+                      value={memberFormData.fullName}
+                      onChange={(e) => setMemberFormData({ ...memberFormData, fullName: e.target.value })}
+                      placeholder="Enter full name"
+                      required
+                    />
+                  </div>
+
+                  {/* Email */}
+                  <div>
+                    <label className="block text-sm font-medium mb-2" style={{ color: 'var(--text-secondary)' }}>
+                      Email Address
+                    </label>
+                    <input
+                      type="email"
+                      className="form-input"
+                      value={memberFormData.email}
+                      onChange={(e) => setMemberFormData({ ...memberFormData, email: e.target.value })}
+                      placeholder="email@example.com"
+                      required
+                    />
+                  </div>
+
+                  {/* Phone */}
+                  <div>
+                    <label className="block text-sm font-medium mb-2" style={{ color: 'var(--text-secondary)' }}>
+                      Phone Number
+                    </label>
+                    <input
+                      type="tel"
+                      className="form-input"
+                      value={memberFormData.phone}
+                      onChange={(e) => setMemberFormData({ ...memberFormData, phone: e.target.value })}
+                      placeholder="+1 (555) 123-4567"
+                      required
+                    />
+                  </div>
+
+                  {/* Access Level */}
+                  <div>
+                    <label className="block text-sm font-medium mb-2" style={{ color: 'var(--text-secondary)' }}>
+                      Access Level
+                    </label>
+                    <div className="grid grid-cols-2 gap-3">
+                      <button
+                        type="button"
+                        onClick={() => setMemberFormData({ ...memberFormData, accessLevel: 'view-only' })}
+                        className={`p-3 rounded-lg border-2 transition-all text-left ${
+                          memberFormData.accessLevel === 'view-only'
+                            ? 'border-blue-500 bg-blue-500/10'
+                            : 'border-gray-600 hover:border-gray-500'
+                        }`}
+                      >
+                        <div className="flex items-center gap-2 mb-1">
+                          <Eye className="w-4 h-4 text-blue-400" />
+                          <span className="text-sm font-bold" style={{ color: 'var(--text-primary)' }}>View Only</span>
+                        </div>
+                        <p className="text-xs" style={{ color: 'var(--text-tertiary)' }}>Can view portfolio</p>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setMemberFormData({ ...memberFormData, accessLevel: 'full-access' })}
+                        className={`p-3 rounded-lg border-2 transition-all text-left ${
+                          memberFormData.accessLevel === 'full-access'
+                            ? 'border-purple-500 bg-purple-500/10'
+                            : 'border-gray-600 hover:border-gray-500'
+                        }`}
+                      >
+                        <div className="flex items-center gap-2 mb-1">
+                          <Unlock className="w-4 h-4 text-purple-400" />
+                          <span className="text-sm font-bold" style={{ color: 'var(--text-primary)' }}>Full Access</span>
+                        </div>
+                        <p className="text-xs" style={{ color: 'var(--text-tertiary)' }}>Can view & trade</p>
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Submit */}
+                  <div className="flex gap-3 pt-4">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setShowAddMemberModal(false);
+                        setMemberFormData({
+                          fullName: '',
+                          email: '',
+                          phone: '',
+                          relationship: '',
+                          otherRelationship: '',
+                          accessLevel: '' as 'view-only' | 'full-access' | ''
+                        });
+                      }}
+                      className="flex-1 btn-secondary"
+                    >
+                      Cancel
+                    </button>
+                    <button type="submit" className="flex-1 btn-primary">
+                      Add Member
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
-    </div>
-  );
+    );
+  };
 
   const renderContent = () => {
     switch (activeTab) {

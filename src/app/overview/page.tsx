@@ -20,7 +20,7 @@ export default function Overview() {
   }
 
   return (
-    <div className="min-h-screen" style={{ background: 'var(--background-primary)' }}>
+    <div className="min-h-screen">
       {/* Market Status Bar - positioned below navbar */}
       <div className="fixed top-20 left-0 right-0 z-30 glass-morphism border-b border-white/10 backdrop-blur-xl">
         <div className="container mx-auto px-4 py-3">

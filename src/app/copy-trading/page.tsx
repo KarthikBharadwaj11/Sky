@@ -5,6 +5,7 @@ import { useAuth } from '@/components/auth/AuthProvider';
 import LineChart from '@/components/charts/LineChart';
 import { TrendingUp, Users, Award, Bell, MessageCircle, Share2, TrendingDown, Star, Shield, Target, Calendar, DollarSign, Activity, ExternalLink, UserMinus, Settings, BarChart3, BookOpen, User, TrendingDown as TrendingDownIcon, Copy, Brain, Zap, CheckCircle, PlayCircle, UserCheck, Clock, PieChart, LineChart as LineChartIcon, Heart, Sparkles, Globe, Lock, ArrowRight, ArrowDown } from 'lucide-react';
 import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
 
 interface Expert {
   id: string;
@@ -70,6 +71,7 @@ interface PendingTrade {
 
 export default function CopyTrading() {
   const { user, updateBalance } = useAuth();
+  const searchParams = useSearchParams();
   const [experts, setExperts] = useState<Expert[]>([]);
   const [subscriptions, setSubscriptions] = useState<Subscription[]>([]);
   const [selectedExpert, setSelectedExpert] = useState<Expert | null>(null);
@@ -121,7 +123,7 @@ export default function CopyTrading() {
 
   const copyTradingTestimonials = [
     {
-      name: "Sarah Johnson",
+      name: "Wanda Maximoff",
       role: "Marketing Executive",
       avatar: "👩‍💼",
       rating: 5,
@@ -130,7 +132,7 @@ export default function CopyTrading() {
       timeframe: "6 months"
     },
     {
-      name: "Mike Chen",
+      name: "Neville Longbottom",
       role: "Software Engineer",
       avatar: "👨‍💻",
       rating: 5,
@@ -139,7 +141,7 @@ export default function CopyTrading() {
       timeframe: "8 months"
     },
     {
-      name: "Emily Rodriguez",
+      name: "Ginny Weasley",
       role: "College Student",
       avatar: "👩‍🎓",
       rating: 5,
@@ -148,7 +150,7 @@ export default function CopyTrading() {
       timeframe: "4 months"
     },
     {
-      name: "David Williams",
+      name: "Thor Odinson",
       role: "Business Owner",
       avatar: "👨‍💼",
       rating: 5,
@@ -235,6 +237,14 @@ export default function CopyTrading() {
     return () => clearInterval(interval);
   }, []);
 
+  // Read tab from URL query parameter
+  useEffect(() => {
+    const tab = searchParams.get('tab');
+    if (tab && ['dashboard', 'your-trading', 'live-feed', 'portfolio-center', 'pending-trades'].includes(tab)) {
+      setActiveTab(tab as any);
+    }
+  }, [searchParams]);
+
   // Simulate live trades
   useEffect(() => {
     const generateLiveTrade = () => {
@@ -256,9 +266,9 @@ export default function CopyTrading() {
       const confidence = ['High', 'Medium', 'Low'];
 
       const expertsList = experts.length > 0 ? experts : [
-        { id: '1', name: 'Sarah Chen', avatar: '👩‍💼', riskLevel: 'Medium' },
-        { id: '2', name: 'Marcus Johnson', avatar: '👨‍💼', riskLevel: 'Low' },
-        { id: '3', name: 'Alex Rodriguez', avatar: '👨‍💻', riskLevel: 'High' }
+        { id: '1', name: 'Loki Laufeyson', avatar: '👩‍💼', riskLevel: 'Medium' },
+        { id: '2', name: 'Minerva McGonagall', avatar: '👨‍💼', riskLevel: 'Low' },
+        { id: '3', name: 'Sam Wilson', avatar: '👨‍💻', riskLevel: 'High' }
       ];
 
       const randomExpert = expertsList[Math.floor(Math.random() * expertsList.length)];
@@ -317,7 +327,7 @@ export default function CopyTrading() {
     const mockExperts: Expert[] = [
       {
         id: '1',
-        name: 'Sarah Chen',
+        name: 'Draco Malfoy',
         username: '@tech_trader_pro',
         avatar: '👩‍💼',
         bio: 'Tech stock specialist with 8 years experience. Focus on growth stocks and emerging technologies.',
@@ -343,7 +353,7 @@ export default function CopyTrading() {
       },
       {
         id: '2',
-        name: 'Marcus Johnson',
+        name: 'Nick Fury',
         username: '@dividend_king',
         avatar: '👨‍💼',
         bio: 'Conservative dividend investor. Steady returns with low volatility approach.',
@@ -368,7 +378,7 @@ export default function CopyTrading() {
       },
       {
         id: '3',
-        name: 'Alex Rodriguez',
+        name: 'Severus Snape',
         username: '@crypto_stocks',
         avatar: '👨‍💻',
         bio: 'High-growth momentum trader. Specializes in crypto-related stocks and high volatility plays.',
@@ -393,7 +403,7 @@ export default function CopyTrading() {
       },
       {
         id: '4',
-        name: 'Emma Watson',
+        name: 'Pepper Potts',
         username: '@esg_investor',
         avatar: '👩‍🔬',
         bio: 'ESG and sustainable investing expert. Long-term value creation through responsible investing.',
@@ -1810,9 +1820,10 @@ export default function CopyTrading() {
               </p>
             </div>
             <Link href="/copy-trading-portfolio">
-              <button className="btn-primary px-6 py-3 flex items-center gap-2 hover:scale-105 transition-all duration-300">
+              <button className="btn-primary px-6 py-3 flex items-center gap-2 hover:scale-105 transition-all duration-300 shadow-lg">
                 <PieChart className="w-5 h-5" />
-                View Full Portfolio
+                <span>Manage Portfolio</span>
+                <ArrowRight className="w-4 h-4" />
               </button>
             </Link>
           </div>

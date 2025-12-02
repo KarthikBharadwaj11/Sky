@@ -3,6 +3,8 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '@/components/auth/AuthProvider';
 import Link from 'next/link';
+import OptionsPortfolio from '@/components/options/OptionsPortfolio';
+import { OptionsPosition } from '@/types/options';
 
 interface Transaction {
   id: string;
@@ -19,6 +21,7 @@ interface Transaction {
 
 export default function PortfolioAnalytics() {
   const { user } = useAuth();
+  const [activeTab, setActiveTab] = useState<'stocks' | 'options'>('stocks');
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [filter, setFilter] = useState<'all' | 'buy' | 'sell'>('all');
   const [sortBy, setSortBy] = useState<'date' | 'profit' | 'amount'>('date');
@@ -37,6 +40,67 @@ export default function PortfolioAnalytics() {
       loadTransactions();
     }
   }, [user, loadTransactions]);
+
+  // Mock options positions for visual prototype
+  const mockOptionsPositions: OptionsPosition[] = [
+    {
+      id: '1',
+      symbol: 'AAPL',
+      stockName: 'Apple Inc.',
+      type: 'call',
+      strike: 175,
+      expiration: '2024-03-15',
+      quantity: 2,
+      action: 'buy_to_open',
+      entryPremium: 5.25,
+      currentPremium: 6.80,
+      totalCost: 1050,
+      currentValue: 1360,
+      profitLoss: 310,
+      profitLossPercent: 29.52,
+      breakEven: 180.25,
+      daysToExpiration: 8,
+      purchaseDate: '2024-03-01'
+    },
+    {
+      id: '2',
+      symbol: 'TSLA',
+      stockName: 'Tesla Inc.',
+      type: 'put',
+      strike: 250,
+      expiration: '2024-03-22',
+      quantity: 1,
+      action: 'buy_to_open',
+      entryPremium: 8.50,
+      currentPremium: 7.20,
+      totalCost: 850,
+      currentValue: 720,
+      profitLoss: -130,
+      profitLossPercent: -15.29,
+      breakEven: 241.50,
+      daysToExpiration: 15,
+      purchaseDate: '2024-02-28'
+    },
+    {
+      id: '3',
+      symbol: 'NVDA',
+      stockName: 'NVIDIA Corp.',
+      type: 'call',
+      strike: 870,
+      expiration: '2024-04-05',
+      quantity: 1,
+      action: 'buy_to_open',
+      entryPremium: 18.75,
+      currentPremium: 24.30,
+      totalCost: 1875,
+      currentValue: 2430,
+      profitLoss: 555,
+      profitLossPercent: 29.60,
+      breakEven: 888.75,
+      daysToExpiration: 29,
+      purchaseDate: '2024-02-25'
+    }
+  ];
 
   if (!user) {
     return (
@@ -73,123 +137,143 @@ export default function PortfolioAnalytics() {
   const winRate = totalTrades > 0 ? (profitableTrades / totalTrades) * 100 : 0;
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="mb-12">
-        <div className="flex items-center justify-between mb-8">
-          <h1 className="text-5xl font-bold text-gradient gradient-shift">Portfolio Analytics & History</h1>
+    <div className="max-w-6xl mx-auto px-6 py-8">
+      <div className="mb-8">
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            <h1 className="text-3xl font-bold mb-1" style={{ color: 'var(--text-primary)' }}>Portfolio Analytics</h1>
+            <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>Track your trading history and performance</p>
+          </div>
           <Link href="/overview">
-            <button className="btn-secondary px-6 py-3">
+            <button className="btn-secondary px-4 py-2 text-sm">
               ← Back to Overview
             </button>
           </Link>
         </div>
 
-        {/* Analytics Summary Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
-          <div className="card pulse-glow">
-            <div className="card-body text-center">
-              <div className="w-12 h-12 mx-auto mb-4 rounded-full flex items-center justify-center" style={{ background: 'var(--gradient-primary)' }}>
-                <svg className="w-6 h-6" style={{ color: 'var(--text-primary)' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z" />
-                </svg>
-              </div>
-              <h3 className="text-lg font-semibold mb-2" style={{ color: 'var(--text-secondary)' }}>Total Trades</h3>
-              <p className="text-3xl font-bold" style={{ color: 'var(--primary-blue)' }}>{totalTrades}</p>
-            </div>
-          </div>
-
-          <div className="card pulse-glow">
-            <div className="card-body text-center">
-              <div className="w-12 h-12 mx-auto mb-4 rounded-full flex items-center justify-center" style={{ background: 'var(--gradient-accent)' }}>
-                <svg className="w-6 h-6" style={{ color: 'var(--text-primary)' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-              </div>
-              <h3 className="text-lg font-semibold mb-2" style={{ color: 'var(--text-secondary)' }}>Win Rate</h3>
-              <p className="text-3xl font-bold text-green-400">{winRate.toFixed(1)}%</p>
-              <p className="text-sm mt-1" style={{ color: 'var(--text-tertiary)' }}>{profitableTrades} profitable</p>
-            </div>
-          </div>
-
-          <div className="card pulse-glow">
-            <div className="card-body text-center">
-              <div className="w-12 h-12 mx-auto mb-4 rounded-full flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #10B981 0%, #059669 100%)' }}>
-                <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
-                </svg>
-              </div>
-              <h3 className="text-lg font-semibold mb-2" style={{ color: 'var(--text-secondary)' }}>Total Buy Volume</h3>
-              <p className="text-3xl font-bold text-green-400">${totalBuyVolume.toFixed(2)}</p>
-            </div>
-          </div>
-
-          <div className="card pulse-glow">
-            <div className="card-body text-center">
-              <div className="w-12 h-12 mx-auto mb-4 rounded-full flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #EF4444 0%, #DC2626 100%)' }}>
-                <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 17h8m0 0V9m0 8l-8-8-4 4-6-6" />
-                </svg>
-              </div>
-              <h3 className="text-lg font-semibold mb-2" style={{ color: 'var(--text-secondary)' }}>Total Sell Volume</h3>
-              <p className="text-3xl font-bold text-red-400">${totalSellVolume.toFixed(2)}</p>
-            </div>
-          </div>
+        {/* Tab Selector */}
+        <div className="flex gap-2 mb-6 p-1 rounded-lg inline-flex" style={{ background: 'var(--background-secondary)' }}>
+          <button
+            onClick={() => setActiveTab('stocks')}
+            className={`py-2 px-6 rounded-lg font-medium text-sm transition-colors ${
+              activeTab === 'stocks'
+                ? 'bg-blue-500 text-white'
+                : 'text-gray-400 hover:text-white'
+            }`}
+          >
+            Stocks
+          </button>
+          <button
+            onClick={() => setActiveTab('options')}
+            className={`py-2 px-6 rounded-lg font-medium text-sm transition-colors ${
+              activeTab === 'options'
+                ? 'bg-blue-500 text-white'
+                : 'text-gray-400 hover:text-white'
+            }`}
+          >
+            Options
+          </button>
         </div>
 
-        {/* Complete Transaction History */}
-        <div className="card">
-          <div className="card-header">
-            <div className="flex items-center justify-between">
-              <h2 className="text-3xl font-bold text-gradient">Complete Transaction History</h2>
-
-              <div className="flex items-center gap-4">
-                {/* Filter */}
-                <div className="flex gap-2">
-                  <button
-                    onClick={() => setFilter('all')}
-                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
-                      filter === 'all' ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white' : 'glass-morphism'
-                    }`}
-                    style={filter !== 'all' ? { color: 'var(--text-secondary)' } : {}}
-                  >
-                    All
-                  </button>
-                  <button
-                    onClick={() => setFilter('buy')}
-                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
-                      filter === 'buy' ? 'bg-green-500 text-white' : 'glass-morphism'
-                    }`}
-                    style={filter !== 'buy' ? { color: 'var(--text-secondary)' } : {}}
-                  >
-                    Buys
-                  </button>
-                  <button
-                    onClick={() => setFilter('sell')}
-                    className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
-                      filter === 'sell' ? 'bg-red-500 text-white' : 'glass-morphism'
-                    }`}
-                    style={filter !== 'sell' ? { color: 'var(--text-secondary)' } : {}}
-                  >
-                    Sells
-                  </button>
+        {/* Stocks Tab Content */}
+        {activeTab === 'stocks' && (
+          <>
+            {/* Analytics Summary Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+              <div className="rounded-lg border p-5 text-center" style={{ borderColor: 'var(--glass-border)', background: 'var(--background-secondary)' }}>
+                <div className="w-10 h-10 mx-auto mb-3 rounded-lg flex items-center justify-center" style={{ background: 'var(--background-primary)' }}>
+                  <svg className="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z" />
+                  </svg>
                 </div>
+                <p className="text-xs mb-1" style={{ color: 'var(--text-tertiary)' }}>Total Trades</p>
+                <p className="text-2xl font-bold" style={{ color: 'var(--text-primary)' }}>{totalTrades}</p>
+              </div>
 
-                {/* Sort */}
-                <div className="flex items-center gap-2">
-                  <span className="text-sm" style={{ color: 'var(--text-secondary)' }}>Sort by:</span>
-                  <select
-                    value={sortBy}
-                    onChange={(e) => setSortBy(e.target.value as any)}
-                    className="form-input px-3 py-2"
-                  >
-                    <option value="date">Date</option>
-                    <option value="amount">Amount</option>
-                    <option value="profit">Profit</option>
-                  </select>
+              <div className="rounded-lg border p-5 text-center" style={{ borderColor: 'var(--glass-border)', background: 'var(--background-secondary)' }}>
+                <div className="w-10 h-10 mx-auto mb-3 rounded-lg flex items-center justify-center" style={{ background: 'var(--background-primary)' }}>
+                  <svg className="w-5 h-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
                 </div>
+                <p className="text-xs mb-1" style={{ color: 'var(--text-tertiary)' }}>Win Rate</p>
+                <p className="text-2xl font-bold text-green-400">{winRate.toFixed(1)}%</p>
+                <p className="text-xs mt-1" style={{ color: 'var(--text-tertiary)' }}>{profitableTrades} profitable</p>
+              </div>
+
+              <div className="rounded-lg border p-5 text-center" style={{ borderColor: 'var(--glass-border)', background: 'var(--background-secondary)' }}>
+                <div className="w-10 h-10 mx-auto mb-3 rounded-lg flex items-center justify-center" style={{ background: 'var(--background-primary)' }}>
+                  <svg className="w-5 h-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                  </svg>
+                </div>
+                <p className="text-xs mb-1" style={{ color: 'var(--text-tertiary)' }}>Total Buy Volume</p>
+                <p className="text-2xl font-bold text-green-400">${totalBuyVolume.toFixed(2)}</p>
+              </div>
+
+              <div className="rounded-lg border p-5 text-center" style={{ borderColor: 'var(--glass-border)', background: 'var(--background-secondary)' }}>
+                <div className="w-10 h-10 mx-auto mb-3 rounded-lg flex items-center justify-center" style={{ background: 'var(--background-primary)' }}>
+                  <svg className="w-5 h-5 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 17h8m0 0V9m0 8l-8-8-4 4-6-6" />
+                  </svg>
+                </div>
+                <p className="text-xs mb-1" style={{ color: 'var(--text-tertiary)' }}>Total Sell Volume</p>
+                <p className="text-2xl font-bold text-red-400">${totalSellVolume.toFixed(2)}</p>
               </div>
             </div>
-          </div>
+
+            {/* Complete Transaction History */}
+            <div className="rounded-lg border overflow-hidden" style={{ borderColor: 'var(--glass-border)', background: 'var(--background-secondary)' }}>
+              <div className="px-6 py-4 border-b flex items-center justify-between" style={{ borderColor: 'var(--glass-border)' }}>
+                <h2 className="text-lg font-semibold" style={{ color: 'var(--text-primary)' }}>Transaction History</h2>
+
+                <div className="flex items-center gap-3">
+                  {/* Filter */}
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => setFilter('all')}
+                      className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
+                        filter === 'all' ? 'bg-blue-500 text-white' : 'border'
+                      }`}
+                      style={filter !== 'all' ? { borderColor: 'var(--glass-border)', color: 'var(--text-secondary)' } : {}}
+                    >
+                      All
+                    </button>
+                    <button
+                      onClick={() => setFilter('buy')}
+                      className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
+                        filter === 'buy' ? 'bg-green-500 text-white' : 'border'
+                      }`}
+                      style={filter !== 'buy' ? { borderColor: 'var(--glass-border)', color: 'var(--text-secondary)' } : {}}
+                    >
+                      Buys
+                    </button>
+                    <button
+                      onClick={() => setFilter('sell')}
+                      className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
+                        filter === 'sell' ? 'bg-red-500 text-white' : 'border'
+                      }`}
+                      style={filter !== 'sell' ? { borderColor: 'var(--glass-border)', color: 'var(--text-secondary)' } : {}}
+                    >
+                      Sells
+                    </button>
+                  </div>
+
+                  {/* Sort */}
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs" style={{ color: 'var(--text-tertiary)' }}>Sort:</span>
+                    <select
+                      value={sortBy}
+                      onChange={(e) => setSortBy(e.target.value as any)}
+                      className="form-input px-3 py-1.5 text-sm"
+                    >
+                      <option value="date">Date</option>
+                      <option value="amount">Amount</option>
+                      <option value="profit">Profit</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
 
           <div className="overflow-x-auto">
             {sortedTransactions.length > 0 ? (
@@ -295,6 +379,13 @@ export default function PortfolioAnalytics() {
             )}
           </div>
         </div>
+          </>
+        )}
+
+        {/* Options Tab Content */}
+        {activeTab === 'options' && (
+          <OptionsPortfolio positions={mockOptionsPositions} />
+        )}
       </div>
     </div>
   );

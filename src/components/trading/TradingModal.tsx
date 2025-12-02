@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../auth/AuthProvider';
 import { X, TrendingUp, TrendingDown, DollarSign, Wallet } from 'lucide-react';
+import OptionsChain from '../options/OptionsChain';
 
 interface Stock {
   symbol: string;
@@ -19,6 +20,7 @@ interface TradingModalProps {
 
 export default function TradingModal({ stock, onClose }: TradingModalProps) {
   const { user, updateBalance } = useAuth();
+  const [activeTab, setActiveTab] = useState<'stocks' | 'options'>('stocks');
   const [tradeType, setTradeType] = useState<'buy' | 'sell'>('buy');
   const [quantity, setQuantity] = useState<number>(1);
   const [quantityInput, setQuantityInput] = useState<string>('1');
@@ -176,8 +178,8 @@ export default function TradingModal({ stock, onClose }: TradingModalProps) {
         bottom: 0
       }}
     >
-      <div 
-        className="card max-w-md w-full mx-4"
+      <div
+        className="card max-w-4xl w-full mx-4"
         onClick={(e) => {
           console.log('📦 Modal content clicked - preventing close');
           e.stopPropagation();
@@ -188,10 +190,13 @@ export default function TradingModal({ stock, onClose }: TradingModalProps) {
           <div className="flex justify-between items-center mb-6">
             <div className="flex items-center gap-3">
               <div className="w-12 h-12 rounded-xl flex items-center justify-center" style={{ background: 'var(--gradient-primary)' }}>
-                {tradeType === 'buy' ? 
-                  <TrendingUp className="w-6 h-6" style={{ color: 'var(--text-primary)' }} /> :
-                  <TrendingDown className="w-6 h-6" style={{ color: 'var(--text-primary)' }} />
-                }
+                {activeTab === 'stocks' ? (
+                  tradeType === 'buy' ?
+                    <TrendingUp className="w-6 h-6" style={{ color: 'var(--text-primary)' }} /> :
+                    <TrendingDown className="w-6 h-6" style={{ color: 'var(--text-primary)' }} />
+                ) : (
+                  <DollarSign className="w-6 h-6" style={{ color: 'var(--text-primary)' }} />
+                )}
               </div>
               <div>
                 <h2 className="text-2xl font-bold" style={{ color: 'var(--text-primary)' }}>
@@ -213,31 +218,58 @@ export default function TradingModal({ stock, onClose }: TradingModalProps) {
             </button>
           </div>
 
-          {/* Stock Price Info */}
-          <div className="glass-morphism p-4 rounded-xl mb-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <div className="text-3xl font-bold mb-1" style={{ color: 'var(--text-primary)' }}>
-                  ${stock.price.toFixed(2)}
-                </div>
-                <div className={`text-sm font-semibold flex items-center gap-1 ${
-                  stock.change >= 0 ? 'status-positive' : 'status-negative'
-                }`}>
-                  {stock.change >= 0 ? <TrendingUp className="w-4 h-4" /> : <TrendingDown className="w-4 h-4" />}
-                  {stock.change >= 0 ? '+' : ''}{stock.change.toFixed(2)} ({stock.changePercent.toFixed(2)}%)
-                </div>
-              </div>
-              <div className="text-right">
-                <div className="text-sm" style={{ color: 'var(--text-tertiary)' }}>Last updated</div>
-                <div className="text-sm" style={{ color: 'var(--text-secondary)' }}>
-                  {new Date().toLocaleTimeString()}
-                </div>
-              </div>
-            </div>
+          {/* Tab Selector */}
+          <div className="flex gap-2 mb-6">
+            <button
+              onClick={() => setActiveTab('stocks')}
+              className={`flex-1 py-2.5 px-4 rounded-xl font-semibold transition-all ${
+                activeTab === 'stocks'
+                  ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white'
+                  : 'glass-morphism text-gray-400 hover:text-white'
+              }`}
+            >
+              Stocks
+            </button>
+            <button
+              onClick={() => setActiveTab('options')}
+              className={`flex-1 py-2.5 px-4 rounded-xl font-semibold transition-all ${
+                activeTab === 'options'
+                  ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white'
+                  : 'glass-morphism text-gray-400 hover:text-white'
+              }`}
+            >
+              Options
+            </button>
           </div>
 
-          {/* Trade Type Toggle */}
-          <div className="flex gap-2 mb-6">
+          {/* Stocks Tab Content */}
+          {activeTab === 'stocks' && (
+            <>
+              {/* Stock Price Info */}
+              <div className="glass-morphism p-4 rounded-xl mb-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <div className="text-3xl font-bold mb-1" style={{ color: 'var(--text-primary)' }}>
+                      ${stock.price.toFixed(2)}
+                    </div>
+                    <div className={`text-sm font-semibold flex items-center gap-1 ${
+                      stock.change >= 0 ? 'status-positive' : 'status-negative'
+                    }`}>
+                      {stock.change >= 0 ? <TrendingUp className="w-4 h-4" /> : <TrendingDown className="w-4 h-4" />}
+                      {stock.change >= 0 ? '+' : ''}{stock.change.toFixed(2)} ({stock.changePercent.toFixed(2)}%)
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <div className="text-sm" style={{ color: 'var(--text-tertiary)' }}>Last updated</div>
+                    <div className="text-sm" style={{ color: 'var(--text-secondary)' }}>
+                      {new Date().toLocaleTimeString()}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Trade Type Toggle */}
+              <div className="flex gap-2 mb-6">
             <button
               onClick={() => setTradeType('buy')}
               className={`flex-1 py-3 px-4 rounded-xl font-semibold transition-all duration-300 flex items-center justify-center gap-2 ${
@@ -358,28 +390,43 @@ export default function TradingModal({ stock, onClose }: TradingModalProps) {
             </div>
           )}
 
-          {/* Execute Trade Button */}
-          <button
-            onClick={handleTrade}
-            disabled={loading || (tradeType === 'buy' && !canAfford) || (tradeType === 'sell' && !canSell)}
-            className={`w-full py-4 px-6 rounded-xl font-bold text-lg transition-all duration-300 flex items-center justify-center gap-2 ${
-              tradeType === 'buy'
-                ? 'bg-green-600 hover:bg-green-700 text-white shadow-lg shadow-green-600/30 hover:scale-105'
-                : 'bg-red-600 hover:bg-red-700 text-white shadow-lg shadow-red-600/30 hover:scale-105'
-            } disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none`}
-          >
-            {loading ? (
-              <>
-                <div className="loading-shimmer w-5 h-5 rounded-full"></div>
-                Processing...
-              </>
-            ) : (
-              <>
-                {tradeType === 'buy' ? <TrendingUp className="w-5 h-5" /> : <TrendingDown className="w-5 h-5" />}
-                {tradeType === 'buy' ? 'Buy' : 'Sell'} {quantity} shares
-              </>
-            )}
-          </button>
+              {/* Execute Trade Button */}
+              <button
+                onClick={handleTrade}
+                disabled={loading || (tradeType === 'buy' && !canAfford) || (tradeType === 'sell' && !canSell)}
+                className={`w-full py-4 px-6 rounded-xl font-bold text-lg transition-all duration-300 flex items-center justify-center gap-2 ${
+                  tradeType === 'buy'
+                    ? 'bg-green-600 hover:bg-green-700 text-white shadow-lg shadow-green-600/30 hover:scale-105'
+                    : 'bg-red-600 hover:bg-red-700 text-white shadow-lg shadow-red-600/30 hover:scale-105'
+                } disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none`}
+              >
+                {loading ? (
+                  <>
+                    <div className="loading-shimmer w-5 h-5 rounded-full"></div>
+                    Processing...
+                  </>
+                ) : (
+                  <>
+                    {tradeType === 'buy' ? <TrendingUp className="w-5 h-5" /> : <TrendingDown className="w-5 h-5" />}
+                    {tradeType === 'buy' ? 'Buy' : 'Sell'} {quantity} shares
+                  </>
+                )}
+              </button>
+            </>
+          )}
+
+          {/* Options Tab Content */}
+          {activeTab === 'options' && (
+            <div className="max-h-[600px] overflow-y-auto">
+              <OptionsChain
+                symbol={stock.symbol}
+                onTrade={(type, strike, expiration) => {
+                  console.log('Options trade:', { type, strike, expiration });
+                  alert(`Option trade simulation:\n${type.toUpperCase()} ${stock.symbol} $${strike} ${expiration}`);
+                }}
+              />
+            </div>
+          )}
         </div>
       </div>
     </div>

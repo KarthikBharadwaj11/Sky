@@ -11,6 +11,7 @@ import SourceOfFunds from '@/components/onboarding/SourceOfFunds';
 import InvestmentGoalsExperience from '@/components/onboarding/InvestmentGoalsExperience';
 import ComplianceRiskAssessment from '@/components/onboarding/ComplianceRiskAssessment';
 import AddFamilyMemberPrompt from '@/components/onboarding/AddFamilyMemberPrompt';
+import FamilyMemberDetailsStep from '@/components/onboarding/FamilyMemberDetailsStep';
 import AddAccountPrompt from '@/components/onboarding/AddAccountPrompt';
 import ProgressStepper from '@/components/onboarding/ProgressStepper';
 import { ChevronLeft } from 'lucide-react';
@@ -80,7 +81,8 @@ export default function OnboardingPage() {
     { id: 6, name: 'Investment Goals', shortName: 'Goals' },
     { id: 7, name: 'Risk Assessment', shortName: 'Risk' },
     { id: 8, name: 'Family/Advisor Access', shortName: 'Family' },
-    { id: 9, name: 'Create Account', shortName: 'Account Setup' },
+    { id: 9, name: 'Member Details', shortName: 'Details' },
+    { id: 10, name: 'Create Account', shortName: 'Account Setup' },
   ];
 
   const handleStepComplete = (stepData: any) => {
@@ -205,6 +207,12 @@ export default function OnboardingPage() {
             />
           )}
           {currentStep === 9 && (
+            <FamilyMemberDetailsStep
+              data={onboardingData}
+              onComplete={handleStepComplete}
+            />
+          )}
+          {currentStep === 10 && (
             <AddAccountPrompt
               data={onboardingData}
               onComplete={handleStepComplete}
