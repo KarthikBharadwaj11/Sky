@@ -158,108 +158,87 @@ export default function PaperTrading() {
   // Preview for non-logged-in users
   if (!user) {
     return (
-      <div className="min-h-screen" style={{ background: isDark ? `linear-gradient(135deg, ${bgPrimary} 0%, ${bgSecondary} 50%, ${bgPrimary} 100%)` : `linear-gradient(135deg, ${bgSecondary} 0%, ${bgPrimary} 50%, ${bgSecondary} 100%)` }}>
-        <div className="pt-20 container mx-auto px-4 py-12">
-          {/* Hero Section */}
-          <div className="relative overflow-hidden rounded-3xl p-12 mb-12" style={{
-            background: cardBg,
-            border: `2px solid ${borderColor}`
-          }}>
-            <div className="relative text-center mb-8">
-              <div className="flex justify-center mb-8">
-                <div className="w-24 h-24 rounded-3xl flex items-center justify-center transition-opacity duration-1000" style={{
-                  background: textPrimary,
-                  boxShadow: isDark ? '0 0 30px rgba(255, 255, 255, 0.2)' : '0 0 30px rgba(0, 0, 0, 0.2)'
-                }}>
-                  <Target className="w-12 h-12" style={{ color: bgPrimary }} />
-                </div>
+      <div className="min-h-screen trading-background">
+        <section className="pt-48 pb-16">
+          <div className="container mx-auto px-4">
+            <div className="max-w-6xl mx-auto text-center mb-16">
+              <div className="inline-block px-4 py-2 rounded-full mb-6 glass-morphism">
+                <span className="text-sm font-bold" style={{ color: 'var(--text-accent)' }}>🎯 PRACTICE MODE</span>
               </div>
-              <h1 className="text-5xl md:text-7xl font-black mb-6" style={{
-                color: textPrimary
-              }}>
+              <h1 className="text-5xl md:text-7xl font-bold gradient-shift leading-tight mb-6">
                 Paper Trading
               </h1>
-              <p className="text-2xl md:text-3xl max-w-4xl mx-auto leading-relaxed" style={{ color: textSecondary }}>
-                Practice trading with <span className="font-bold" style={{ color: textPrimary }}>$100,000</span> virtual money. Zero risk, real learning.
+              <p className="text-xl md:text-2xl mb-8" style={{ color: 'var(--text-secondary)' }}>
+                Practice trading with $100,000 virtual money. Zero risk, real learning.
               </p>
             </div>
 
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-12">
-              <div className="text-center">
-                <div className="text-4xl md:text-5xl font-black mb-2" style={{ color: textPrimary }}>$100K</div>
-                <div className="text-sm font-medium" style={{ color: textSecondary }}>Starting Balance</div>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-16 max-w-5xl mx-auto">
+              <div className="card p-6 text-center hover:scale-105 transition-all duration-300">
+                <div className="text-3xl font-bold mb-2 text-gradient">X</div>
+                <div className="text-sm font-medium" style={{ color: 'var(--text-secondary)' }}>Starting Balance</div>
               </div>
-              <div className="text-center">
-                <div className="text-4xl md:text-5xl font-black mb-2" style={{ color: textPrimary }}>Real Data</div>
-                <div className="text-sm font-medium" style={{ color: textSecondary }}>Live Market Prices</div>
+              <div className="card p-6 text-center hover:scale-105 transition-all duration-300">
+                <div className="text-3xl font-bold mb-2 text-gradient">X</div>
+                <div className="text-sm font-medium" style={{ color: 'var(--text-secondary)' }}>Live Market Prices</div>
               </div>
-              <div className="text-center">
-                <div className="text-4xl md:text-5xl font-black mb-2" style={{ color: textPrimary }}>Zero Risk</div>
-                <div className="text-sm font-medium" style={{ color: textSecondary }}>Practice Safely</div>
+              <div className="card p-6 text-center hover:scale-105 transition-all duration-300">
+                <div className="text-3xl font-bold mb-2 text-gradient">X</div>
+                <div className="text-sm font-medium" style={{ color: 'var(--text-secondary)' }}>Practice Safely</div>
               </div>
-              <div className="text-center">
-                <div className="text-4xl md:text-5xl font-black mb-2" style={{ color: textPrimary }}>Full Access</div>
-                <div className="text-sm font-medium" style={{ color: textSecondary }}>All Trading Tools</div>
+              <div className="card p-6 text-center hover:scale-105 transition-all duration-300">
+                <div className="text-3xl font-bold mb-2 text-gradient">X</div>
+                <div className="text-sm font-medium" style={{ color: 'var(--text-secondary)' }}>All Trading Tools</div>
+              </div>
+            </div>
+
+            {/* What is Paper Trading */}
+            <div className="max-w-4xl mx-auto mb-16">
+              <div className="card p-8">
+                <h2 className="text-3xl font-bold mb-4 text-center text-gradient">What is Paper Trading?</h2>
+                <p className="text-lg text-center mb-8" style={{ color: 'var(--text-secondary)' }}>
+                  Paper trading is a risk-free way to practice trading with virtual money. Test your strategies, learn the market, and build confidence before trading with real money.
+                </p>
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  <div className="glass-morphism p-6 rounded-xl hover:scale-105 transition-all duration-300">
+                    <BookOpen className="w-10 h-10 mb-4" style={{ color: 'var(--text-accent)' }} />
+                    <h3 className="text-lg font-bold mb-2" style={{ color: 'var(--text-primary)' }}>Learn Trading</h3>
+                    <p style={{ color: 'var(--text-secondary)' }}>Practice buying and selling stocks without any financial risk</p>
+                  </div>
+                  <div className="glass-morphism p-6 rounded-xl hover:scale-105 transition-all duration-300">
+                    <BarChart3 className="w-10 h-10 mb-4" style={{ color: 'var(--text-accent)' }} />
+                    <h3 className="text-lg font-bold mb-2" style={{ color: 'var(--text-primary)' }}>Test Strategies</h3>
+                    <p style={{ color: 'var(--text-secondary)' }}>Experiment with different trading strategies and see what works</p>
+                  </div>
+                  <div className="glass-morphism p-6 rounded-xl hover:scale-105 transition-all duration-300">
+                    <Award className="w-10 h-10 mb-4" style={{ color: 'var(--text-accent)' }} />
+                    <h3 className="text-lg font-bold mb-2" style={{ color: 'var(--text-primary)' }}>Build Confidence</h3>
+                    <p style={{ color: 'var(--text-secondary)' }}>Gain experience and confidence before using real money</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Call-to-action */}
+            <div className="text-center max-w-4xl mx-auto">
+              <div className="card p-8">
+                <h2 className="text-3xl font-bold mb-4 text-gradient">Ready to Start Paper Trading?</h2>
+                <p className="text-lg mb-8" style={{ color: 'var(--text-secondary)' }}>
+                  Sign up now and get $100,000 in virtual money to practice trading
+                </p>
+                <div className="flex gap-4 justify-center">
+                  <a href="/register" className="btn-primary px-8 py-4 hover:scale-105 transition-all duration-300">
+                    Get Started Now
+                  </a>
+                  <a href="/learn" className="btn-secondary px-8 py-4 hover:scale-105 transition-all duration-300">
+                    Learn More
+                  </a>
+                </div>
               </div>
             </div>
           </div>
-
-          {/* What is Paper Trading */}
-          <div className="rounded-3xl p-8 mb-12" style={{
-            background: cardBg,
-            border: `1px solid ${borderColor}`
-          }}>
-            <h2 className="text-4xl font-bold mb-6 text-center" style={{ color: textPrimary }}>What is Paper Trading?</h2>
-            <p className="text-xl text-center mb-8 max-w-3xl mx-auto" style={{ color: textSecondary }}>
-              Paper trading is a risk-free way to practice trading with virtual money. Test your strategies, learn the market, and build confidence before trading with real money.
-            </p>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="p-6 rounded-xl" style={{ background: cardBg }}>
-                <BookOpen className="w-12 h-12 mb-4" style={{ color: textPrimary }} />
-                <h3 className="text-xl font-bold mb-2" style={{ color: textPrimary }}>Learn Trading</h3>
-                <p style={{ color: textSecondary }}>Practice buying and selling stocks without any financial risk</p>
-              </div>
-              <div className="p-6 rounded-xl" style={{ background: cardBg }}>
-                <BarChart3 className="w-12 h-12 mb-4" style={{ color: textPrimary }} />
-                <h3 className="text-xl font-bold mb-2" style={{ color: textPrimary }}>Test Strategies</h3>
-                <p style={{ color: textSecondary }}>Experiment with different trading strategies and see what works</p>
-              </div>
-              <div className="p-6 rounded-xl" style={{ background: cardBg }}>
-                <Award className="w-12 h-12 mb-4" style={{ color: textPrimary }} />
-                <h3 className="text-xl font-bold mb-2" style={{ color: textPrimary }}>Build Confidence</h3>
-                <p style={{ color: textSecondary }}>Gain experience and confidence before using real money</p>
-              </div>
-            </div>
-          </div>
-
-          {/* Call-to-action */}
-          <div className="text-center p-12 rounded-3xl" style={{
-            background: cardBg,
-            border: `2px solid ${borderColor}`
-          }}>
-            <h2 className="text-4xl font-bold mb-4" style={{ color: textPrimary }}>Ready to Start Paper Trading?</h2>
-            <p className="text-xl mb-8" style={{ color: textSecondary }}>
-              Sign up now and get $100,000 in virtual money to practice trading
-            </p>
-            <div className="flex gap-4 justify-center">
-              <a href="/register" className="px-8 py-4 text-lg rounded-xl font-semibold transition-all duration-200" style={{
-                background: textPrimary,
-                color: bgPrimary,
-                boxShadow: isDark ? '0 4px 20px rgba(255, 255, 255, 0.3)' : '0 4px 20px rgba(0, 0, 0, 0.3)'
-              }}>
-                Get Started Now
-              </a>
-              <a href="/learn" className="px-8 py-4 text-lg rounded-xl font-semibold transition-all duration-200" style={{
-                background: cardBg,
-                border: `1px solid ${borderColor}`,
-                color: textPrimary
-              }}>
-                Learn More
-              </a>
-            </div>
-          </div>
-        </div>
+        </section>
       </div>
     );
   }
@@ -340,6 +319,136 @@ export default function PaperTrading() {
             <p className={`text-xs mt-1 ${totalReturn >= 0 ? 'text-green-600' : 'text-red-600'}`}>
               {totalReturn >= 0 ? '+' : ''}{totalReturnPercent.toFixed(2)}%
             </p>
+          </div>
+        </div>
+
+        {/* Copy Trading Placeholder */}
+        <div className="rounded-xl p-6 mb-8" style={{
+          background: `linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(147, 51, 234, 0.1) 100%)`,
+          border: `2px solid ${isDark ? 'rgba(59, 130, 246, 0.3)' : 'rgba(59, 130, 246, 0.2)'}`
+        }}>
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center gap-3">
+              <div className="w-12 h-12 rounded-lg flex items-center justify-center" style={{
+                background: 'linear-gradient(135deg, #3b82f6, #8b5cf6)',
+              }}>
+                <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                </svg>
+              </div>
+              <div>
+                <h2 className="text-xl font-bold" style={{ color: textPrimary }}>Paper Copy Trading</h2>
+                <p className="text-sm" style={{ color: textSecondary }}>Practice copying expert traders with virtual money</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Expert Traders Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {/* Expert 1 */}
+            <div className="rounded-lg p-4" style={{
+              background: cardBg,
+              border: `1px solid ${borderColor}`
+            }}>
+              <div className="flex items-center gap-3 mb-3">
+                <div className="w-12 h-12 rounded-full flex items-center justify-center text-xl font-bold" style={{
+                  background: 'linear-gradient(135deg, #10b981, #059669)',
+                  color: 'white'
+                }}>
+                  TS
+                </div>
+                <div>
+                  <h3 className="font-bold" style={{ color: textPrimary }}>Tony Stark</h3>
+                  <p className="text-xs" style={{ color: textSecondary }}>Tech Stocks Expert</p>
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-2 mb-3">
+                <div>
+                  <p className="text-xs" style={{ color: textSecondary }}>Win Rate</p>
+                  <p className="font-bold text-green-500">76%</p>
+                </div>
+                <div>
+                  <p className="text-xs" style={{ color: textSecondary }}>Return</p>
+                  <p className="font-bold text-green-500">+24.5%</p>
+                </div>
+              </div>
+              <button className="w-full py-2 rounded-lg text-sm font-medium" style={{
+                background: 'linear-gradient(135deg, #3b82f6, #8b5cf6)',
+                color: 'white'
+              }}>
+                Copy
+              </button>
+            </div>
+
+            {/* Expert 2 */}
+            <div className="rounded-lg p-4" style={{
+              background: cardBg,
+              border: `1px solid ${borderColor}`
+            }}>
+              <div className="flex items-center gap-3 mb-3">
+                <div className="w-12 h-12 rounded-full flex items-center justify-center text-xl font-bold" style={{
+                  background: 'linear-gradient(135deg, #f59e0b, #d97706)',
+                  color: 'white'
+                }}>
+                  HG
+                </div>
+                <div>
+                  <h3 className="font-bold" style={{ color: textPrimary }}>Hermione Granger</h3>
+                  <p className="text-xs" style={{ color: textSecondary }}>Growth Investor</p>
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-2 mb-3">
+                <div>
+                  <p className="text-xs" style={{ color: textSecondary }}>Win Rate</p>
+                  <p className="font-bold text-green-500">82%</p>
+                </div>
+                <div>
+                  <p className="text-xs" style={{ color: textSecondary }}>Return</p>
+                  <p className="font-bold text-green-500">+31.2%</p>
+                </div>
+              </div>
+              <button className="w-full py-2 rounded-lg text-sm font-medium" style={{
+                background: 'linear-gradient(135deg, #3b82f6, #8b5cf6)',
+                color: 'white'
+              }}>
+                Copy
+              </button>
+            </div>
+
+            {/* Expert 3 */}
+            <div className="rounded-lg p-4" style={{
+              background: cardBg,
+              border: `1px solid ${borderColor}`
+            }}>
+              <div className="flex items-center gap-3 mb-3">
+                <div className="w-12 h-12 rounded-full flex items-center justify-center text-xl font-bold" style={{
+                  background: 'linear-gradient(135deg, #8b5cf6, #7c3aed)',
+                  color: 'white'
+                }}>
+                  DS
+                </div>
+                <div>
+                  <h3 className="font-bold" style={{ color: textPrimary }}>Doctor Strange</h3>
+                  <p className="text-xs" style={{ color: textSecondary }}>Day Trader</p>
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-2 mb-3">
+                <div>
+                  <p className="text-xs" style={{ color: textSecondary }}>Win Rate</p>
+                  <p className="font-bold text-green-500">68%</p>
+                </div>
+                <div>
+                  <p className="text-xs" style={{ color: textSecondary }}>Return</p>
+                  <p className="font-bold text-green-500">+18.7%</p>
+                </div>
+              </div>
+              <button className="w-full py-2 rounded-lg text-sm font-medium" style={{
+                background: 'linear-gradient(135deg, #3b82f6, #8b5cf6)',
+                color: 'white'
+              }}>
+                Copy
+              </button>
+            </div>
           </div>
         </div>
 

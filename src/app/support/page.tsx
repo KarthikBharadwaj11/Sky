@@ -128,18 +128,12 @@ export default function SupportPage() {
   };
 
   return (
-    <div className="min-h-screen" style={{ background: 'var(--gradient-background)' }}>
+    <div className="min-h-screen trading-background">
       
       {/* Hero Section */}
-      <section className="pt-32 pb-16">
+      <section className="pt-48 pb-16">
         <div className="container mx-auto px-4">
           <div className="max-w-6xl mx-auto text-center">
-            <div className="flex justify-center mb-6">
-              <div className="w-20 h-20 rounded-2xl flex items-center justify-center" style={{ background: 'var(--gradient-primary)' }}>
-                <Headphones className="w-10 h-10" style={{ color: 'var(--text-primary)' }} />
-              </div>
-            </div>
-            
             <h1 className="text-5xl md:text-7xl font-bold gradient-shift leading-tight mb-6">
               We're Here to Help
             </h1>

@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { useState } from 'react';
 import { Menu, X, Sun, Moon } from 'lucide-react';
 import { useTheme } from '../theme/ThemeProvider';
@@ -12,18 +13,25 @@ export default function LandingNavbar() {
   return (
     <div className="fixed top-6 left-1/2 transform -translate-x-1/2 z-50 w-full max-w-6xl px-4">
       <nav className="glass-morphism rounded-2xl shadow-2xl">
-        <div className="px-6 py-4">
-          <div className="flex justify-between items-center">
+        <div className="px-6 py-3">
+          <div className="flex justify-between items-center gap-4">
             {/* Logo */}
-            <Link 
-              href="/landing" 
-              className="text-2xl font-bold text-gradient hover:scale-105 transition-all duration-300"
+            <Link
+              href="/landing"
+              className="hover:scale-105 transition-all duration-300"
             >
-              Sky
+              <Image
+                src="/logo.png"
+                alt="Logo"
+                width={100}
+                height={35}
+                className="object-contain"
+                priority
+              />
             </Link>
 
             {/* Desktop Navigation */}
-            <div className="hidden md:flex items-center space-x-8">
+            <div className="hidden md:flex items-center space-x-6">
               <Link
                 href="/copy-trading"
                 className="nav-link"
@@ -80,9 +88,9 @@ export default function LandingNavbar() {
               >
                 Sign In
               </Link>
-              <Link 
-                href="/register" 
-                className="btn-primary px-6 py-2 text-sm"
+              <Link
+                href="/register"
+                className="btn-primary px-6 py-2 text-sm whitespace-nowrap"
               >
                 Get Started
               </Link>

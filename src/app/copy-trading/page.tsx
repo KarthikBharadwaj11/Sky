@@ -648,60 +648,157 @@ export default function CopyTrading() {
   if (!user) {
     return (
       <div className="min-h-screen" style={{ background: 'var(--background-primary)' }}>
-        <div className="pt-20 container mx-auto px-4 py-12">
-          {/* Hero Section */}
-          <div className="relative overflow-hidden bg-gradient-to-br from-blue-600/20 via-purple-600/20 to-pink-600/20 rounded-3xl p-5 border border-blue-500/30 mb-5">
-            <div className="relative text-center mb-5">
-              <div className="flex justify-center mb-5">
-                <div className="w-20 h-20 rounded-3xl flex items-center justify-center transition-opacity duration-1000" style={{ background: 'var(--gradient-primary)' }}>
-                  <Copy className="w-10 h-10" style={{ color: 'var(--text-primary)' }} />
-                </div>
-              </div>
-              <h1 className="text-4xl md:text-7xl font-black text-gradient mb-5">
-                Copy Trading<br />
-                <span className="text-gradient">Made Simple</span>
+        <section className="pt-48 pb-16">
+          <div className="container mx-auto px-4">
+            <div className="max-w-6xl mx-auto text-center mb-16">
+              <h1 className="text-5xl md:text-7xl font-bold gradient-shift leading-tight mb-6">
+                Copy Trading Made Simple
               </h1>
-              <p className="text-2xl md:text-3xl max-w-4xl mx-auto leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
-                Automatically copy trades from <span className="text-gradient font-bold">expert traders</span> and earn while you learn.
+              <p className="text-xl md:text-2xl mb-8" style={{ color: 'var(--text-secondary)' }}>
+                Automatically copy trades from expert traders and earn while you learn.
               </p>
             </div>
 
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-5">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-16 max-w-5xl mx-auto">
               <div className="text-center">
-                <div className="text-4xl md:text-4xl font-black text-gradient mb-2">50K+</div>
+                <div className="text-4xl md:text-4xl font-black text-gradient mb-2">X</div>
                 <div className="text-sm font-medium" style={{ color: 'var(--text-tertiary)' }}>Active Traders</div>
               </div>
               <div className="text-center">
-                <div className="text-4xl md:text-4xl font-black text-gradient mb-2">240+</div>
+                <div className="text-4xl md:text-4xl font-black text-gradient mb-2">X</div>
                 <div className="text-sm font-medium" style={{ color: 'var(--text-tertiary)' }}>Expert Traders</div>
               </div>
               <div className="text-center">
-                <div className="text-4xl md:text-4xl font-black text-gradient mb-2">$2.3B</div>
+                <div className="text-4xl md:text-4xl font-black text-gradient mb-2">X</div>
                 <div className="text-sm font-medium" style={{ color: 'var(--text-tertiary)' }}>Assets Under Management</div>
               </div>
               <div className="text-center">
-                <div className="text-4xl md:text-4xl font-black text-gradient mb-2">87%</div>
+                <div className="text-4xl md:text-4xl font-black text-gradient mb-2">X</div>
                 <div className="text-sm font-medium" style={{ color: 'var(--text-tertiary)' }}>Positive Returns</div>
               </div>
             </div>
-          </div>
 
-          {/* Call-to-action */}
-          <div className="text-center p-5 rounded-3xl bg-gradient-to-r from-blue-600/20 to-purple-600/20 border border-blue-500/30">
-            <h2 className="text-base font-bold text-gradient mb-4">Ready to Start Copy Trading?</h2>
-            <p className="text-base mb-5" style={{ color: 'var(--text-secondary)' }}>
-              Join thousands of traders who are already earning with copy trading
-            </p>
-            <div className="flex gap-4 justify-center">
-              <a href="/register" className="btn-primary px-8 py-4 text-lg">
-                Get Started Now
-              </a>
-              <a href="/learn" className="btn-secondary px-8 py-4 text-lg">
-                Learn More
-              </a>
+            {/* How It Works */}
+            <div className="max-w-4xl mx-auto mb-16">
+              <div className="card p-8">
+                <h2 className="text-3xl font-bold mb-4 text-center" style={{ color: 'var(--text-primary)' }}>How Copy Trading Works</h2>
+                <p className="text-lg text-center mb-8" style={{ color: 'var(--text-secondary)' }}>
+                  Start copying expert traders in four simple steps
+                </p>
+
+                <div className="space-y-6">
+                  <div className="flex gap-4 items-start">
+                    <div className="flex-shrink-0 w-10 h-10 rounded-lg flex items-center justify-center" style={{ background: 'var(--gradient-primary)' }}>
+                      <span className="text-white font-bold">1</span>
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-bold mb-2" style={{ color: 'var(--text-primary)' }}>Browse Expert Traders</h3>
+                      <p style={{ color: 'var(--text-secondary)' }}>Explore our marketplace of verified expert traders. View their performance history, win rates, and trading strategies.</p>
+                    </div>
+                  </div>
+
+                  <div className="flex gap-4 items-start">
+                    <div className="flex-shrink-0 w-10 h-10 rounded-lg flex items-center justify-center" style={{ background: 'var(--gradient-primary)' }}>
+                      <span className="text-white font-bold">2</span>
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-bold mb-2" style={{ color: 'var(--text-primary)' }}>Select a Trader to Copy</h3>
+                      <p style={{ color: 'var(--text-secondary)' }}>Choose an expert trader that matches your investment goals and risk tolerance.</p>
+                    </div>
+                  </div>
+
+                  <div className="flex gap-4 items-start">
+                    <div className="flex-shrink-0 w-10 h-10 rounded-lg flex items-center justify-center" style={{ background: 'var(--gradient-primary)' }}>
+                      <span className="text-white font-bold">3</span>
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-bold mb-2" style={{ color: 'var(--text-primary)' }}>Set Your Parameters</h3>
+                      <p style={{ color: 'var(--text-secondary)' }}>Decide how much to invest, choose between automatic or manual copying, and set your duration preferences.</p>
+                    </div>
+                  </div>
+
+                  <div className="flex gap-4 items-start">
+                    <div className="flex-shrink-0 w-10 h-10 rounded-lg flex items-center justify-center" style={{ background: 'var(--gradient-primary)' }}>
+                      <span className="text-white font-bold">4</span>
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-bold mb-2" style={{ color: 'var(--text-primary)' }}>Start Copying</h3>
+                      <p style={{ color: 'var(--text-secondary)' }}>Sit back and watch as trades are copied to your account. Monitor performance and adjust settings anytime.</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Copy Trading Modes */}
+            <div className="max-w-4xl mx-auto mb-16">
+              <h2 className="text-3xl font-bold mb-4 text-center" style={{ color: 'var(--text-primary)' }}>Choose Your Copy Trading Mode</h2>
+              <p className="text-lg text-center mb-8" style={{ color: 'var(--text-secondary)' }}>
+                Two ways to copy trades - pick what works best for you
+              </p>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="card p-6">
+                  <h3 className="text-xl font-bold mb-3" style={{ color: 'var(--text-primary)' }}>Automatic Copying</h3>
+                  <p className="mb-4" style={{ color: 'var(--text-secondary)' }}>
+                    Trades are executed instantly when your chosen expert makes a move. Completely hands-free.
+                  </p>
+                  <ul className="space-y-2">
+                    <li className="flex items-start gap-2">
+                      <span className="text-green-500 mt-1">✓</span>
+                      <span style={{ color: 'var(--text-secondary)' }}>Instant trade execution</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-green-500 mt-1">✓</span>
+                      <span style={{ color: 'var(--text-secondary)' }}>No manual intervention needed</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-green-500 mt-1">✓</span>
+                      <span style={{ color: 'var(--text-secondary)' }}>Set duration and forget</span>
+                    </li>
+                  </ul>
+                </div>
+
+                <div className="card p-6">
+                  <h3 className="text-xl font-bold mb-3" style={{ color: 'var(--text-primary)' }}>Manual Approval</h3>
+                  <p className="mb-4" style={{ color: 'var(--text-secondary)' }}>
+                    Review each trade before it's executed. You maintain full control over every decision.
+                  </p>
+                  <ul className="space-y-2">
+                    <li className="flex items-start gap-2">
+                      <span className="text-blue-500 mt-1">✓</span>
+                      <span style={{ color: 'var(--text-secondary)' }}>Review before executing</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-blue-500 mt-1">✓</span>
+                      <span style={{ color: 'var(--text-secondary)' }}>Full control over each trade</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-blue-500 mt-1">✓</span>
+                      <span style={{ color: 'var(--text-secondary)' }}>Learn from expert strategies</span>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            {/* Call-to-action */}
+            <div className="text-center max-w-4xl mx-auto">
+              <h2 className="text-2xl font-bold mb-4" style={{ color: 'var(--text-primary)' }}>Ready to Start Copy Trading?</h2>
+              <p className="text-lg mb-8" style={{ color: 'var(--text-secondary)' }}>
+                Join thousands of traders who are already earning with copy trading
+              </p>
+              <div className="flex gap-4 justify-center">
+                <a href="/register" className="btn-primary px-8 py-4">
+                  Get Started Now
+                </a>
+                <a href="/learn" className="btn-secondary px-8 py-4">
+                  Learn More
+                </a>
+              </div>
             </div>
           </div>
-        </div>
+        </section>
       </div>
     );
   }
@@ -767,28 +864,28 @@ export default function CopyTrading() {
             <div className="flex justify-center mb-4 opacity-60 group-hover:opacity-100 transition-opacity">
               <Users className="w-10 h-10" style={{ color: 'var(--primary-blue)' }} />
             </div>
-            <div className="text-4xl md:text-4xl font-black text-gradient mb-2">50K+</div>
+            <div className="text-4xl md:text-4xl font-black text-gradient mb-2">X</div>
             <div className="text-sm font-medium" style={{ color: 'var(--text-tertiary)' }}>Active Copy Traders</div>
           </div>
           <div className="text-center group hover:scale-110 transition-all duration-300">
             <div className="flex justify-center mb-4 opacity-60 group-hover:opacity-100 transition-opacity">
               <Award className="w-10 h-10" style={{ color: 'var(--primary-blue)' }} />
             </div>
-            <div className="text-4xl md:text-4xl font-black text-gradient mb-2">240+</div>
+            <div className="text-4xl md:text-4xl font-black text-gradient mb-2">X</div>
             <div className="text-sm font-medium" style={{ color: 'var(--text-tertiary)' }}>Expert Traders</div>
           </div>
           <div className="text-center group hover:scale-110 transition-all duration-300">
             <div className="flex justify-center mb-4 opacity-60 group-hover:opacity-100 transition-opacity">
               <DollarSign className="w-10 h-10" style={{ color: 'var(--primary-blue)' }} />
             </div>
-            <div className="text-4xl md:text-4xl font-black text-gradient mb-2">$2.3B</div>
+            <div className="text-4xl md:text-4xl font-black text-gradient mb-2">X</div>
             <div className="text-sm font-medium" style={{ color: 'var(--text-tertiary)' }}>Assets Under Management</div>
           </div>
           <div className="text-center group hover:scale-110 transition-all duration-300">
             <div className="flex justify-center mb-4 opacity-60 group-hover:opacity-100 transition-opacity">
               <TrendingUp className="w-10 h-10" style={{ color: 'var(--primary-blue)' }} />
             </div>
-            <div className="text-4xl md:text-4xl font-black text-gradient mb-2">87%</div>
+            <div className="text-4xl md:text-4xl font-black text-gradient mb-2">X</div>
             <div className="text-sm font-medium" style={{ color: 'var(--text-tertiary)' }}>Positive Returns</div>
           </div>
         </div>
@@ -819,7 +916,7 @@ export default function CopyTrading() {
         <div className="card">
           <div className="card-body p-5">
             <div className="text-center mb-5">
-              <h2 className="text-base font-bold text-gradient mb-5">What is Copy Trading? 🤔</h2>
+              <h2 className="text-base font-bold text-gradient mb-5">What is Copy Trading?</h2>
               <p className="text-base max-w-3xl mx-auto leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
                 Imagine having a personal trading expert making investment decisions for you 24/7. That's exactly what copy trading is!
               </p>
@@ -828,9 +925,6 @@ export default function CopyTrading() {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
               <div className="space-y-8">
                 <div className="flex items-start gap-5">
-                  <div className="w-10 h-10 rounded-2xl flex items-center justify-center" style={{ background: 'var(--gradient-primary)' }}>
-                    <Copy className="w-8 h-8" style={{ color: 'var(--text-primary)' }} />
-                  </div>
                   <div>
                     <h3 className="text-base font-bold mb-4" style={{ color: 'var(--text-primary)' }}>
                       Automatic Trade Replication
@@ -843,9 +937,6 @@ export default function CopyTrading() {
                 </div>
 
                 <div className="flex items-start gap-5">
-                  <div className="w-10 h-10 rounded-2xl flex items-center justify-center" style={{ background: 'var(--gradient-secondary)' }}>
-                    <Brain className="w-8 h-8" style={{ color: 'var(--text-primary)' }} />
-                  </div>
                   <div>
                     <h3 className="text-base font-bold mb-4" style={{ color: 'var(--text-primary)' }}>
                       Learn from the Best
@@ -858,9 +949,6 @@ export default function CopyTrading() {
                 </div>
 
                 <div className="flex items-start gap-5">
-                  <div className="w-10 h-10 rounded-2xl flex items-center justify-center" style={{ background: 'var(--gradient-accent)' }}>
-                    <Shield className="w-8 h-8" style={{ color: 'var(--text-primary)' }} />
-                  </div>
                   <div>
                     <h3 className="text-base font-bold mb-4" style={{ color: 'var(--text-primary)' }}>
                       You Stay in Control
@@ -992,126 +1080,6 @@ export default function CopyTrading() {
                 </span>
               </button>
             </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Success Stories */}
-      <div className="card">
-        <div className="card-body p-5">
-          <div className="text-center mb-5">
-            <h2 className="text-base font-bold text-gradient mb-5">Success Stories</h2>
-            <p className="text-base max-w-3xl mx-auto leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
-              Real people, real results. See how copy trading has transformed the financial lives of thousands
-            </p>
-          </div>
-
-          <div className="relative">
-            <div className="glass-morphism p-5 md:p-12 rounded-2xl overflow-hidden">
-              <div
-                className="flex transition-transform duration-700 ease-in-out"
-                style={{
-                  transform: `translateX(-${currentTestimonial * 100}%)`,
-                  width: `${copyTradingTestimonials.length * 100}%`
-                }}
-              >
-                {copyTradingTestimonials.map((testimonial, index) => (
-                  <div key={index} className="w-full flex-shrink-0">
-                    <div className="max-w-4xl mx-auto text-center">
-                      <div className="flex justify-center mb-5">
-                        <div className="w-20 h-20 rounded-full">
-                          {testimonial.avatar}
-                        </div>
-                      </div>
-
-                      <div className="flex justify-center mb-5">
-                        {Array.from({ length: 5 }, (_, i) => (
-                          <Star
-                            key={i}
-                            className={`w-5 h-5 ${i < testimonial.rating ? 'fill-current' : ''}`}
-                            style={{ color: i < testimonial.rating ? 'var(--warning)' : 'var(--text-tertiary)' }}
-                          />
-                        ))}
-                      </div>
-
-                      <blockquote className="text-2xl md:text-3xl leading-relaxed mb-5 italic" style={{ color: 'var(--text-secondary)' }}>
-                        "{testimonial.quote}"
-                      </blockquote>
-
-                      <div className="flex flex-col sm:flex-row justify-center items-center gap-5 mb-5">
-                        <div className="glass-morphism px-6 py-3 rounded-full">
-                          <span className="text-base font-bold text-gradient mr-2">{testimonial.profit}</span>
-                          <span style={{ color: 'var(--text-tertiary)' }}>profit in {testimonial.timeframe}</span>
-                        </div>
-                      </div>
-
-                      <div>
-                        <h4 className="text-base font-bold mb-2" style={{ color: 'var(--text-primary)' }}>
-                          {testimonial.name}
-                        </h4>
-                        <p className="text-lg" style={{ color: 'var(--text-accent)' }}>
-                          {testimonial.role}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Testimonial dots */}
-            <div className="flex justify-center mt-8 space-x-3">
-              {copyTradingTestimonials.map((_, index) => (
-                <button
-                  key={index}
-                  onClick={() => setCurrentTestimonial(index)}
-                  className={`w-4 h-4 rounded-full transition-all duration-300 ${
-                    currentTestimonial === index
-                      ? 'bg-gradient-to-r from-blue-500 to-purple-600 scale-125'
-                      : 'bg-gray-600 hover:bg-gray-500'
-                  }`}
-                />
-              ))}
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Top Performers Preview */}
-      <div className="card">
-        <div className="card-body p-5">
-          <div className="flex items-center justify-between mb-5">
-            <div>
-              <h2 className="text-base font-bold mb-2" style={{ color: 'var(--text-primary)' }}>Top Performers This Month</h2>
-              <p style={{ color: 'var(--text-secondary)' }}>See our best-performing expert traders</p>
-            </div>
-            <button
-              onClick={() => setActiveTab('your-trading')}
-              className="btn-primary px-6 py-3 text-sm hover:scale-105 transition-all duration-300"
-            >
-              View All Experts
-            </button>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-            {experts.slice(0, 3).map((expert, index) => (
-              <div key={expert.id} className="glass-morphism p-5 rounded-xl hover:scale-105 transition-all duration-300">
-                <div className="flex items-center gap-3 mb-4">
-                  {index === 0 && <div className="w-8 h-8 bg-gradient-to-r from-yellow-400 to-yellow-500 rounded-full flex items-center justify-center text-lg">🥇</div>}
-                  {index === 1 && <div className="w-8 h-8 bg-gradient-to-r from-gray-400 to-gray-500 rounded-full flex items-center justify-center text-lg">🥈</div>}
-                  {index === 2 && <div className="w-8 h-8 bg-gradient-to-r from-orange-400 to-orange-500 rounded-full flex items-center justify-center text-lg">🥉</div>}
-                  <span className="text-3xl">{expert.avatar}</span>
-                  <div>
-                    <p className="font-bold text-lg" style={{ color: 'var(--text-primary)' }}>{expert.name}</p>
-                    <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>{expert.username}</p>
-                  </div>
-                </div>
-                <div className="text-center">
-                  <p className="text-base font-bold mb-2" style={{ color: 'var(--success)' }}>+{expert.monthlyReturn}%</p>
-                  <p className="text-sm" style={{ color: 'var(--text-tertiary)' }}>Monthly Return</p>
-                </div>
-              </div>
-            ))}
           </div>
         </div>
       </div>
@@ -2457,7 +2425,7 @@ export default function CopyTrading() {
                 </div>
 
                 {/* Right Column - Copy Settings */}
-                <div>
+                <div className={`transition-opacity ${!autoCopyEnabled ? 'opacity-40 pointer-events-none' : ''}`}>
                   <div className="glass-morphism p-5 rounded-xl">
                     <h4 className="font-semibold text-base mb-4 flex items-center gap-2" style={{ color: 'var(--text-primary)' }}>
                       <Settings className="w-5 h-5" />
@@ -2476,6 +2444,7 @@ export default function CopyTrading() {
                           max={subscriptionAmount}
                           value={currentSettings.maxTradeAmount}
                           onChange={(e) => setCurrentSettings({...currentSettings, maxTradeAmount: Math.max(100, parseInt(e.target.value) || 100)})}
+                          disabled={!autoCopyEnabled}
                           className="form-input"
                         />
                         <p className="text-xs mt-1" style={{ color: 'var(--text-tertiary)' }}>
@@ -2496,6 +2465,7 @@ export default function CopyTrading() {
                               value="until-cancelled"
                               checked={copyDuration === 'until-cancelled'}
                               onChange={(e) => setCopyDuration(e.target.value as any)}
+                              disabled={!autoCopyEnabled}
                               className="w-4 h-4"
                             />
                             <span className="text-sm" style={{ color: 'var(--text-secondary)' }}>
@@ -2509,6 +2479,7 @@ export default function CopyTrading() {
                               value="7-days"
                               checked={copyDuration === '7-days'}
                               onChange={(e) => setCopyDuration(e.target.value as any)}
+                              disabled={!autoCopyEnabled}
                               className="w-4 h-4"
                             />
                             <span className="text-sm" style={{ color: 'var(--text-secondary)' }}>
@@ -2522,6 +2493,7 @@ export default function CopyTrading() {
                               value="30-days"
                               checked={copyDuration === '30-days'}
                               onChange={(e) => setCopyDuration(e.target.value as any)}
+                              disabled={!autoCopyEnabled}
                               className="w-4 h-4"
                             />
                             <span className="text-sm" style={{ color: 'var(--text-secondary)' }}>
@@ -2535,6 +2507,7 @@ export default function CopyTrading() {
                               value="90-days"
                               checked={copyDuration === '90-days'}
                               onChange={(e) => setCopyDuration(e.target.value as any)}
+                              disabled={!autoCopyEnabled}
                               className="w-4 h-4"
                             />
                             <span className="text-sm" style={{ color: 'var(--text-secondary)' }}>
@@ -2548,6 +2521,7 @@ export default function CopyTrading() {
                               value="custom"
                               checked={copyDuration === 'custom'}
                               onChange={(e) => setCopyDuration(e.target.value as any)}
+                              disabled={!autoCopyEnabled}
                               className="w-4 h-4"
                             />
                             <span className="text-sm" style={{ color: 'var(--text-secondary)' }}>
@@ -2560,6 +2534,7 @@ export default function CopyTrading() {
                               value={customEndDate}
                               onChange={(e) => setCustomEndDate(e.target.value)}
                               min={new Date().toISOString().split('T')[0]}
+                              disabled={!autoCopyEnabled}
                               className="form-input mt-2"
                             />
                           )}
@@ -2901,7 +2876,7 @@ export default function CopyTrading() {
                       </div>
 
                       {/* Right Column - Copy Settings */}
-                      <div>
+                      <div className={`transition-opacity ${!subscription?.autoCopy ? 'opacity-40 pointer-events-none' : ''}`}>
                         <div className="glass-morphism p-5 rounded-xl">
                           <h4 className="font-semibold text-base mb-4 flex items-center gap-2" style={{ color: 'var(--text-primary)' }}>
                             <Settings className="w-5 h-5" />
@@ -2919,6 +2894,7 @@ export default function CopyTrading() {
                                 min="100"
                                 value={currentSettings.maxTradeAmount}
                                 onChange={(e) => setCurrentSettings({...currentSettings, maxTradeAmount: Math.max(100, parseInt(e.target.value) || 100)})}
+                                disabled={!subscription?.autoCopy}
                                 className="form-input"
                               />
                               <p className="text-xs mt-1" style={{ color: 'var(--text-tertiary)' }}>

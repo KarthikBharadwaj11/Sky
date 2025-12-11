@@ -20,10 +20,10 @@ import {
 
 export default function AboutPage() {
   const stats = [
-    { icon: <Users className="w-8 h-8" />, value: "10K+", label: "Active Traders" },
-    { icon: <Globe className="w-8 h-8" />, value: "$2.5B+", label: "Volume Traded" },
-    { icon: <TrendingUp className="w-8 h-8" />, value: "99.9%", label: "Uptime" },
-    { icon: <Award className="w-8 h-8" />, value: "24/7", label: "Support" }
+    { icon: <Users className="w-8 h-8" />, value: "X", label: "Active Traders" },
+    { icon: <Globe className="w-8 h-8" />, value: "X", label: "Volume Traded" },
+    { icon: <TrendingUp className="w-8 h-8" />, value: "X", label: "Uptime" },
+    { icon: <Award className="w-8 h-8" />, value: "X", label: "Support" }
   ];
 
   const values = [
@@ -82,18 +82,12 @@ export default function AboutPage() {
 
 
   return (
-    <div className="min-h-screen" style={{ background: 'var(--gradient-background)' }}>
+    <div className="min-h-screen trading-background">
       
       {/* Hero Section */}
-      <section className="pt-32 pb-16">
+      <section className="pt-48 pb-16">
         <div className="container mx-auto px-4">
           <div className="max-w-6xl mx-auto text-center">
-            <div className="flex justify-center mb-6">
-              <div className="w-20 h-20 rounded-2xl flex items-center justify-center" style={{ background: 'var(--gradient-primary)' }}>
-                <Target className="w-10 h-10" style={{ color: 'var(--text-primary)' }} />
-              </div>
-            </div>
-            
             <h1 className="text-5xl md:text-7xl font-bold gradient-shift leading-tight mb-6">
               About Sky
             </h1>
@@ -106,9 +100,6 @@ export default function AboutPage() {
             <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
               {stats.map((stat, index) => (
                 <div key={index} className="glass-morphism p-6 rounded-xl text-center hover:scale-105 transition-all duration-300">
-                  <div className="flex justify-center mb-3" style={{ color: 'var(--text-accent)' }}>
-                    {stat.icon}
-                  </div>
                   <div className="text-3xl font-bold text-gradient mb-1">{stat.value}</div>
                   <div className="text-sm" style={{ color: 'var(--text-secondary)' }}>{stat.label}</div>
                 </div>

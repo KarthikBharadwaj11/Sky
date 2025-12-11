@@ -98,7 +98,7 @@ interface TrendingTopic {
 
 export default function SocialFeed() {
   const { user } = useAuth();
-  const [activeTab, setActiveTab] = useState<'for-you' | 'following' | 'news' | 'signals'>('for-you');
+  const [activeTab, setActiveTab] = useState<'for-you' | 'following'>('for-you');
   const [newsArticles, setNewsArticles] = useState<NewsArticle[]>([]);
   const [socialPosts, setSocialPosts] = useState<SocialPost[]>([]);
   const [marketSignals, setMarketSignals] = useState<MarketSignal[]>([]);
@@ -190,99 +190,39 @@ export default function SocialFeed() {
     const mockSocialPosts: SocialPost[] = [
       {
         id: '1',
-        user: { name: 'Alex Rodriguez', avatar: '🔥', verified: true, followers: 45600, isExpert: true, badges: ['Top Trader'] },
-        content: 'Just closed my $AAPL position with a 23% gain! The earnings beat was exactly what I predicted last week. Sometimes patience really pays off in this market.',
+        user: { name: 'Tony Stark', avatar: '🦾', verified: true, followers: 125000, isExpert: false },
+        content: 'Just bought some $TSLA shares. Electric vehicles are the future! Really excited about the tech innovations happening in this space.',
         timestamp: new Date(Date.now() - 900000).toISOString(),
         likes: 234,
         comments: 45,
         shares: 12,
         isLiked: false,
-        type: 'trade',
-        stockMentions: ['AAPL'],
-        tradeData: {
-          action: 'sell',
-          symbol: 'AAPL',
-          price: 189.50,
-          quantity: 100,
-          profit: 3450,
-          percentage: 23.2
-        }
+        type: 'text',
+        stockMentions: ['TSLA']
       },
       {
         id: '2',
-        user: { name: 'Sarah Chen', avatar: '👩‍💼', verified: true, followers: 32400, isExpert: true, badges: ['Crypto Expert'] },
-        content: 'Market prediction: $BTC will test $50k resistance within the next 2 weeks. The institutional buying pressure is building up nicely. What do you think?',
+        user: { name: 'Hermione Granger', avatar: '📚', verified: true, followers: 89000, isExpert: false },
+        content: 'Been doing research on $AAPL and their recent earnings report looks promising. The growth in services revenue is particularly interesting.',
         timestamp: new Date(Date.now() - 1800000).toISOString(),
         likes: 567,
         comments: 89,
         shares: 34,
         isLiked: true,
-        type: 'prediction',
-        stockMentions: ['BTC'],
-        predictionData: {
-          symbol: 'BTC',
-          target: 50000,
-          timeframe: '2 weeks',
-          confidence: 78,
-          reasoning: 'Institutional buying pressure and technical breakout patterns'
-        }
+        type: 'text',
+        stockMentions: ['AAPL']
       },
       {
         id: '3',
-        user: { name: 'Marcus Johnson', avatar: '👨‍💻', verified: false, followers: 8900, badges: ['Rising Star'] },
-        content: 'Sharing my portfolio milestone today! 🎉 Finally hit 6-figure returns this year. Started with $10k in January, now sitting at $167k. Mainly focused on tech growth stocks and some crypto positions.',
+        user: { name: 'Peter Parker', avatar: '🕷️', verified: false, followers: 42000, isExpert: false },
+        content: 'Market looking good today! Anyone else watching $NVDA? The tech sector has been strong this week.',
         timestamp: new Date(Date.now() - 2700000).toISOString(),
-        likes: 1243,
-        comments: 156,
-        shares: 67,
-        isLiked: false,
-        type: 'milestone',
-        stockMentions: []
-      },
-      {
-        id: '4',
-        user: { name: 'Emily Davis', avatar: '📊', verified: true, followers: 67800, isExpert: true, badges: ['Technical Analyst'] },
-        content: 'Educational thread: Understanding RSI divergence 📚\n\nWhen price makes higher highs but RSI makes lower highs, it often signals a potential reversal. This is called bearish divergence and can be a powerful tool for timing exits.',
-        timestamp: new Date(Date.now() - 3600000).toISOString(),
-        likes: 456,
-        comments: 78,
-        shares: 123,
-        isLiked: true,
-        type: 'educational'
-      },
-      {
-        id: '5',
-        user: { name: 'Pro Mike', avatar: '⚡', verified: true, followers: 123000, isExpert: true, badges: ['Signal Provider', 'Top Trader'] },
-        content: 'New signal alert! 🚨 Looking at a potential breakout in $NVDA. All indicators aligning for a move to $520. Entry zone: $480-485. This could be a 7% quick gain if we see the momentum continue.',
-        timestamp: new Date(Date.now() - 4500000).toISOString(),
-        likes: 789,
-        comments: 234,
-        shares: 45,
-        isLiked: false,
-        type: 'signal',
-        stockMentions: ['NVDA']
-      },
-      {
-        id: '6',
-        user: { name: 'Crypto Queen', avatar: '👑', verified: true, followers: 89000, isExpert: true, badges: ['DeFi Expert'] },
-        content: 'Poll time! Which sector will outperform in Q1 2024?',
-        timestamp: new Date(Date.now() - 5400000).toISOString(),
-        likes: 234,
+        likes: 412,
         comments: 67,
         shares: 23,
-        isLiked: true,
-        type: 'poll',
-        pollData: {
-          question: 'Which sector will outperform in Q1 2024?',
-          options: [
-            { label: 'Technology', votes: 456, percentage: 45.6 },
-            { label: 'Healthcare', votes: 234, percentage: 23.4 },
-            { label: 'Energy', votes: 189, percentage: 18.9 },
-            { label: 'Financial', votes: 121, percentage: 12.1 }
-          ],
-          totalVotes: 1000,
-          userVoted: 0
-        }
+        isLiked: false,
+        type: 'text',
+        stockMentions: ['NVDA']
       }
     ];
 
@@ -490,9 +430,7 @@ export default function SocialFeed() {
 
   const tabs = [
     { id: 'for-you', label: 'For You', icon: '🎯', desc: 'Personalized feed' },
-    { id: 'following', label: 'Following', icon: '👥', desc: 'Your network' },
-    { id: 'news', label: 'News', icon: '📰', desc: 'Market updates' },
-    { id: 'signals', label: 'Signals', icon: '⚡', desc: 'Trading alerts' }
+    { id: 'following', label: 'Following', icon: '👥', desc: 'Your network' }
   ];
 
   if (!user) {
@@ -668,214 +606,6 @@ export default function SocialFeed() {
                 </div>
               </div>
 
-              {activeTab === 'news' && (
-                <>
-                  {/* Category Filter */}
-                  <div className="flex justify-center gap-2 mb-6 flex-wrap">
-                    {(['all', 'market', 'earnings', 'economics', 'crypto'] as const).map((filterOption) => (
-                      <button
-                        key={filterOption}
-                        onClick={() => setFilter(filterOption)}
-                        className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 hover:scale-105 ${
-                          filter === filterOption ? 'btn-primary' : 'glass-morphism'
-                        }`}
-                        style={filter !== filterOption ? { color: 'var(--text-secondary)' } : {}}
-                      >
-                        {filterOption.charAt(0).toUpperCase() + filterOption.slice(1)}
-                      </button>
-                    ))}
-                  </div>
-
-                  {/* News Articles */}
-                  <div className="space-y-6">
-                    {filteredNews.map((article) => (
-                      <div key={article.id} className="card hover:scale-[1.02] transition-all duration-300">
-                        <div className="card-body">
-                          <div className="flex items-start justify-between mb-4">
-                            <div className="flex items-center gap-3">
-                              <span className={`px-3 py-1 rounded-full text-xs font-medium border ${getCategoryColor(article.category)}`}>
-                                {article.category}
-                              </span>
-                              {article.priority === 'high' && (
-                                <span className="px-2 py-1 rounded-full text-xs font-bold bg-red-900/30 text-red-300 border border-red-500/30 transition-opacity duration-1000">
-                                  HOT
-                                </span>
-                              )}
-                              <span className="text-sm font-medium" style={{ color: 'var(--text-muted)' }}>
-                                {article.source}
-                              </span>
-                            </div>
-                            <div className="flex items-center gap-2 text-sm" style={{ color: 'var(--text-muted)' }}>
-                              <Clock className="w-4 h-4" />
-                              {new Date(article.timestamp).toLocaleTimeString()}
-                            </div>
-                          </div>
-
-                          <h3 className="text-xl font-bold mb-3 transition-colors cursor-pointer hover:opacity-75" style={{ color: 'var(--text-primary)' }}>
-                            {article.title}
-                          </h3>
-
-                          <p className="mb-4 leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
-                            {article.summary}
-                          </p>
-
-                          {article.relatedStocks && (
-                            <div className="flex items-center gap-2 mb-4">
-                              <Tag className="w-4 h-4" style={{ color: 'var(--text-tertiary)' }} />
-                              <div className="flex gap-2 flex-wrap">
-                                {article.relatedStocks.map(stock => (
-                                  <Link key={stock} href={`/stock/${stock.toLowerCase()}`}>
-                                    <span className="bg-blue-900/30 text-blue-300 px-2 py-1 rounded text-xs font-medium hover:bg-blue-800/40 transition-colors cursor-pointer">
-                                      ${stock}
-                                    </span>
-                                  </Link>
-                                ))}
-                              </div>
-                              <div className={`ml-auto px-2 py-1 rounded text-xs font-medium ${
-                                article.sentiment === 'bullish' ? 'bg-green-900/30 text-green-300' :
-                                article.sentiment === 'bearish' ? 'bg-red-900/30 text-red-300' :
-    ''
-                              }`}>
-                                {article.sentiment}
-                              </div>
-                            </div>
-                          )}
-
-                          <div className="flex items-center justify-between pt-4 border-t" style={{ borderColor: 'var(--glass-border)' }}>
-                            <div className="flex items-center gap-6">
-                              <button
-                                onClick={() => toggleLike(article.id, 'news')}
-                                className={`flex items-center gap-2 hover:scale-110 transition-all duration-300 ${
-                                  article.isLiked ? 'text-red-400' : ''
-                                }`}
-                                style={{ color: article.isLiked ? '#f87171' : 'var(--text-muted)' }}
-                              >
-                                <Heart className={`w-4 h-4 ${article.isLiked ? 'fill-current' : ''}`} />
-                                {article.likes}
-                              </button>
-                              <button className="flex items-center gap-2 hover:scale-110 transition-all duration-300" style={{ color: 'var(--text-muted)' }}>
-                                <MessageCircle className="w-4 h-4" />
-                                {article.comments}
-                              </button>
-                              <button className="flex items-center gap-2 hover:scale-110 transition-all duration-300" style={{ color: 'var(--text-muted)' }}>
-                                <Share2 className="w-4 h-4" />
-                              </button>
-                              <button className="flex items-center gap-2 hover:scale-110 transition-all duration-300" style={{ color: 'var(--text-muted)' }}>
-                                <Bookmark className="w-4 h-4" />
-                              </button>
-                            </div>
-                            <button className="flex items-center gap-2 text-sm hover:text-blue-400 transition-colors" style={{ color: 'var(--text-accent)' }}>
-                              Read More <ExternalLink className="w-3 h-3" />
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </>
-              )}
-
-              {activeTab === 'signals' && (
-                <div className="space-y-6">
-                  {marketSignals.map((signal) => (
-                    <div key={signal.id} className="card hover:scale-[1.01] transition-all duration-300">
-                      <div className="card-body">
-                        <div className="flex items-start justify-between mb-4">
-                          <div className="flex items-center gap-3">
-                            <div className="text-2xl">{signal.user.avatar}</div>
-                            <div>
-                              <div className="flex items-center gap-2">
-                                <span className="font-bold" style={{ color: 'var(--text-primary)' }}>
-                                  {signal.user.name}
-                                </span>
-                                {signal.user.verified && <span style={{ color: 'var(--primary-blue)' }}>✓</span>}
-                                <span className="text-xs bg-green-900/30 text-green-300 px-2 py-1 rounded-full">
-                                  {signal.user.successRate}% success
-                                </span>
-                              </div>
-                              <div className="text-sm" style={{ color: 'var(--text-muted)' }}>
-                                {new Date(signal.timestamp).toLocaleTimeString()}
-                              </div>
-                            </div>
-                          </div>
-                          <div className={`px-3 py-1 rounded-full text-sm font-bold ${
-                            signal.type === 'buy' ? 'bg-green-900/30 text-green-300' :
-                            signal.type === 'sell' ? 'bg-red-900/30 text-red-300' :
-                            'bg-yellow-900/30 text-yellow-300'
-                          }`}>
-                            {signal.type.toUpperCase()}
-                          </div>
-                        </div>
-
-                        <div className="glass-morphism p-4 rounded-xl mb-4">
-                          <div className="flex items-center justify-between mb-3">
-                            <div className="flex items-center gap-2">
-                              <Zap className="w-5 h-5" style={{ color: 'var(--warning)' }} />
-                              <span className="font-bold text-xl">${signal.symbol}</span>
-                            </div>
-                            <div className="text-right">
-                              <div className="text-sm" style={{ color: 'var(--text-secondary)' }}>Current</div>
-                              <div className="font-bold text-lg">${signal.currentPrice}</div>
-                            </div>
-                          </div>
-
-                          <div className="grid grid-cols-3 gap-4 mb-3">
-                            <div className="text-center">
-                              <div className="text-xs" style={{ color: 'var(--text-muted)' }}>Target</div>
-                              <div className="font-bold" style={{ color: 'var(--success)' }}>${signal.targetPrice}</div>
-                            </div>
-                            <div className="text-center">
-                              <div className="text-xs" style={{ color: 'var(--text-muted)' }}>Stop Loss</div>
-                              <div className="font-bold text-red-400">${signal.stopLoss}</div>
-                            </div>
-                            <div className="text-center">
-                              <div className="text-xs" style={{ color: 'var(--text-muted)' }}>Timeframe</div>
-                              <div className="font-bold" style={{ color: 'var(--text-primary)' }}>{signal.timeframe}</div>
-                            </div>
-                          </div>
-
-                          <div className="mb-3">
-                            <div className="flex justify-between text-sm mb-1">
-                              <span style={{ color: 'var(--text-secondary)' }}>Confidence</span>
-                              <span className="font-medium" style={{ color: 'var(--text-primary)' }}>{signal.confidence}%</span>
-                            </div>
-                            <div className="w-full h-2 rounded-full overflow-hidden" style={{ background: 'var(--background-tertiary)' }}>
-                              <div
-                                className="h-full bg-yellow-500 transition-all duration-300"
-                                style={{ width: `${signal.confidence}%` }}
-                              ></div>
-                            </div>
-                          </div>
-
-                          <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>
-                            <strong>Reasoning:</strong> {signal.reasoning}
-                          </p>
-                        </div>
-
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-4">
-                            <button className="flex items-center gap-2 hover:scale-110 transition-all duration-300" style={{ color: 'var(--text-muted)' }}>
-                              <Heart className="w-4 h-4" />
-                              {signal.likes}
-                            </button>
-                            <button className="flex items-center gap-2 hover:scale-110 transition-all duration-300" style={{ color: 'var(--text-muted)' }}>
-                              <Users className="w-4 h-4" />
-                              {signal.followers}
-                            </button>
-                            <button className="flex items-center gap-2 hover:scale-110 transition-all duration-300" style={{ color: 'var(--text-muted)' }}>
-                              <Share2 className="w-4 h-4" />
-                            </button>
-                          </div>
-                          <button className="btn-secondary px-4 py-2 text-sm hover:scale-105 transition-all duration-300">
-                            Follow Signal
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-
               {(activeTab === 'for-you' || activeTab === 'following') && (
                 <div className="space-y-6">
                   {/* Social Posts */}
@@ -901,7 +631,7 @@ export default function SocialFeed() {
                                 </span>
                               ))}
                               <span className="text-sm" style={{ color: 'var(--text-muted)' }}>
-                                @{post.user.name.toLowerCase().replace(' ', '')} • {post.user.followers.toLocaleString()} followers
+                                {post.user.followers.toLocaleString()} followers
                               </span>
                               <span className="text-sm" style={{ color: 'var(--text-muted)' }}>
                                 • {new Date(post.timestamp).toLocaleTimeString()}
@@ -977,102 +707,6 @@ export default function SocialFeed() {
                     </div>
                   ))}
 
-                  {/* Show additional content only in For You tab */}
-                  {activeTab === 'for-you' && (
-                    <>
-                      {/* Trading Challenges Section */}
-                      <div className="card">
-                        <div className="card-body">
-                          <h3 className="text-2xl font-bold mb-4 flex items-center gap-2" style={{ color: 'var(--text-primary)' }}>
-                            🏅 Trading Challenges
-                          </h3>
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            {[
-                              {
-                                title: 'November Championship',
-                                prize: '$10,000',
-                                participants: 1247,
-                                timeLeft: '12 days',
-                                yourRank: 23
-                              },
-                              {
-                                title: 'Tech Stock Challenge',
-                                prize: '$5,000',
-                                participants: 567,
-                                timeLeft: '5 days',
-                                yourRank: 45
-                              }
-                            ].map((challenge, index) => (
-                              <div key={index} className="p-4 rounded-lg border hover:scale-105 transition-all duration-300" style={{ background: 'var(--background-secondary)', borderColor: 'var(--border-primary)' }}>
-                                <h4 className="font-bold mb-2" style={{ color: 'var(--text-primary)' }}>{challenge.title}</h4>
-                                <div className="grid grid-cols-2 gap-3 text-sm">
-                                  <div>
-                                    <span style={{ color: 'var(--text-muted)' }}>Prize: </span>
-                                    <span className="font-bold text-yellow-400">{challenge.prize}</span>
-                                  </div>
-                                  <div>
-                                    <span style={{ color: 'var(--text-muted)' }}>Your Rank: </span>
-                                    <span className="font-bold" style={{ color: 'var(--text-primary)' }}>#{challenge.yourRank}</span>
-                                  </div>
-                                  <div>
-                                    <span style={{ color: 'var(--text-muted)' }}>Participants: </span>
-                                    <span className="font-bold" style={{ color: 'var(--text-primary)' }}>{challenge.participants}</span>
-                                  </div>
-                                  <div>
-                                    <span style={{ color: 'var(--text-muted)' }}>Time Left: </span>
-                                    <span className="font-bold" style={{ color: 'var(--text-primary)' }}>{challenge.timeLeft}</span>
-                                  </div>
-                                </div>
-                              </div>
-                            ))}
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Top Performers Leaderboard */}
-                      <div className="card">
-                        <div className="card-body">
-                          <h3 className="text-2xl font-bold mb-4 flex items-center gap-2" style={{ color: 'var(--text-primary)' }}>
-                            🏆 Top Performers This Month
-                          </h3>
-                          <div className="space-y-3">
-                            {[
-                              { rank: 1, name: 'Alex Rodriguez', avatar: '🔥', return: '+24.7%', followers: 45600 },
-                              { rank: 2, name: 'Sarah Chen', avatar: '👩‍💼', return: '+22.3%', followers: 32400 },
-                              { rank: 3, name: 'Pro Mike', avatar: '⚡', return: '+21.8%', followers: 123000 },
-                              { rank: 4, name: 'Marcus Johnson', avatar: '👨‍💻', return: '+19.5%', followers: 8900 },
-                              { rank: 5, name: 'Emily Davis', avatar: '📊', return: '+18.2%', followers: 67800 }
-                            ].map((leader) => (
-                              <div key={leader.rank} className="flex items-center justify-between p-3 rounded-lg transition-colors cursor-pointer hover:opacity-75" style={{ background: 'var(--background-tertiary)' }}>
-                                <div className="flex items-center gap-3">
-                                  <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold ${
-                                    leader.rank === 1 ? 'bg-yellow-500 text-black' :
-                                    leader.rank === 2 ? 'bg-gray-400 text-black' :
-                                    leader.rank === 3 ? 'bg-orange-600 text-white' :
-                                    'bg-gray-600 text-white'
-                                  }`}>
-                                    {leader.rank}
-                                  </div>
-                                  <span className="text-2xl">{leader.avatar}</span>
-                                  <div>
-                                    <h5 className="font-semibold" style={{ color: 'var(--text-primary)' }}>{leader.name}</h5>
-                                    <p className="text-xs" style={{ color: 'var(--text-muted)' }}>
-                                      {leader.followers?.toLocaleString()} followers
-                                    </p>
-                                  </div>
-                                </div>
-                                <div className="text-right">
-                                  <div className="font-bold" style={{ color: 'var(--success)' }}>
-                                    {leader.return}
-                                  </div>
-                                </div>
-                              </div>
-                            ))}
-                          </div>
-                        </div>
-                      </div>
-                    </>
-                  )}
                 </div>
               )}
 
@@ -1092,9 +726,9 @@ export default function SocialFeed() {
                   </div>
                   <div className="space-y-3">
                     {[
-                      { name: 'Warren AI', avatar: '🤖', followers: '2.1M', verified: true, badge: 'AI Analyst' },
-                      { name: 'Crypto Queen', avatar: '👑', followers: '890K', verified: true, badge: 'DeFi Expert' },
-                      { name: 'Stock Sage', avatar: '🧙‍♂️', followers: '456K', verified: true, badge: 'Value Investor' }
+                      { name: 'Doctor Strange', avatar: '🧙‍♂️', followers: '2.1M', verified: true, badge: 'AI Analyst' },
+                      { name: 'Black Widow', avatar: '🕷️', followers: '890K', verified: true, badge: 'Tech Expert' },
+                      { name: 'Dumbledore', avatar: '✨', followers: '456K', verified: true, badge: 'Value Investor' }
                     ].map((suggestion, index) => (
                       <div key={index} className="flex items-center justify-between p-2 rounded-lg transition-colors hover:opacity-75" style={{ background: 'var(--background-tertiary)' }}>
                         <div className="flex items-center gap-3">
@@ -1161,9 +795,9 @@ export default function SocialFeed() {
                   </h3>
                   <div className="space-y-3">
                     {[
-                      { name: 'Alex Rodriguez', return: '+42.3%', avatar: '🔥', rank: 1 },
-                      { name: 'Sarah Chen', return: '+38.7%', avatar: '👩‍💼', rank: 2 },
-                      { name: 'Marcus Johnson', return: '+35.1%', avatar: '👨‍💻', rank: 3 }
+                      { name: 'Thor', return: '+42.3%', avatar: '⚡', rank: 1 },
+                      { name: 'Scarlet Witch', return: '+38.7%', avatar: '🔮', rank: 2 },
+                      { name: 'Ron Weasley', return: '+35.1%', avatar: '♟️', rank: 3 }
                     ].map((performer) => (
                       <div key={performer.rank} className="flex items-center justify-between p-3 rounded-lg transition-colors cursor-pointer hover:opacity-75" style={{ background: 'var(--background-tertiary)' }}>
                         <div className="flex items-center gap-3">

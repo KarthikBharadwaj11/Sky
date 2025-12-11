@@ -116,11 +116,11 @@ export default function LandingPage() {
   ];
 
   return (
-    <div className="min-h-screen" style={{ background: 'var(--gradient-background)' }}>
+    <div className="min-h-screen trading-background">
       
       {/* Hero Section */}
       <section className="relative overflow-hidden">
-        <div className="container mx-auto px-4 py-32">
+        <div className="container mx-auto px-4 pt-48 pb-32">
           <div className="max-w-6xl mx-auto text-center">
             
             <h1 className="text-6xl md:text-8xl font-bold gradient-shift leading-tight mb-8">
@@ -155,15 +155,15 @@ export default function LandingPage() {
             {/* Stats */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-16">
               <div className="glass-morphism p-6 rounded-xl">
-                <div className="text-4xl font-bold text-gradient mb-2">10K+</div>
+                <div className="text-4xl font-bold text-gradient mb-2">X</div>
                 <div style={{ color: 'var(--text-secondary)' }}>Active Traders</div>
               </div>
               <div className="glass-morphism p-6 rounded-xl">
-                <div className="text-4xl font-bold text-gradient mb-2">$2.5B+</div>
+                <div className="text-4xl font-bold text-gradient mb-2">X</div>
                 <div style={{ color: 'var(--text-secondary)' }}>Volume Traded</div>
               </div>
               <div className="glass-morphism p-6 rounded-xl">
-                <div className="text-4xl font-bold text-gradient mb-2">99.9%</div>
+                <div className="text-4xl font-bold text-gradient mb-2">X</div>
                 <div style={{ color: 'var(--text-secondary)' }}>Uptime</div>
               </div>
             </div>
@@ -203,134 +203,63 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Trust & Credibility Section */}
-      <section className="py-20">
-        <div className="container mx-auto px-4">
-          <div className="max-w-6xl mx-auto">
-            <div className="text-center mb-16">
-              <h2 className="text-5xl font-bold text-gradient mb-6">Trusted by Thousands</h2>
-              <p className="text-xl" style={{ color: 'var(--text-secondary)' }}>
-                Security and reliability you can count on
-              </p>
-            </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-              <div className="glass-morphism p-6 rounded-xl text-center hover:scale-105 transition-all duration-300">
-                <Shield className="w-12 h-12 mx-auto mb-4" style={{ color: 'var(--text-accent)' }} />
-                <h4 className="font-bold mb-2" style={{ color: 'var(--text-primary)' }}>Bank-Level Security</h4>
-                <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>256-bit SSL encryption</p>
-              </div>
-              <div className="glass-morphism p-6 rounded-xl text-center hover:scale-105 transition-all duration-300">
-                <Lock className="w-12 h-12 mx-auto mb-4" style={{ color: 'var(--text-accent)' }} />
-                <h4 className="font-bold mb-2" style={{ color: 'var(--text-primary)' }}>SIPC Insured</h4>
-                <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>Up to $500,000</p>
-              </div>
-              <div className="glass-morphism p-6 rounded-xl text-center hover:scale-105 transition-all duration-300">
-                <Award className="w-12 h-12 mx-auto mb-4" style={{ color: 'var(--text-accent)' }} />
-                <h4 className="font-bold mb-2" style={{ color: 'var(--text-primary)' }}>Best Platform 2024</h4>
-                <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>Trading Awards</p>
-              </div>
-              <div className="glass-morphism p-6 rounded-xl text-center hover:scale-105 transition-all duration-300">
-                <Star className="w-12 h-12 mx-auto mb-4 fill-current text-yellow-400" />
-                <h4 className="font-bold mb-2" style={{ color: 'var(--text-primary)' }}>5-Star Rated</h4>
-                <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>User reviews</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
       {/* How It Works Section */}
       <section className="py-20">
         <div className="container mx-auto px-4">
-          <div className="max-w-6xl mx-auto">
-            <div className="text-center mb-16">
-              <h2 className="text-5xl font-bold text-gradient mb-6">How Sky Works</h2>
-              <p className="text-xl" style={{ color: 'var(--text-secondary)' }}>
-                Start trading in three simple steps
-              </p>
-            </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              <div className="text-center">
-                <div className="w-24 h-24 rounded-full" style={{ background: 'var(--gradient-primary)' }}>
-                  <span className="text-3xl font-bold" style={{ color: 'var(--text-primary)' }}>1</span>
+          <div className="max-w-4xl mx-auto">
+            <div className="card">
+              <div className="card-body p-8">
+                <div className="text-center mb-8">
+                  <h2 className="text-3xl font-bold mb-3" style={{ color: 'var(--text-primary)' }}>How Sky Works</h2>
+                  <p className="text-base" style={{ color: 'var(--text-secondary)' }}>
+                    Start trading in three simple steps
+                  </p>
                 </div>
-                <h3 className="text-2xl font-bold mb-4" style={{ color: 'var(--text-primary)' }}>Sign Up</h3>
-                <p className="text-lg" style={{ color: 'var(--text-secondary)' }}>
-                  Create your account in just 2 minutes with our streamlined registration process
-                </p>
-              </div>
-              
-              <div className="text-center">
-                <div className="w-24 h-24 rounded-full" style={{ background: 'var(--gradient-primary)' }}>
-                  <span className="text-3xl font-bold" style={{ color: 'var(--text-primary)' }}>2</span>
-                </div>
-                <h3 className="text-2xl font-bold mb-4" style={{ color: 'var(--text-primary)' }}>Fund Account</h3>
-                <p className="text-lg" style={{ color: 'var(--text-secondary)' }}>
-                  Deposit funds securely and start with any amount - no minimum required
-                </p>
-              </div>
-              
-              <div className="text-center">
-                <div className="w-24 h-24 rounded-full" style={{ background: 'var(--gradient-primary)' }}>
-                  <span className="text-3xl font-bold" style={{ color: 'var(--text-primary)' }}>3</span>
-                </div>
-                <h3 className="text-2xl font-bold mb-4" style={{ color: 'var(--text-primary)' }}>Start Trading</h3>
-                <p className="text-lg" style={{ color: 'var(--text-secondary)' }}>
-                  Access powerful tools, AI insights, and start your trading journey
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
 
-      {/* Testimonials Section */}
-      <section className="py-20">
-        <div className="container mx-auto px-4">
-          <div className="max-w-6xl mx-auto">
-            <div className="text-center mb-16">
-              <h2 className="text-5xl font-bold text-gradient mb-6">Success Stories</h2>
-              <p className="text-xl" style={{ color: 'var(--text-secondary)' }}>
-                Hear from our community of successful traders
-              </p>
-            </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              {testimonials.map((testimonial, index) => (
-                <div key={index} className="card hover:scale-105 transition-all duration-300">
-                  <div className="card-body">
-                    <div className="flex items-center mb-4">
-                      <div className="text-3xl mr-3">{testimonial.avatar}</div>
-                      <div>
-                        <div className="font-bold" style={{ color: 'var(--text-primary)' }}>
-                          {testimonial.name}
-                        </div>
-                        <div className="text-sm" style={{ color: 'var(--text-tertiary)' }}>
-                          {testimonial.role}
-                        </div>
-                      </div>
-                      <div className="ml-auto">
-                        <div className="px-3 py-1 rounded-full text-sm font-bold bg-green-900/30 text-green-300">
-                          {testimonial.profit}
-                        </div>
+                <div className="space-y-6">
+                  <div className="flex gap-4">
+                    <div className="flex-shrink-0">
+                      <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center">
+                        <span className="text-white font-bold">1</span>
                       </div>
                     </div>
-                    
-                    <div className="flex mb-4">
-                      {[...Array(testimonial.rating)].map((_, i) => (
-                        <Star key={i} className="w-4 h-4 fill-current text-yellow-400" />
-                      ))}
+                    <div>
+                      <h3 className="text-lg font-bold mb-2" style={{ color: 'var(--text-primary)' }}>Sign Up</h3>
+                      <p style={{ color: 'var(--text-secondary)' }}>
+                        Create your account in just 2 minutes with our streamlined registration process
+                      </p>
                     </div>
-                    
-                    <Quote className="w-6 h-6 mb-2 opacity-50" style={{ color: 'var(--text-accent)' }} />
-                    <p style={{ color: 'var(--text-secondary)' }}>
-                      {testimonial.content}
-                    </p>
+                  </div>
+
+                  <div className="flex gap-4">
+                    <div className="flex-shrink-0">
+                      <div className="w-8 h-8 rounded-lg bg-purple-600 flex items-center justify-center">
+                        <span className="text-white font-bold">2</span>
+                      </div>
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-bold mb-2" style={{ color: 'var(--text-primary)' }}>Fund Account</h3>
+                      <p style={{ color: 'var(--text-secondary)' }}>
+                        Deposit funds securely and start with any amount - no minimum required
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex gap-4">
+                    <div className="flex-shrink-0">
+                      <div className="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center">
+                        <span className="text-white font-bold">3</span>
+                      </div>
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-bold mb-2" style={{ color: 'var(--text-primary)' }}>Start Trading</h3>
+                      <p style={{ color: 'var(--text-secondary)' }}>
+                        Access powerful tools, AI insights, and start your trading journey
+                      </p>
+                    </div>
                   </div>
                 </div>
-              ))}
+              </div>
             </div>
           </div>
         </div>

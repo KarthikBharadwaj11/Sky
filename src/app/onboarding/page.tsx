@@ -115,7 +115,7 @@ export default function OnboardingPage() {
   };
 
   return (
-    <div className="min-h-screen" style={{ background: 'var(--gradient-background)' }}>
+    <div className="min-h-screen trading-background">
       {/* Header */}
       <div className="border-b" style={{ borderColor: 'var(--glass-border)' }}>
         <div className="container mx-auto px-4 py-4">

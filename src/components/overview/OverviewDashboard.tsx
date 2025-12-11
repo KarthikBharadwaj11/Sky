@@ -1,7 +1,7 @@
 'use client';
 
 import { useAuth } from '../auth/AuthProvider';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import LineChart from '../charts/LineChart';
 import AreaChart from '../charts/AreaChart';
 import ComparisonChart from '../charts/ComparisonChart';
@@ -46,6 +46,12 @@ export default function OverviewDashboard() {
   const [showWatchlistManager, setShowWatchlistManager] = useState(false);
   const [newWatchlistName, setNewWatchlistName] = useState('');
   const [showAddStock, setShowAddStock] = useState(false);
+  const [marketOverview, setMarketOverview] = useState<{ topStocks: Stock[]; us: Stock[]; international: Stock[]; commodities: Stock[] }>({ topStocks: [], us: [], international: [], commodities: [] });
+  const [selectedMarketTab, setSelectedMarketTab] = useState<'topStocks' | 'us' | 'international' | 'commodities'>('topStocks');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchResults, setSearchResults] = useState<Stock[]>([]);
+  const [showSearchResults, setShowSearchResults] = useState(false);
+  const searchRef = useRef<HTMLDivElement>(null);
 
   // Mini sparkline component
   const MiniSparkline = ({ data, color }: { data: number[], color: string }) => {
@@ -184,6 +190,39 @@ export default function OverviewDashboard() {
         { symbol: 'NVDA', name: 'NVIDIA', price: 875.28, change: 15.67, changePercent: 1.83 },
         { symbol: 'AMZN', name: 'Amazon', price: 127.74, change: 1.89, changePercent: 1.50 },
         { symbol: 'MSFT', name: 'Microsoft', price: 378.85, change: 4.12, changePercent: 1.10 }
+      ]
+    });
+
+    // Market Overview
+    setMarketOverview({
+      topStocks: [
+        { symbol: 'AAPL', name: 'Apple Inc.', price: 175.43, change: 2.15, changePercent: 1.24 },
+        { symbol: 'GOOGL', name: 'Alphabet Inc.', price: 138.21, change: -1.32, changePercent: -0.95 },
+        { symbol: 'MSFT', name: 'Microsoft Corp.', price: 378.85, change: 4.12, changePercent: 1.10 },
+        { symbol: 'TSLA', name: 'Tesla Inc.', price: 248.42, change: -5.23, changePercent: -2.06 },
+        { symbol: 'AMZN', name: 'Amazon.com Inc.', price: 127.74, change: 1.89, changePercent: 1.50 }
+      ],
+      us: [
+        { symbol: 'SPX', name: 'S&P 500', price: 5234.18, change: 23.45, changePercent: 0.45 },
+        { symbol: 'IXIC', name: 'NASDAQ', price: 16428.82, change: 127.34, changePercent: 0.78 },
+        { symbol: 'DJI', name: 'Dow Jones', price: 38712.21, change: -46.32, changePercent: -0.12 },
+        { symbol: 'RUT', name: 'Russell 2000', price: 2048.52, change: 15.67, changePercent: 0.77 },
+        { symbol: 'VIX', name: 'Volatility Index', price: 14.23, change: -0.89, changePercent: -5.89 }
+      ],
+      international: [
+        { symbol: 'FTSE', name: 'FTSE 100', price: 7842.45, change: 34.21, changePercent: 0.44 },
+        { symbol: 'DAX', name: 'DAX', price: 17234.67, change: -45.32, changePercent: -0.26 },
+        { symbol: 'CAC', name: 'CAC 40', price: 7523.89, change: 12.45, changePercent: 0.17 },
+        { symbol: 'N225', name: 'Nikkei 225', price: 38456.78, change: 234.56, changePercent: 0.61 },
+        { symbol: 'HSI', name: 'Hang Seng', price: 17892.34, change: -123.45, changePercent: -0.68 },
+        { symbol: 'SSEC', name: 'Shanghai Composite', price: 3234.56, change: 23.45, changePercent: 0.73 }
+      ],
+      commodities: [
+        { symbol: 'GC', name: 'Gold', price: 2034.50, change: 12.30, changePercent: 0.61 },
+        { symbol: 'SI', name: 'Silver', price: 24.67, change: 0.34, changePercent: 1.40 },
+        { symbol: 'CL', name: 'Crude Oil WTI', price: 78.45, change: -1.23, changePercent: -1.54 },
+        { symbol: 'BZ', name: 'Brent Crude', price: 82.34, change: -0.89, changePercent: -1.07 },
+        { symbol: 'NG', name: 'Natural Gas', price: 2.87, change: 0.12, changePercent: 4.36 }
       ]
     });
 
@@ -440,10 +479,7 @@ export default function OverviewDashboard() {
         {/* Watchlist Header */}
         <div className="p-4 border-b border-white/10">
           <div className="flex items-center justify-between mb-3">
-            <h2 className="text-xl font-bold flex items-center gap-2" style={{ color: 'var(--text-primary)' }}>
-              <svg className="w-5 h-5" style={{ color: 'var(--primary-blue)' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
-              </svg>
+            <h2 className="text-xl font-bold" style={{ color: 'var(--text-primary)' }}>
               Watchlists
             </h2>
             <button
@@ -676,10 +712,24 @@ export default function OverviewDashboard() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
         <div className="card">
           <div className="card-body p-4">
-            <h3 className="text-base font-bold mb-4" style={{ color: 'var(--text-primary)' }}>Portfolio Performance</h3>
+            <h3 className="text-base font-bold mb-3" style={{ color: 'var(--text-primary)' }}>Portfolio Performance</h3>
+
+            {/* Sub-tabs for P&L and Symbol */}
+            <div className="flex gap-2 mb-4">
+              <button
+                className="px-4 py-1.5 rounded-lg text-sm font-medium transition-all duration-200 bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg"
+              >
+                P&L
+              </button>
+              <button
+                className="px-4 py-1.5 rounded-lg text-sm font-medium transition-all duration-200 bg-gray-800 text-gray-300 hover:bg-gray-700 hover:text-white"
+              >
+                Symbol
+              </button>
+            </div>
+
             <LineChart
               data={portfolioHistory}
-              title="Portfolio Performance"
               color="#10B981"
               height={280}
               minimalistic={false}
@@ -690,7 +740,6 @@ export default function OverviewDashboard() {
               {timeframeOptions.map((option) => (
                 <button
                   key={option.value}
-                  onClick={() => setSelectedTimeframe(option.value)}
                   className={`px-2.5 py-1 rounded-lg text-xs font-medium transition-all duration-200 ${
                     selectedTimeframe === option.value
                       ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg'
@@ -705,10 +754,9 @@ export default function OverviewDashboard() {
         </div>
         <div className="card">
           <div className="card-body p-4">
-            <h3 className="text-base font-bold mb-4" style={{ color: 'var(--text-primary)' }}>Performance vs Market</h3>
+            <h3 className="text-base font-bold mb-4" style={{ color: 'var(--text-primary)' }}>Portfolio vs Market</h3>
             <ComparisonChart
               data={comparisonData}
-              title="Performance Comparison"
               height={256}
               showGrid={true}
             />
@@ -716,7 +764,6 @@ export default function OverviewDashboard() {
               {comparisonTimeframeOptions.map((option) => (
                 <button
                   key={option.value}
-                  onClick={() => setSelectedComparisonTimeframe(option.value)}
                   className={`px-2.5 py-1 rounded-lg text-xs font-medium transition-all duration-200 ${
                     selectedComparisonTimeframe === option.value
                       ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg'
@@ -731,17 +778,98 @@ export default function OverviewDashboard() {
         </div>
       </div>
 
-      {/* 3. Holdings Table */}
+      {/* 3. Market Overview */}
+      <div className="card mb-8">
+        <div className="card-body">
+          <h2 className="text-2xl font-bold mb-6" style={{ color: 'var(--text-primary)' }}>
+            Market Overview
+          </h2>
+
+          {/* Tabs */}
+          <div className="flex gap-2 mb-6">
+            <button
+              onClick={() => setSelectedMarketTab('topStocks')}
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+                selectedMarketTab === 'topStocks'
+                  ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg'
+                  : 'bg-white/5 hover:bg-white/10'
+              }`}
+              style={selectedMarketTab !== 'topStocks' ? { color: 'var(--text-secondary)' } : {}}
+            >
+              Top Stocks
+            </button>
+            <button
+              onClick={() => setSelectedMarketTab('us')}
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+                selectedMarketTab === 'us'
+                  ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg'
+                  : 'bg-white/5 hover:bg-white/10'
+              }`}
+              style={selectedMarketTab !== 'us' ? { color: 'var(--text-secondary)' } : {}}
+            >
+              US Indices
+            </button>
+            <button
+              onClick={() => setSelectedMarketTab('international')}
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+                selectedMarketTab === 'international'
+                  ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg'
+                  : 'bg-white/5 hover:bg-white/10'
+              }`}
+              style={selectedMarketTab !== 'international' ? { color: 'var(--text-secondary)' } : {}}
+            >
+              International
+            </button>
+            <button
+              onClick={() => setSelectedMarketTab('commodities')}
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+                selectedMarketTab === 'commodities'
+                  ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg'
+                  : 'bg-white/5 hover:bg-white/10'
+              }`}
+              style={selectedMarketTab !== 'commodities' ? { color: 'var(--text-secondary)' } : {}}
+            >
+              Commodities
+            </button>
+          </div>
+
+          {/* Market Grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {marketOverview[selectedMarketTab].map((item) => (
+              <div key={item.symbol} className="glass-morphism p-4 rounded-xl hover:bg-white/5 transition-all duration-200 border border-white/5 hover:border-blue-500/30">
+                <div className="flex items-center justify-between mb-2">
+                  <div>
+                    <h3 className="text-sm font-bold" style={{ color: 'var(--text-primary)' }}>{item.symbol}</h3>
+                    <p className="text-xs" style={{ color: 'var(--text-tertiary)' }}>{item.name}</p>
+                  </div>
+                  <div className={`px-2 py-1 rounded-lg text-xs font-medium ${
+                    item.changePercent >= 0 ? 'bg-green-500/10 text-green-400' : 'bg-red-500/10 text-red-400'
+                  }`}>
+                    {item.changePercent >= 0 ? '+' : ''}{item.changePercent.toFixed(2)}%
+                  </div>
+                </div>
+                <div className="flex items-end justify-between">
+                  <div>
+                    <p className="text-2xl font-bold" style={{ color: 'var(--text-primary)' }}>
+                      {item.price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                    </p>
+                    <p className={`text-xs font-medium ${item.change >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                      {item.change >= 0 ? '+' : ''}{item.change.toFixed(2)}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* 4. Positions Table */}
       <div className="card mb-8">
         <div className="card-body p-4">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-bold flex items-center gap-2" style={{ color: 'var(--text-primary)' }}>
-              <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ background: 'var(--gradient-primary)' }}>
-                <svg className="w-4 h-4" style={{ color: 'var(--text-primary)' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                </svg>
-              </div>
-              Holdings
+            <h2 className="text-lg font-bold" style={{ color: 'var(--text-primary)' }}>
+              Positions
             </h2>
           </div>
 
@@ -825,141 +953,214 @@ export default function OverviewDashboard() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                 </svg>
               </div>
-              <p className="text-xl mb-2" style={{ color: 'var(--text-primary)' }}>No holdings yet.</p>
+              <p className="text-xl mb-2" style={{ color: 'var(--text-primary)' }}>No positions yet.</p>
               <p className="text-lg" style={{ color: 'var(--text-tertiary)' }}>Start trading to build your portfolio!</p>
             </div>
           )}
         </div>
       </div>
 
-      {/* 4. Performance Metrics & Risk Analysis */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
-        <div className="card">
-          <div className="card-body">
-            <h3 className="text-lg font-bold mb-4 flex items-center gap-2" style={{ color: 'var(--text-primary)' }}>
-              <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: 'var(--gradient-primary)' }}>
-                <svg className="w-4 h-4" style={{ color: 'var(--text-primary)' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                </svg>
-              </div>
-              Performance Metrics
-            </h3>
-            <div className="space-y-4">
-              <div className="glass-morphism p-4 rounded-lg">
-                <div className="flex justify-between items-center mb-2">
-                  <span className="text-sm" style={{ color: 'var(--text-secondary)' }}>Total Return</span>
+      {/* 4. Performance Metrics & Market Movers | Recent Activity & Copy Trading */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
+        {/* Left Column: Performance Metrics + Market Movers */}
+        <div className="space-y-8">
+          {/* Performance Metrics */}
+          <div className="card">
+            <div className="card-body">
+              <h3 className="text-lg font-bold mb-4" style={{ color: 'var(--text-primary)' }}>
+                Performance Metrics
+              </h3>
+              <div className="grid grid-cols-2 gap-3">
+                <div className="glass-morphism p-3 rounded-lg">
+                  <span className="text-xs block mb-1" style={{ color: 'var(--text-secondary)' }}>Total Return</span>
                   <span className={`text-lg font-bold ${totalReturn >= 0 ? 'text-green-400' : 'text-red-400'}`}>
                     {totalReturn >= 0 ? '+' : ''}${totalReturn.toFixed(2)}
                   </span>
                 </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-sm" style={{ color: 'var(--text-secondary)' }}>Return %</span>
+                <div className="glass-morphism p-3 rounded-lg">
+                  <span className="text-xs block mb-1" style={{ color: 'var(--text-secondary)' }}>Return %</span>
                   <span className={`text-lg font-bold ${totalReturnPercent >= 0 ? 'text-green-400' : 'text-red-400'}`}>
                     {totalReturnPercent >= 0 ? '+' : ''}{totalReturnPercent.toFixed(2)}%
                   </span>
                 </div>
-              </div>
-              <div className="glass-morphism p-4 rounded-lg">
-                <div className="flex justify-between items-center mb-2">
-                  <span className="text-sm" style={{ color: 'var(--text-secondary)' }}>Annual Return</span>
-                  <span className="text-lg font-bold text-green-400">+18.5%</span>
-                </div>
-              </div>
-              <div className="glass-morphism p-4 rounded-lg">
-                <div className="flex justify-between items-center mb-2">
-                  <span className="text-sm" style={{ color: 'var(--text-secondary)' }}>Best Day</span>
+                <div className="glass-morphism p-3 rounded-lg">
+                  <span className="text-xs block mb-1" style={{ color: 'var(--text-secondary)' }}>Best Day</span>
                   <span className="text-lg font-bold text-green-400">+$1,234.56</span>
                 </div>
-              </div>
-              <div className="glass-morphism p-4 rounded-lg">
-                <div className="flex justify-between items-center mb-2">
-                  <span className="text-sm" style={{ color: 'var(--text-secondary)' }}>Worst Day</span>
+                <div className="glass-morphism p-3 rounded-lg">
+                  <span className="text-xs block mb-1" style={{ color: 'var(--text-secondary)' }}>Worst Day</span>
                   <span className="text-lg font-bold text-red-400">-$567.89</span>
                 </div>
               </div>
             </div>
           </div>
-        </div>
 
-        <div className="card">
-          <div className="card-body">
-            <h3 className="text-lg font-bold mb-4 flex items-center gap-2" style={{ color: 'var(--text-primary)' }}>
-              <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: 'var(--gradient-accent)' }}>
-                <svg className="w-4 h-4" style={{ color: 'var(--text-primary)' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                </svg>
+          {/* Today's Market Movers */}
+          <div className="card">
+            <div className="card-body">
+              <h2 className="text-2xl font-bold mb-6" style={{ color: 'var(--text-primary)' }}>
+                Today's Market Movers
+              </h2>
+
+              {/* Tabs */}
+              <div className="flex gap-2 mb-4">
+                <button
+                  onClick={() => setSelectedMoverTab('gainers')}
+                  className={`flex-1 px-4 py-2.5 rounded-lg text-sm font-semibold transition-all duration-200 ${
+                    selectedMoverTab === 'gainers'
+                      ? 'bg-gradient-to-r from-green-500 to-emerald-600 text-white shadow-lg shadow-green-500/30'
+                      : 'glass-morphism border border-white/10 hover:border-green-500/30'
+                  }`}
+                >
+                  <span className="flex items-center justify-center gap-2">
+                    Gainers
+                  </span>
+                </button>
+                <button
+                  onClick={() => setSelectedMoverTab('losers')}
+                  className={`flex-1 px-4 py-2.5 rounded-lg text-sm font-semibold transition-all duration-200 ${
+                    selectedMoverTab === 'losers'
+                      ? 'bg-gradient-to-r from-red-500 to-rose-600 text-white shadow-lg shadow-red-500/30'
+                      : 'glass-morphism border border-white/10 hover:border-red-500/30'
+                  }`}
+                >
+                  <span className="flex items-center justify-center gap-2">
+                    Losers
+                  </span>
+                </button>
+                <button
+                  onClick={() => setSelectedMoverTab('mostActive')}
+                  className={`flex-1 px-4 py-2.5 rounded-lg text-sm font-semibold transition-all duration-200 ${
+                    selectedMoverTab === 'mostActive'
+                      ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg shadow-blue-500/30'
+                      : 'glass-morphism border border-white/10 hover:border-blue-500/30'
+                  }`}
+                >
+                  <span className="flex items-center justify-center gap-2">
+                    Most Active
+                  </span>
+                </button>
               </div>
-              Risk Analysis
-            </h3>
-            <div className="space-y-4">
-              <div className="glass-morphism p-4 rounded-lg">
-                <div className="flex justify-between items-center mb-2">
-                  <span className="text-sm" style={{ color: 'var(--text-secondary)' }}>Risk Score</span>
-                  <span className="text-lg font-bold text-yellow-400">Moderate</span>
-                </div>
-                <div className="w-full h-2 bg-gray-700 rounded-full overflow-hidden">
-                  <div className="h-full bg-gradient-to-r from-green-500 via-yellow-500 to-red-500 rounded-full" style={{ width: '60%' }}></div>
-                </div>
-              </div>
-              <div className="glass-morphism p-4 rounded-lg">
-                <div className="flex justify-between items-center mb-2">
-                  <span className="text-sm" style={{ color: 'var(--text-secondary)' }}>Beta</span>
-                  <span className="text-lg font-bold" style={{ color: 'var(--text-primary)' }}>1.15</span>
-                </div>
-              </div>
-              <div className="glass-morphism p-4 rounded-lg">
-                <div className="flex justify-between items-center mb-2">
-                  <span className="text-sm" style={{ color: 'var(--text-secondary)' }}>Sharpe Ratio</span>
-                  <span className="text-lg font-bold" style={{ color: 'var(--text-primary)' }}>1.82</span>
-                </div>
-              </div>
-              <div className="glass-morphism p-4 rounded-lg">
-                <div className="flex justify-between items-center mb-2">
-                  <span className="text-sm" style={{ color: 'var(--text-secondary)' }}>Volatility</span>
-                  <span className="text-lg font-bold text-yellow-400">12.3%</span>
-                </div>
+
+              {/* Stock List */}
+              <div className="space-y-2.5">
+                {marketMovers[selectedMoverTab].map((stock, index) => (
+                  <div key={stock.symbol} className="glass-morphism p-4 rounded-xl hover:bg-white/5 transition-all duration-200 cursor-pointer border border-white/5 hover:border-blue-500/30">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3 flex-1">
+                        <div className="w-8 h-8 rounded-lg flex items-center justify-center text-sm font-bold" style={{
+                          background: selectedMoverTab === 'gainers'
+                            ? 'linear-gradient(135deg, #10B981 0%, #059669 100%)'
+                            : selectedMoverTab === 'losers'
+                            ? 'linear-gradient(135deg, #EF4444 0%, #DC2626 100%)'
+                            : 'linear-gradient(135deg, #3B82F6 0%, #8B5CF6 100%)'
+                        }}>
+                          {index + 1}
+                        </div>
+                        <div className="flex-1">
+                          <Link href={`/stock/${stock.symbol.toLowerCase()}`}>
+                            <div className="flex items-center gap-2 mb-0.5">
+                              <span className="text-base font-bold hover:text-blue-400 transition-colors" style={{ color: 'var(--text-primary)' }}>
+                                {stock.symbol}
+                              </span>
+                              <span className="text-xs" style={{ color: 'var(--text-tertiary)' }}>{stock.name}</span>
+                            </div>
+                          </Link>
+                          <div className="flex items-center gap-3">
+                            <span className="text-sm font-semibold" style={{ color: 'var(--text-secondary)' }}>
+                              ${stock.price.toFixed(2)}
+                            </span>
+                            <span className={`text-sm font-bold ${stock.change >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                              {stock.change >= 0 ? '+' : ''}{stock.changePercent.toFixed(2)}%
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                      <Link href={`/stock/${stock.symbol.toLowerCase()}`}>
+                        <button className="px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-200 glass-morphism border border-white/10 hover:border-blue-500/50 hover:bg-blue-500/10">
+                          Trade
+                        </button>
+                      </Link>
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
           </div>
         </div>
 
+        {/* Recent Activity */}
         <div className="card">
           <div className="card-body">
-            <h3 className="text-lg font-bold mb-4 flex items-center gap-2" style={{ color: 'var(--text-primary)' }}>
-              <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: 'var(--gradient-secondary)' }}>
-                <svg className="w-4 h-4" style={{ color: 'var(--text-primary)' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
-                </svg>
-              </div>
-              Additional Metrics
-            </h3>
-            <div className="space-y-4">
-              <div className="glass-morphism p-4 rounded-lg">
-                <div className="flex justify-between items-center mb-2">
-                  <span className="text-sm" style={{ color: 'var(--text-secondary)' }}>Invested Capital</span>
-                  <span className="text-lg font-bold" style={{ color: 'var(--text-primary)' }}>${totalInvested.toFixed(2)}</span>
-                </div>
-              </div>
-              <div className="glass-morphism p-4 rounded-lg">
-                <div className="flex justify-between items-center mb-2">
-                  <span className="text-sm" style={{ color: 'var(--text-secondary)' }}>Total Positions</span>
-                  <span className="text-lg font-bold" style={{ color: 'var(--text-primary)' }}>{portfolio.length}</span>
-                </div>
-              </div>
-              <div className="glass-morphism p-4 rounded-lg">
-                <div className="flex justify-between items-center mb-2">
-                  <span className="text-sm" style={{ color: 'var(--text-secondary)' }}>Avg Position Size</span>
-                  <span className="text-lg font-bold" style={{ color: 'var(--text-primary)' }}>
-                    ${portfolio.length > 0 ? (totalPortfolioValue / portfolio.length).toFixed(2) : '0.00'}
-                  </span>
-                </div>
-              </div>
-              <div className="glass-morphism p-4 rounded-lg">
-                <div className="flex justify-between items-center mb-2">
-                  <span className="text-sm" style={{ color: 'var(--text-secondary)' }}>Win Rate</span>
-                  <span className="text-lg font-bold text-green-400">68.5%</span>
-                </div>
-              </div>
+            <div className="mb-6">
+              <h2 className="text-2xl font-bold" style={{ color: 'var(--text-primary)' }}>
+                Recent Activity
+              </h2>
+            </div>
+
+            <div className="space-y-3">
+              {recentActivities.map((activity) => {
+                const getActivityIcon = (type: string) => {
+                  switch (type) {
+                    case 'buy':
+                      return { icon: 'BUY', color: 'linear-gradient(135deg, #10B981 0%, #059669 100%)', label: 'Bought' };
+                    case 'sell':
+                      return { icon: 'SELL', color: 'linear-gradient(135deg, #EF4444 0%, #DC2626 100%)', label: 'Sold' };
+                    case 'dividend':
+                      return { icon: 'DIV', color: 'linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%)', label: 'Dividend' };
+                    case 'watchlist':
+                      return { icon: 'WL', color: 'linear-gradient(135deg, #F59E0B 0%, #D97706 100%)', label: 'Added to Watchlist' };
+                    case 'price_alert':
+                      return { icon: 'ALT', color: 'linear-gradient(135deg, #3B82F6 0%, #2563EB 100%)', label: 'Price Alert' };
+                    default:
+                      return { icon: 'ACT', color: 'linear-gradient(135deg, #6B7280 0%, #4B5563 100%)', label: 'Activity' };
+                  }
+                };
+
+                const activityInfo = getActivityIcon(activity.type);
+
+                return (
+                  <div key={activity.id} className="glass-morphism p-4 rounded-xl hover:bg-white/5 transition-all duration-200 border border-white/5 hover:border-blue-500/20">
+                    <div className="flex items-center gap-4">
+                      <div className="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0" style={{ background: activityInfo.color }}>
+                        <span className="text-xs font-bold text-white">{activityInfo.icon}</span>
+                      </div>
+
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 mb-1">
+                          <span className="font-semibold" style={{ color: 'var(--text-primary)' }}>{activityInfo.label}</span>
+                          {activity.symbol && (
+                            <Link href={`/stock/${activity.symbol?.toLowerCase()}`}>
+                              <span className="font-bold text-blue-400 hover:text-blue-300 transition-colors">
+                                ${activity.symbol}
+                              </span>
+                            </Link>
+                          )}
+                        </div>
+
+                        <div className="flex items-center gap-3 text-sm" style={{ color: 'var(--text-secondary)' }}>
+                          {activity.type === 'buy' || activity.type === 'sell' ? (
+                            <>
+                              <span>{activity.shares} shares @ ${activity.price.toFixed(2)}</span>
+                              <span className="text-xs px-2 py-0.5 rounded-full glass-morphism">
+                                ${activity.value.toFixed(2)}
+                              </span>
+                            </>
+                          ) : activity.type === 'dividend' ? (
+                            <span className="text-green-400 font-semibold">+${activity.amount.toFixed(2)}</span>
+                          ) : activity.type === 'price_alert' ? (
+                            <span>Target: ${activity.targetPrice.toFixed(2)}</span>
+                          ) : null}
+                        </div>
+                      </div>
+
+                      <div className="text-right flex-shrink-0">
+                        <span className="text-xs" style={{ color: 'var(--text-tertiary)' }}>{activity.time}</span>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           </div>
         </div>
@@ -1008,203 +1209,11 @@ export default function OverviewDashboard() {
         </div>
       )}
 
-      {/* 6. Market Movers & Recent Activity - Side by Side */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
-        {/* Market Movers */}
-        <div className="card">
-          <div className="card-body">
-            <h2 className="text-2xl font-bold flex items-center gap-3 mb-6" style={{ color: 'var(--text-primary)' }}>
-              <div className="w-9 h-9 rounded-lg flex items-center justify-center" style={{ background: 'var(--gradient-secondary)' }}>
-                <svg className="w-5 h-5" style={{ color: 'var(--text-primary)' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
-                </svg>
-              </div>
-              Market Movers
-            </h2>
-
-            {/* Tabs */}
-            <div className="flex gap-2 mb-4">
-              <button
-                onClick={() => setSelectedMoverTab('gainers')}
-                className={`flex-1 px-4 py-2.5 rounded-lg text-sm font-semibold transition-all duration-200 ${
-                  selectedMoverTab === 'gainers'
-                    ? 'bg-gradient-to-r from-green-500 to-emerald-600 text-white shadow-lg shadow-green-500/30'
-                    : 'glass-morphism border border-white/10 hover:border-green-500/30'
-                }`}
-              >
-                <span className="flex items-center justify-center gap-2">
-                  Gainers
-                </span>
-              </button>
-              <button
-                onClick={() => setSelectedMoverTab('losers')}
-                className={`flex-1 px-4 py-2.5 rounded-lg text-sm font-semibold transition-all duration-200 ${
-                  selectedMoverTab === 'losers'
-                    ? 'bg-gradient-to-r from-red-500 to-rose-600 text-white shadow-lg shadow-red-500/30'
-                    : 'glass-morphism border border-white/10 hover:border-red-500/30'
-                }`}
-              >
-                <span className="flex items-center justify-center gap-2">
-                  Losers
-                </span>
-              </button>
-              <button
-                onClick={() => setSelectedMoverTab('mostActive')}
-                className={`flex-1 px-4 py-2.5 rounded-lg text-sm font-semibold transition-all duration-200 ${
-                  selectedMoverTab === 'mostActive'
-                    ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg shadow-blue-500/30'
-                    : 'glass-morphism border border-white/10 hover:border-blue-500/30'
-                }`}
-              >
-                <span className="flex items-center justify-center gap-2">
-                  Most Active
-                </span>
-              </button>
-            </div>
-
-            {/* Stock List */}
-            <div className="space-y-2.5">
-              {marketMovers[selectedMoverTab].map((stock, index) => (
-                <div key={stock.symbol} className="glass-morphism p-4 rounded-xl hover:bg-white/5 transition-all duration-200 cursor-pointer border border-white/5 hover:border-blue-500/30">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3 flex-1">
-                      <div className="w-8 h-8 rounded-lg flex items-center justify-center text-sm font-bold" style={{
-                        background: selectedMoverTab === 'gainers'
-                          ? 'linear-gradient(135deg, #10B981 0%, #059669 100%)'
-                          : selectedMoverTab === 'losers'
-                          ? 'linear-gradient(135deg, #EF4444 0%, #DC2626 100%)'
-                          : 'linear-gradient(135deg, #3B82F6 0%, #8B5CF6 100%)'
-                      }}>
-                        {index + 1}
-                      </div>
-                      <div className="flex-1">
-                        <Link href={`/stock/${stock.symbol.toLowerCase()}`}>
-                          <div className="flex items-center gap-2 mb-0.5">
-                            <span className="text-base font-bold hover:text-blue-400 transition-colors" style={{ color: 'var(--text-primary)' }}>
-                              {stock.symbol}
-                            </span>
-                            <span className="text-xs" style={{ color: 'var(--text-tertiary)' }}>{stock.name}</span>
-                          </div>
-                        </Link>
-                        <div className="flex items-center gap-3">
-                          <span className="text-sm font-semibold" style={{ color: 'var(--text-secondary)' }}>
-                            ${stock.price.toFixed(2)}
-                          </span>
-                          <span className={`text-sm font-bold ${stock.change >= 0 ? 'text-green-400' : 'text-red-400'}`}>
-                            {stock.change >= 0 ? '+' : ''}{stock.changePercent.toFixed(2)}%
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                    <Link href={`/stock/${stock.symbol.toLowerCase()}`}>
-                      <button className="px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-200 glass-morphism border border-white/10 hover:border-blue-500/50 hover:bg-blue-500/10">
-                        Trade
-                      </button>
-                    </Link>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        {/* Recent Activity Feed */}
-        <div className="card">
-        <div className="card-body">
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-bold flex items-center gap-3" style={{ color: 'var(--text-primary)' }}>
-              <div className="w-9 h-9 rounded-lg flex items-center justify-center" style={{ background: 'var(--gradient-accent)' }}>
-                <svg className="w-5 h-5" style={{ color: 'var(--text-primary)' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-              </div>
-              Recent Activity
-            </h2>
-            <Link href="/portfolio">
-              <button className="px-3 py-1.5 rounded-lg text-sm font-medium transition-all duration-200 glass-morphism border border-white/10 hover:border-blue-500/50">
-                View All
-              </button>
-            </Link>
-          </div>
-
-          <div className="space-y-3">
-            {recentActivities.map((activity) => {
-              const getActivityIcon = (type: string) => {
-                switch (type) {
-                  case 'buy':
-                    return { icon: 'BUY', color: 'linear-gradient(135deg, #10B981 0%, #059669 100%)', label: 'Bought' };
-                  case 'sell':
-                    return { icon: 'SELL', color: 'linear-gradient(135deg, #EF4444 0%, #DC2626 100%)', label: 'Sold' };
-                  case 'dividend':
-                    return { icon: 'DIV', color: 'linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%)', label: 'Dividend' };
-                  case 'watchlist':
-                    return { icon: 'WL', color: 'linear-gradient(135deg, #F59E0B 0%, #D97706 100%)', label: 'Added to Watchlist' };
-                  case 'price_alert':
-                    return { icon: 'ALT', color: 'linear-gradient(135deg, #3B82F6 0%, #2563EB 100%)', label: 'Price Alert' };
-                  default:
-                    return { icon: 'ACT', color: 'linear-gradient(135deg, #6B7280 0%, #4B5563 100%)', label: 'Activity' };
-                }
-              };
-
-              const activityInfo = getActivityIcon(activity.type);
-
-              return (
-                <div key={activity.id} className="glass-morphism p-4 rounded-xl hover:bg-white/5 transition-all duration-200 border border-white/5 hover:border-blue-500/20">
-                  <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0" style={{ background: activityInfo.color }}>
-                      <span className="text-xs font-bold text-white">{activityInfo.icon}</span>
-                    </div>
-
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 mb-1">
-                        <span className="font-semibold" style={{ color: 'var(--text-primary)' }}>{activityInfo.label}</span>
-                        {activity.symbol && (
-                          <Link href={`/stock/${activity.symbol?.toLowerCase()}`}>
-                            <span className="font-bold text-blue-400 hover:text-blue-300 transition-colors">
-                              ${activity.symbol}
-                            </span>
-                          </Link>
-                        )}
-                      </div>
-
-                      <div className="flex items-center gap-3 text-sm" style={{ color: 'var(--text-secondary)' }}>
-                        {activity.type === 'buy' || activity.type === 'sell' ? (
-                          <>
-                            <span>{activity.shares} shares @ ${activity.price.toFixed(2)}</span>
-                            <span className="text-xs px-2 py-0.5 rounded-full glass-morphism">
-                              ${activity.value.toFixed(2)}
-                            </span>
-                          </>
-                        ) : activity.type === 'dividend' ? (
-                          <span className="text-green-400 font-semibold">+${activity.amount.toFixed(2)}</span>
-                        ) : activity.type === 'price_alert' ? (
-                          <span>Target: ${activity.targetPrice.toFixed(2)}</span>
-                        ) : null}
-                      </div>
-                    </div>
-
-                    <div className="text-right flex-shrink-0">
-                      <span className="text-xs" style={{ color: 'var(--text-tertiary)' }}>{activity.time}</span>
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-        </div>
-      </div>
-
-      {/* 7. Market News & Sentiment Section */}
+      {/* 6. Market News & Sentiment Section */}
       <div className="card mb-12">
         <div className="card-body">
           <div className="flex items-center justify-between mb-8">
-            <h2 className="text-3xl font-bold flex items-center gap-4" style={{ color: 'var(--text-primary)' }}>
-              <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: 'var(--gradient-accent)' }}>
-                <svg className="w-5 h-5" style={{ color: 'var(--text-primary)' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
-                </svg>
-              </div>
+            <h2 className="text-3xl font-bold" style={{ color: 'var(--text-primary)' }}>
               Market News & Sentiment
             </h2>
 
@@ -1360,148 +1369,6 @@ export default function OverviewDashboard() {
                   </div>
                 </div>
               </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* 8. Market Overview & Your Watchlist - Side by Side */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        {/* Market Overview Table */}
-        <div className="card">
-          <div className="card-body">
-            <h2 className="text-2xl font-bold mb-6 flex items-center gap-3" style={{ color: 'var(--text-primary)' }}>
-              <div className="w-9 h-9 rounded-xl flex items-center justify-center" style={{ background: 'var(--gradient-secondary)' }}>
-                <svg className="w-5 h-5" style={{ color: 'var(--text-primary)' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
-                </svg>
-              </div>
-              Market Overview
-            </h2>
-            <div className="overflow-x-auto">
-              <table className="table w-full">
-                <thead>
-                  <tr>
-                    <th>Symbol</th>
-                    <th>Name</th>
-                    <th className="text-right">Price</th>
-                    <th className="text-right">Change</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {topStocks.map((stock) => (
-                    <tr key={stock.symbol}>
-                      <td>
-                        <Link href={`/stock/${stock.symbol.toLowerCase()}`}>
-                          <span className="font-bold hover:text-blue-400 cursor-pointer transition-colors" style={{ color: 'var(--text-primary)' }}>
-                            {stock.symbol}
-                          </span>
-                        </Link>
-                      </td>
-                      <td style={{ color: 'var(--text-tertiary)' }}>{stock.name}</td>
-                      <td className="text-right font-semibold" style={{ color: 'var(--text-primary)' }}>${stock.price.toFixed(2)}</td>
-                      <td className={`text-right ${stock.change >= 0 ? 'status-positive' : 'status-negative'}`}>
-                        {stock.change >= 0 ? '+' : ''}{stock.change.toFixed(2)} ({stock.changePercent.toFixed(2)}%)
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-
-        {/* Copy Trading Promotional Section */}
-        <div className="card relative overflow-hidden">
-          {/* Animated background gradient */}
-          <div className="absolute inset-0 opacity-10">
-            <div className="absolute inset-0 bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500 transition-opacity duration-1000"></div>
-          </div>
-
-          <div className="card-body relative z-10">
-            <div className="flex flex-col items-center text-center py-8">
-              {/* Icon */}
-              <div className="w-20 h-20 rounded-2xl flex items-center justify-center mb-6 relative" style={{ background: 'var(--gradient-primary)' }}>
-                <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-blue-500 to-purple-600 transition-opacity duration-1000 opacity-50"></div>
-                <svg className="w-10 h-10 relative z-10" style={{ color: 'var(--text-primary)' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                </svg>
-              </div>
-
-              {/* Headline */}
-              <h2 className="text-3xl font-bold mb-3 text-gradient">
-                Try Copy Trading
-              </h2>
-
-              {/* Subheading */}
-              <p className="text-lg mb-6 max-w-md" style={{ color: 'var(--text-secondary)' }}>
-                Follow expert traders and automatically copy their winning strategies
-              </p>
-
-              {/* Stats/Features */}
-              <div className="grid grid-cols-3 gap-6 mb-8 w-full max-w-lg">
-                <div className="glass-morphism rounded-xl p-4">
-                  <div className="text-3xl font-bold text-green-400 mb-1">500+</div>
-                  <div className="text-xs" style={{ color: 'var(--text-tertiary)' }}>Expert Traders</div>
-                </div>
-                <div className="glass-morphism rounded-xl p-4">
-                  <div className="text-3xl font-bold text-blue-400 mb-1">78%</div>
-                  <div className="text-xs" style={{ color: 'var(--text-tertiary)' }}>Avg Win Rate</div>
-                </div>
-                <div className="glass-morphism rounded-xl p-4">
-                  <div className="text-3xl font-bold text-purple-400 mb-1">24/7</div>
-                  <div className="text-xs" style={{ color: 'var(--text-tertiary)' }}>Auto Trading</div>
-                </div>
-              </div>
-
-              {/* Features List */}
-              <div className="space-y-3 mb-8 text-left w-full max-w-md">
-                <div className="flex items-center gap-3">
-                  <div className="w-6 h-6 rounded-full bg-green-500/20 flex items-center justify-center flex-shrink-0">
-                    <svg className="w-4 h-4 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                    </svg>
-                  </div>
-                  <span className="text-sm" style={{ color: 'var(--text-secondary)' }}>
-                    Copy trades from verified expert traders
-                  </span>
-                </div>
-                <div className="flex items-center gap-3">
-                  <div className="w-6 h-6 rounded-full bg-green-500/20 flex items-center justify-center flex-shrink-0">
-                    <svg className="w-4 h-4 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                    </svg>
-                  </div>
-                  <span className="text-sm" style={{ color: 'var(--text-secondary)' }}>
-                    Set your own risk controls and limits
-                  </span>
-                </div>
-                <div className="flex items-center gap-3">
-                  <div className="w-6 h-6 rounded-full bg-green-500/20 flex items-center justify-center flex-shrink-0">
-                    <svg className="w-4 h-4 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                    </svg>
-                  </div>
-                  <span className="text-sm" style={{ color: 'var(--text-secondary)' }}>
-                    Stop or pause copying anytime
-                  </span>
-                </div>
-              </div>
-
-              {/* CTA Button */}
-              <Link href="/copy-trading" className="w-full max-w-sm">
-                <button className="w-full px-8 py-4 rounded-xl text-base font-bold transition-all duration-300 bg-gradient-to-r from-blue-500 via-purple-600 to-pink-500 hover:from-blue-600 hover:via-purple-700 hover:to-pink-600 text-white shadow-lg hover:shadow-2xl transform hover:scale-105 hover:-translate-y-1 flex items-center justify-center gap-2">
-                  <span>Explore Copy Trading</span>
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                  </svg>
-                </button>
-              </Link>
-
-              {/* Small disclaimer */}
-              <p className="text-xs mt-4" style={{ color: 'var(--text-muted)' }}>
-                Copy trading involves risk. Past performance does not guarantee future results.
-              </p>
             </div>
           </div>
         </div>

@@ -91,7 +91,7 @@ export default function MarketPage() {
   ];
 
   return (
-    <div className="min-h-screen pt-12 pb-8 px-6" style={{ background: 'var(--gradient-background)' }}>
+    <div className="min-h-screen pt-12 pb-8 px-6 trading-background">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="mb-6">

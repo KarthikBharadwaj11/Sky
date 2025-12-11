@@ -55,13 +55,13 @@ export default function LearnPage() {
     {
       id: 3,
       front: {
-        title: "Market Cap",
-        icon: <DollarSign className="w-12 h-12" />,
+        title: "Technical Indicators",
+        icon: <BarChart3 className="w-12 h-12" />,
         color: "from-purple-500 to-pink-500"
       },
       back: {
-        content: "Market Capitalization = Share Price × Number of Outstanding Shares. It shows the total value of all company shares.",
-        example: "Apple at $180/share with 15.7B shares = $2.8 Trillion market cap!"
+        content: "Popular indicators include Moving Averages (smooth price trends), RSI (overbought/oversold levels), MACD (momentum changes), and Bollinger Bands (volatility).",
+        example: "When price crosses above the 50-day moving average, it's often seen as a bullish signal!"
       }
     },
     {
@@ -162,16 +162,10 @@ export default function LearnPage() {
   };
 
   return (
-    <div className="min-h-screen pt-28 pb-16">
+    <div className="min-h-screen pt-48 pb-16">
       <div className="container mx-auto px-4">
         {/* Hero Section */}
         <div className="max-w-6xl mx-auto text-center mb-16">
-          <div className="flex justify-center mb-6">
-            <div className="w-20 h-20 rounded-2xl flex items-center justify-center transition-opacity duration-1000" style={{ background: 'var(--gradient-primary)' }}>
-              <Brain className="w-10 h-10" style={{ color: 'var(--text-primary)' }} />
-            </div>
-          </div>
-          
           <h1 className="text-5xl md:text-7xl font-bold gradient-shift leading-tight mb-6">
             Learn Trading the Fun Way! 🚀
           </h1>
@@ -209,26 +203,26 @@ export default function LearnPage() {
             {flashcards.map((card) => (
               <div
                 key={card.id}
-                className="h-64"
+                className="h-64 cursor-pointer"
+                onClick={() => setFlippedCard(flippedCard === card.id ? null : card.id)}
               >
-                {/* Commented out flip container - showing static front side */}
-                {/* <div className="card-flip-inner"> */}
-                  {/* Front of card - now static */}
-                  <div className={`bg-gradient-to-br ${card.front.color} glow-effect hover:scale-105 transition-all duration-300 text-center h-full rounded-20 flex flex-col justify-center items-center p-6`}>
+                {flippedCard !== card.id ? (
+                  /* Front of card */
+                  <div className={`w-full h-full bg-gradient-to-br ${card.front.color} rounded-2xl flex flex-col justify-center items-center p-6 transition-opacity duration-300`}>
                     <div className="text-white mb-4">
                       {card.front.icon}
                     </div>
                     <h3 className="text-xl font-bold text-white mb-4">{card.front.title}</h3>
                     <div className="mt-auto flex items-center gap-2 text-white/80 text-sm">
-                      {/* <RotateCcw className="w-4 h-4" /> */}
-                      {/* Click to flip */}
+                      <RotateCcw className="w-4 h-4" />
+                      Click to flip
                     </div>
                   </div>
-
-                  {/* Back of card - commented out */}
-                  {/* <div className="card-flip-back card hover:scale-105 transition-all duration-300">
-                    <div className="h-full flex flex-col justify-center text-center">
-                      <p className="mb-4 leading-relaxed text-lg" style={{ color: 'var(--text-secondary)' }}>
+                ) : (
+                  /* Back of card */
+                  <div className="w-full h-full card rounded-2xl transition-opacity duration-300">
+                    <div className="h-full flex flex-col justify-center text-center p-6">
+                      <p className="mb-4 leading-relaxed text-base" style={{ color: 'var(--text-secondary)' }}>
                         {card.back.content}
                       </p>
                       <div className="glass-morphism p-4 rounded-lg mt-4">
@@ -236,9 +230,13 @@ export default function LearnPage() {
                           💡 Example: {card.back.example}
                         </p>
                       </div>
+                      <div className="mt-4 flex items-center justify-center gap-2 text-sm" style={{ color: 'var(--text-tertiary)' }}>
+                        <RotateCcw className="w-4 h-4" />
+                        Click to flip back
+                      </div>
                     </div>
-                  </div> */}
-                {/* </div> */}
+                  </div>
+                )}
               </div>
             ))}
           </div>
@@ -326,49 +324,6 @@ export default function LearnPage() {
                 </div>
               </div>
             ))}
-          </div>
-        </section>
-
-        {/* Interactive Chart Types */}
-        <section className="mb-20">
-          <div className="text-center mb-12">
-            <h2 className="text-4xl font-bold text-gradient mb-4">📊 Chart Types Made Simple</h2>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-            <div className="card hover:scale-105 transition-all duration-300">
-              <div className="card-body p-8 text-center">
-                <LineChart className="w-16 h-16 mx-auto mb-4" style={{ color: 'var(--text-accent)' }} />
-                <h3 className="text-2xl font-bold mb-4" style={{ color: 'var(--text-primary)' }}>
-                  📈 Line Charts
-                </h3>
-                <p className="mb-4" style={{ color: 'var(--text-secondary)' }}>
-                  Shows price movement over time. Simple and clean for spotting trends.
-                </p>
-                <div className="glass-morphism p-4 rounded-lg">
-                  <p className="text-sm" style={{ color: 'var(--text-accent)' }}>
-                    💡 Best for: Long-term trend analysis
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <div className="card hover:scale-105 transition-all duration-300">
-              <div className="card-body p-8 text-center">
-                <BarChart3 className="w-16 h-16 mx-auto mb-4" style={{ color: 'var(--text-accent)' }} />
-                <h3 className="text-2xl font-bold mb-4" style={{ color: 'var(--text-primary)' }}>
-                  🕯️ Candlestick Charts
-                </h3>
-                <p className="mb-4" style={{ color: 'var(--text-secondary)' }}>
-                  Shows open, high, low, and close prices. Like X-ray vision for stocks!
-                </p>
-                <div className="glass-morphism p-4 rounded-lg">
-                  <p className="text-sm" style={{ color: 'var(--text-accent)' }}>
-                    💡 Best for: Detailed technical analysis
-                  </p>
-                </div>
-              </div>
-            </div>
           </div>
         </section>
 
@@ -470,250 +425,31 @@ export default function LearnPage() {
                   <h3 className="text-2xl font-bold mb-4" style={{ color: 'var(--text-primary)' }}>
                     📊 Trading Simulator
                   </h3>
-                  <p className="mb-6" style={{ color: 'var(--text-secondary)' }}>
+                  <p className="mb-8" style={{ color: 'var(--text-secondary)' }}>
                     Practice trading with $100,000 virtual money using real market data
                   </p>
-                  <div className="flex items-center justify-center gap-4 mb-6">
-                    <div className="text-center">
-                      <div className="text-2xl font-bold" style={{ color: 'var(--text-accent)' }}>$100K</div>
-                      <div className="text-sm" style={{ color: 'var(--text-muted)' }}>Virtual Cash</div>
-                    </div>
-                    <div className="text-center">
-                      <div className="text-2xl font-bold" style={{ color: 'var(--success)' }}>Real Data</div>
-                      <div className="text-sm" style={{ color: 'var(--text-muted)' }}>Live Prices</div>
-                    </div>
-                  </div>
                   <button className="btn-primary w-full">Start Trading Practice</button>
                 </div>
               </div>
             </div>
 
-            {/* Quiz Challenge */}
+            {/* Copy Trade Simulator */}
             <div className="card hover:scale-105 transition-all duration-300">
               <div className="card-body p-8">
                 <div className="text-center">
-                  <div className="w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6" style={{ background: 'var(--gradient-secondary)' }}>
-                    <Brain className="w-10 h-10" style={{ color: 'var(--text-primary)' }} />
+                  <div className="w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6" style={{ background: 'linear-gradient(135deg, #06b6d4, #0891b2)' }}>
+                    <Users className="w-10 h-10" style={{ color: 'var(--text-primary)' }} />
                   </div>
                   <h3 className="text-2xl font-bold mb-4" style={{ color: 'var(--text-primary)' }}>
-                    🧠 Knowledge Quiz
+                    👥 Copy Trade Simulator
                   </h3>
-                  <p className="mb-6" style={{ color: 'var(--text-secondary)' }}>
-                    Test your knowledge and earn badges as you progress through levels
+                  <p className="mb-8" style={{ color: 'var(--text-secondary)' }}>
+                    Watch an interactive visual guide showing exactly how copy trading works
                   </p>
-                  <div className="flex items-center justify-center gap-4 mb-6">
-                    <div className="text-center">
-                      <div className="text-2xl font-bold" style={{ color: 'var(--text-accent)' }}>50+</div>
-                      <div className="text-sm" style={{ color: 'var(--text-muted)' }}>Questions</div>
-                    </div>
-                    <div className="text-center">
-                      <div className="text-2xl font-bold" style={{ color: 'var(--success)' }}>12</div>
-                      <div className="text-sm" style={{ color: 'var(--text-muted)' }}>Badges</div>
-                    </div>
-                  </div>
-                  <button className="btn-primary w-full">Start Quiz Challenge</button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Learning Paths */}
-        <section className="mb-20">
-          <div className="text-center mb-12">
-            <h2 className="text-4xl font-bold text-gradient mb-4">🗺️ Learning Paths</h2>
-            <p className="text-lg" style={{ color: 'var(--text-secondary)' }}>
-              Structured learning journeys from beginner to expert
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-            {/* Beginner Path */}
-            <div className="card hover:scale-105 transition-all duration-300">
-              <div className="card-body p-6">
-                <div className="flex items-center mb-4">
-                  <div className="w-12 h-12 rounded-lg flex items-center justify-center mr-4" style={{ background: 'linear-gradient(135deg, #22c55e, #16a34a)' }}>
-                    <BookOpen className="w-6 h-6 text-white" />
-                  </div>
-                  <div>
-                    <h3 className="text-xl font-bold" style={{ color: 'var(--text-primary)' }}>Beginner Path</h3>
-                    <p className="text-sm" style={{ color: 'var(--text-muted)' }}>8 lessons • 2 hours</p>
-                  </div>
-                </div>
-                
-                <div className="space-y-3 mb-6">
-                  <div className="flex items-center">
-                    <div className="w-2 h-2 rounded-full bg-green-500 mr-3"></div>
-                    <span className="text-sm" style={{ color: 'var(--text-secondary)' }}>What are stocks?</span>
-                  </div>
-                  <div className="flex items-center">
-                    <div className="w-2 h-2 rounded-full bg-green-500 mr-3"></div>
-                    <span className="text-sm" style={{ color: 'var(--text-secondary)' }}>How to read prices</span>
-                  </div>
-                  <div className="flex items-center">
-                    <div className="w-2 h-2 rounded-full bg-gray-400 mr-3"></div>
-                    <span className="text-sm" style={{ color: 'var(--text-muted)' }}>Making your first trade</span>
-                  </div>
-                  <div className="flex items-center">
-                    <div className="w-2 h-2 rounded-full bg-gray-400 mr-3"></div>
-                    <span className="text-sm" style={{ color: 'var(--text-muted)' }}>Risk management basics</span>
-                  </div>
-                </div>
-
-                <div className="mb-4">
-                  <div className="flex justify-between text-sm mb-2">
-                    <span style={{ color: 'var(--text-secondary)' }}>Progress</span>
-                    <span style={{ color: 'var(--text-accent)' }}>25%</span>
-                  </div>
-                  <div className="w-full bg-gray-700 rounded-full h-2">
-                    <div className="bg-gradient-to-r from-green-500 to-emerald-500 h-2 rounded-full" style={{ width: '25%' }}></div>
-                  </div>
-                </div>
-
-                <button className="btn-secondary w-full">Continue Learning</button>
-              </div>
-            </div>
-
-            {/* Intermediate Path */}
-            <div className="card hover:scale-105 transition-all duration-300">
-              <div className="card-body p-6">
-                <div className="flex items-center mb-4">
-                  <div className="w-12 h-12 rounded-lg flex items-center justify-center mr-4" style={{ background: 'linear-gradient(135deg, #3b82f6, #1d4ed8)' }}>
-                    <BarChart3 className="w-6 h-6 text-white" />
-                  </div>
-                  <div>
-                    <h3 className="text-xl font-bold" style={{ color: 'var(--text-primary)' }}>Intermediate Path</h3>
-                    <p className="text-sm" style={{ color: 'var(--text-muted)' }}>12 lessons • 4 hours</p>
-                  </div>
-                </div>
-                
-                <div className="space-y-3 mb-6">
-                  <div className="flex items-center">
-                    <div className="w-2 h-2 rounded-full bg-gray-400 mr-3"></div>
-                    <span className="text-sm" style={{ color: 'var(--text-muted)' }}>Technical analysis</span>
-                  </div>
-                  <div className="flex items-center">
-                    <div className="w-2 h-2 rounded-full bg-gray-400 mr-3"></div>
-                    <span className="text-sm" style={{ color: 'var(--text-muted)' }}>Chart patterns</span>
-                  </div>
-                  <div className="flex items-center">
-                    <div className="w-2 h-2 rounded-full bg-gray-400 mr-3"></div>
-                    <span className="text-sm" style={{ color: 'var(--text-muted)' }}>Fundamental analysis</span>
-                  </div>
-                  <div className="flex items-center">
-                    <div className="w-2 h-2 rounded-full bg-gray-400 mr-3"></div>
-                    <span className="text-sm" style={{ color: 'var(--text-muted)' }}>Portfolio strategies</span>
-                  </div>
-                </div>
-
-                <div className="mb-4">
-                  <div className="flex justify-between text-sm mb-2">
-                    <span style={{ color: 'var(--text-secondary)' }}>Progress</span>
-                    <span style={{ color: 'var(--text-accent)' }}>0%</span>
-                  </div>
-                  <div className="w-full bg-gray-700 rounded-full h-2">
-                    <div className="bg-gradient-to-r from-blue-500 to-blue-600 h-2 rounded-full" style={{ width: '0%' }}></div>
-                  </div>
-                </div>
-
-                <button className="btn-secondary w-full opacity-50 cursor-not-allowed" disabled>
-                  Complete Beginner First
-                </button>
-              </div>
-            </div>
-
-            {/* Expert Path */}
-            <div className="card hover:scale-105 transition-all duration-300">
-              <div className="card-body p-6">
-                <div className="flex items-center mb-4">
-                  <div className="w-12 h-12 rounded-lg flex items-center justify-center mr-4" style={{ background: 'linear-gradient(135deg, #8b5cf6, #7c3aed)' }}>
-                    <Award className="w-6 h-6 text-white" />
-                  </div>
-                  <div>
-                    <h3 className="text-xl font-bold" style={{ color: 'var(--text-primary)' }}>Expert Path</h3>
-                    <p className="text-sm" style={{ color: 'var(--text-muted)' }}>15 lessons • 6 hours</p>
-                  </div>
-                </div>
-                
-                <div className="space-y-3 mb-6">
-                  <div className="flex items-center">
-                    <div className="w-2 h-2 rounded-full bg-gray-400 mr-3"></div>
-                    <span className="text-sm" style={{ color: 'var(--text-muted)' }}>Advanced strategies</span>
-                  </div>
-                  <div className="flex items-center">
-                    <div className="w-2 h-2 rounded-full bg-gray-400 mr-3"></div>
-                    <span className="text-sm" style={{ color: 'var(--text-muted)' }}>Options trading</span>
-                  </div>
-                  <div className="flex items-center">
-                    <div className="w-2 h-2 rounded-full bg-gray-400 mr-3"></div>
-                    <span className="text-sm" style={{ color: 'var(--text-muted)' }}>Risk management</span>
-                  </div>
-                  <div className="flex items-center">
-                    <div className="w-2 h-2 rounded-full bg-gray-400 mr-3"></div>
-                    <span className="text-sm" style={{ color: 'var(--text-muted)' }}>Professional tactics</span>
-                  </div>
-                </div>
-
-                <div className="mb-4">
-                  <div className="flex justify-between text-sm mb-2">
-                    <span style={{ color: 'var(--text-secondary)' }}>Progress</span>
-                    <span style={{ color: 'var(--text-accent)' }}>0%</span>
-                  </div>
-                  <div className="w-full bg-gray-700 rounded-full h-2">
-                    <div className="bg-gradient-to-r from-purple-500 to-purple-600 h-2 rounded-full" style={{ width: '0%' }}></div>
-                  </div>
-                </div>
-
-                <button className="btn-secondary w-full opacity-50 cursor-not-allowed" disabled>
-                  Complete Previous Paths
-                </button>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Achievement System */}
-        <section className="mb-20">
-          <div className="text-center mb-12">
-            <h2 className="text-4xl font-bold text-gradient mb-4">🏆 Your Achievements</h2>
-            <p className="text-lg" style={{ color: 'var(--text-secondary)' }}>
-              Unlock badges and track your learning progress
-            </p>
-          </div>
-
-          <div className="card max-w-4xl mx-auto">
-            <div className="card-body p-8">
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-                <div className="text-center">
-                  <div className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-3" style={{ background: 'linear-gradient(135deg, #fbbf24, #f59e0b)' }}>
-                    <Star className="w-8 h-8 text-white" />
-                  </div>
-                  <h4 className="font-bold" style={{ color: 'var(--text-primary)' }}>First Steps</h4>
-                  <p className="text-sm" style={{ color: 'var(--text-muted)' }}>Complete your first lesson</p>
-                </div>
-
-                <div className="text-center opacity-50">
-                  <div className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-3 bg-gray-600">
-                    <Brain className="w-8 h-8 text-gray-400" />
-                  </div>
-                  <h4 className="font-bold" style={{ color: 'var(--text-secondary)' }}>Knowledge Seeker</h4>
-                  <p className="text-sm" style={{ color: 'var(--text-muted)' }}>Complete 5 lessons</p>
-                </div>
-
-                <div className="text-center opacity-50">
-                  <div className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-3 bg-gray-600">
-                    <Target className="w-8 h-8 text-gray-400" />
-                  </div>
-                  <h4 className="font-bold" style={{ color: 'var(--text-secondary)' }}>Quiz Master</h4>
-                  <p className="text-sm" style={{ color: 'var(--text-muted)' }}>Score 90% on a quiz</p>
-                </div>
-
-                <div className="text-center opacity-50">
-                  <div className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-3 bg-gray-600">
-                    <Award className="w-8 h-8 text-gray-400" />
-                  </div>
-                  <h4 className="font-bold" style={{ color: 'var(--text-secondary)' }}>Trading Pro</h4>
-                  <p className="text-sm" style={{ color: 'var(--text-muted)' }}>Complete expert path</p>
+                  <button className="btn-primary w-full flex items-center justify-center gap-2">
+                    <Play className="w-5 h-5" />
+                    Watch How It Works
+                  </button>
                 </div>
               </div>
             </div>

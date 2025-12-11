@@ -49,7 +49,7 @@ export default function Register() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center py-32 px-4 sm:px-6 lg:px-8" style={{ background: 'var(--gradient-background)' }}>
+    <div className="min-h-screen flex items-center justify-center pt-48 pb-32 px-4 sm:px-6 lg:px-8 trading-background">
       <div className="max-w-6xl w-full">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
           {/* Left Side - App Branding */}
@@ -85,15 +85,15 @@ export default function Register() {
             {/* Stats Preview */}
             <div className="grid grid-cols-3 gap-4 mt-8">
               <div className="text-center">
-                <div className="text-3xl font-bold text-gradient">10K+</div>
+                <div className="text-3xl font-bold text-gradient">X</div>
                 <div className="text-sm" style={{ color: 'var(--text-muted)' }}>Active Users</div>
               </div>
               <div className="text-center">
-                <div className="text-3xl font-bold text-gradient">$2.5B+</div>
+                <div className="text-3xl font-bold text-gradient">X</div>
                 <div className="text-sm" style={{ color: 'var(--text-muted)' }}>Volume</div>
               </div>
               <div className="text-center">
-                <div className="text-3xl font-bold text-gradient">99.9%</div>
+                <div className="text-3xl font-bold text-gradient">X</div>
                 <div className="text-sm" style={{ color: 'var(--text-muted)' }}>Uptime</div>
               </div>
             </div>

@@ -66,22 +66,22 @@ export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
         root.style.setProperty('--text-secondary', '#2c2925');
         root.style.setProperty('--text-tertiary', '#4a453f');
         root.style.setProperty('--text-muted', '#6b6460');
-        root.style.setProperty('--text-accent', '#4f46e5');
-        
-        root.style.setProperty('--primary-blue', '#4f46e5');
-        root.style.setProperty('--primary-purple', '#7c3aed');
-        root.style.setProperty('--accent-violet', '#8b5cf6');
+        root.style.setProperty('--text-accent', '#6b7dba');
+
+        root.style.setProperty('--primary-blue', '#6b7dba');
+        root.style.setProperty('--primary-purple', '#8576b8');
+        root.style.setProperty('--accent-violet', '#9d85c7');
         root.style.setProperty('--success', '#059669');
         root.style.setProperty('--error', '#dc2626');
         root.style.setProperty('--warning', '#d97706');
-        
+
         root.style.setProperty('--border-primary', '#e7e3e1');
         root.style.setProperty('--border-secondary', '#d1cbc7');
         root.style.setProperty('--glass-border', '#e7e3e1');
-        
-        root.style.setProperty('--gradient-primary', 'linear-gradient(135deg, #4f46e5, #7c3aed)');
-        root.style.setProperty('--gradient-secondary', 'linear-gradient(135deg, #7c3aed, #8b5cf6)');
-        root.style.setProperty('--gradient-accent', 'linear-gradient(135deg, #6366f1, #8b5cf6)');
+
+        root.style.setProperty('--gradient-primary', 'linear-gradient(135deg, #6b7dba, #8576b8)');
+        root.style.setProperty('--gradient-secondary', 'linear-gradient(135deg, #8576b8, #9d85c7)');
+        root.style.setProperty('--gradient-accent', 'linear-gradient(135deg, #7581bd, #8576b8)');
         
         root.style.setProperty('--shadow-sm', '0 1px 2px 0 rgba(79, 70, 229, 0.05)');
         root.style.setProperty('--shadow-md', '0 4px 6px -1px rgba(79, 70, 229, 0.08)');
@@ -106,37 +106,37 @@ export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
         root.style.setProperty('--background-tertiary', '#1e293b');
         root.style.setProperty('--background-card', '#0f172a');
         root.style.setProperty('--background-modal', '#0f172a');
-        
+
         root.style.setProperty('--text-primary', '#f8fafc');
         root.style.setProperty('--text-secondary', '#e2e8f0');
         root.style.setProperty('--text-tertiary', '#cbd5e1');
         root.style.setProperty('--text-muted', '#94a3b8');
         root.style.setProperty('--text-accent', '#60a5fa');
-        
+
         root.style.setProperty('--primary-blue', '#3b82f6');
         root.style.setProperty('--primary-purple', '#8b5cf6');
         root.style.setProperty('--accent-violet', '#a855f7');
         root.style.setProperty('--success', '#22c55e');
         root.style.setProperty('--error', '#ef4444');
         root.style.setProperty('--warning', '#f59e0b');
-        
+
         root.style.setProperty('--border-primary', '#334155');
         root.style.setProperty('--border-secondary', '#475569');
         root.style.setProperty('--glass-border', '#334155');
-        
+
         root.style.setProperty('--gradient-primary', 'linear-gradient(135deg, #3b82f6, #8b5cf6)');
         root.style.setProperty('--gradient-secondary', 'linear-gradient(135deg, #8b5cf6, #a855f7)');
         root.style.setProperty('--gradient-accent', 'linear-gradient(135deg, #6366f1, #8b5cf6)');
-        
+
         root.style.setProperty('--shadow-sm', '0 1px 2px 0 rgba(0, 0, 0, 0.3)');
         root.style.setProperty('--shadow-md', '0 4px 6px -1px rgba(0, 0, 0, 0.4)');
         root.style.setProperty('--shadow-lg', '0 10px 15px -3px rgba(0, 0, 0, 0.5)');
         root.style.setProperty('--shadow-xl', '0 20px 25px -5px rgba(0, 0, 0, 0.6)');
-        
+
         // Glass morphism for dark mode - more opaque for better contrast
         root.style.setProperty('--glass-bg', 'rgba(15, 23, 42, 0.9)');
         root.style.setProperty('--glass-border-color', 'rgba(148, 163, 184, 0.2)');
-        
+
         // Chart colors for dark mode
         root.style.setProperty('--chart-grid', '#475569');
         root.style.setProperty('--chart-axis', '#94a3b8');

@@ -164,7 +164,7 @@ export default function SearchStocks() {
   }
 
   return (
-    <div className="min-h-screen" style={{ background: 'var(--gradient-background)' }}>
+    <div className="min-h-screen trading-background">
       <div className="container mx-auto p-6 pt-28">
         {/* Header */}
         <div className="text-center mb-8">

@@ -18,7 +18,7 @@ export default function AccountFunding({
   onSkip,
   showSkipOption = true
 }: AccountFundingProps) {
-  const [selectedMethod, setSelectedMethod] = useState<'wire' | 'ach' | 'check' | 'rollover' | null>(null);
+  const [selectedMethod, setSelectedMethod] = useState<'wire' | 'ach' | 'check' | 'rollover' | 'debit' | null>(null);
   const [copiedWireInfo, setCopiedWireInfo] = useState(false);
   const [achFormData, setAchFormData] = useState({
     routingNumber: '',
@@ -32,8 +32,25 @@ export default function AccountFunding({
     accountType: '',
     estimatedValue: ''
   });
+  const [debitCardData, setDebitCardData] = useState({
+    cardNumber: '',
+    expirationDate: '',
+    cvv: '',
+    cardholderName: '',
+    billingZip: '',
+    amount: ''
+  });
 
   const fundingMethods = [
+    {
+      id: 'debit' as const,
+      icon: CreditCard,
+      title: 'Debit Card',
+      description: 'Instant funding with your debit card',
+      time: 'Instant',
+      fee: 'Free',
+      color: 'from-blue-500 to-purple-500'
+    },
     {
       id: 'wire' as const,
       icon: Building2,
@@ -98,6 +115,131 @@ Reference: ${wireInfo.reference}
 
   const renderMethodDetails = () => {
     switch (selectedMethod) {
+      case 'debit':
+        return (
+          <div className="space-y-6">
+            <div className="glass-morphism p-6 rounded-xl">
+              <h3 className="text-lg font-bold mb-4" style={{ color: 'var(--text-primary)' }}>
+                Debit Card Information
+              </h3>
+
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-semibold mb-2" style={{ color: 'var(--text-secondary)' }}>
+                    Cardholder Name
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="Name on card"
+                    value={debitCardData.cardholderName}
+                    onChange={(e) => setDebitCardData({...debitCardData, cardholderName: e.target.value})}
+                    className="form-input"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-semibold mb-2" style={{ color: 'var(--text-secondary)' }}>
+                    Card Number
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="1234 5678 9012 3456"
+                    maxLength={19}
+                    value={debitCardData.cardNumber}
+                    onChange={(e) => {
+                      const value = e.target.value.replace(/\D/g, '');
+                      const formatted = value.match(/.{1,4}/g)?.join(' ') || value;
+                      setDebitCardData({...debitCardData, cardNumber: formatted});
+                    }}
+                    className="form-input"
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-semibold mb-2" style={{ color: 'var(--text-secondary)' }}>
+                      Expiration Date
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="MM/YY"
+                      maxLength={5}
+                      value={debitCardData.expirationDate}
+                      onChange={(e) => {
+                        let value = e.target.value.replace(/\D/g, '');
+                        if (value.length >= 2) {
+                          value = value.slice(0, 2) + '/' + value.slice(2, 4);
+                        }
+                        setDebitCardData({...debitCardData, expirationDate: value});
+                      }}
+                      className="form-input"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-semibold mb-2" style={{ color: 'var(--text-secondary)' }}>
+                      CVV
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="123"
+                      maxLength={4}
+                      value={debitCardData.cvv}
+                      onChange={(e) => setDebitCardData({...debitCardData, cvv: e.target.value.replace(/\D/g, '')})}
+                      className="form-input"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-semibold mb-2" style={{ color: 'var(--text-secondary)' }}>
+                    Billing ZIP Code
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="12345"
+                    maxLength={5}
+                    value={debitCardData.billingZip}
+                    onChange={(e) => setDebitCardData({...debitCardData, billingZip: e.target.value.replace(/\D/g, '')})}
+                    className="form-input"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-semibold mb-2" style={{ color: 'var(--text-secondary)' }}>
+                    Amount to Deposit (USD)
+                  </label>
+                  <input
+                    type="number"
+                    placeholder="0.00"
+                    min="0"
+                    value={debitCardData.amount}
+                    onChange={(e) => setDebitCardData({...debitCardData, amount: e.target.value})}
+                    className="form-input"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div className="flex items-start gap-3 p-4 rounded-xl" style={{ background: 'rgba(59, 130, 246, 0.1)' }}>
+              <AlertCircle className="w-5 h-5 text-blue-400 flex-shrink-0 mt-0.5" />
+              <div>
+                <p className="text-sm font-semibold text-blue-400 mb-1">Instant Funding</p>
+                <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>
+                  Funds will be available immediately in your account. We only accept debit cards, not credit cards.
+                </p>
+              </div>
+            </div>
+
+            <button
+              onClick={() => onComplete('debit', debitCardData)}
+              disabled={!debitCardData.cardNumber || !debitCardData.expirationDate || !debitCardData.cvv || !debitCardData.cardholderName || !debitCardData.billingZip || !debitCardData.amount}
+              className="w-full btn-primary py-4 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              Add Funds
+            </button>
+          </div>
+        );
+
       case 'wire':
         return (
           <div className="space-y-6">

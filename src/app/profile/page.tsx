@@ -1069,7 +1069,7 @@ export default function Profile() {
                       </div>
                       <button
                         onClick={() => setSelectedAccount(account)}
-                        className="w-full px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-300 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white"
+                        className="mx-auto px-4 py-1.5 rounded-lg text-xs font-semibold transition-all duration-300 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white"
                       >
                         View Details
                       </button>

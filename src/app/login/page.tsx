@@ -23,7 +23,7 @@ export default function Login() {
     if (success) {
       router.push('/overview');
     } else {
-      setError('Invalid username or password');
+      setError('Invalid email or password');
     }
     
     setLoading(false);
@@ -35,7 +35,7 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center py-32 px-4 sm:px-6 lg:px-8" style={{ background: 'var(--gradient-background)' }}>
+    <div className="min-h-screen flex items-center justify-center pt-48 pb-32 px-4 sm:px-6 lg:px-8 trading-background">
       <div className="max-w-4xl w-full">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           {/* Left Side - App Branding */}
@@ -135,7 +135,7 @@ export default function Login() {
               <div className="space-y-4">
                 <div>
                   <label htmlFor="username" className="block text-base font-semibold mb-2" style={{ color: 'var(--text-secondary)' }}>
-                    Username
+                    Email ID
                   </label>
                   <input
                     id="username"
@@ -143,7 +143,7 @@ export default function Login() {
                     type="text"
                     required
                     className="form-input"
-                    placeholder="Enter your username"
+                    placeholder="Enter your email"
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
                   />

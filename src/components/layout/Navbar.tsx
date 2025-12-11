@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { useAuth } from '../auth/AuthProvider';
 import { useTheme } from '../theme/ThemeProvider';
 import { Sun, Moon } from 'lucide-react';
@@ -22,9 +23,16 @@ export default function Navbar() {
           <div className="flex items-center flex-shrink-0">
             <Link
               href="/landing"
-              className="text-2xl font-bold text-gradient hover:scale-105 transition-all duration-300 gradient-shift"
+              className="hover:scale-105 transition-all duration-300"
             >
-              Sky
+              <Image
+                src="/logo.png"
+                alt="Logo"
+                width={120}
+                height={40}
+                className="object-contain"
+                priority
+              />
             </Link>
           </div>
 
@@ -144,7 +152,7 @@ export default function Navbar() {
                 )}
               </button>
               
-              <Link href="/register" className="btn-primary px-6 py-3 font-semibold">
+              <Link href="/register" className="btn-primary px-6 py-3 font-semibold whitespace-nowrap">
                 Get Started
               </Link>
             </div>

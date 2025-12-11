@@ -112,6 +112,7 @@ export default function StockChart({ symbol, timeRange }: StockChartProps) {
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [showVolumeChart, setShowVolumeChart] = useState(true);
   const [activeAnalyticsTab, setActiveAnalyticsTab] = useState<'overview' | 'technical' | 'volume' | 'volatility'>('overview');
+  const [mainTab, setMainTab] = useState<'analytics' | 'compare'>('analytics');
 
   // Auto-determine chart type based on timeframe
   const chartType = ['1m', '5m', '15m', '30m', '1h', '4h'].includes(timeRange) ? 'candlestick' : 'line';
@@ -518,12 +519,11 @@ export default function StockChart({ symbol, timeRange }: StockChartProps) {
               <button
                 key={tab.key}
                 onClick={() => setActiveAnalyticsTab(tab.key as any)}
-                className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-300 ${
+                className={`px-3 py-2 rounded-lg text-sm font-medium transition-all duration-300 ${
                   activeAnalyticsTab === tab.key ? 'btn-primary' : 'glass-morphism hover:bg-white/10'
                 }`}
               >
-                <tab.icon className="w-4 h-4" />
-                <span className="hidden sm:inline">{tab.label}</span>
+                {tab.label}
               </button>
             ))}
           </div>
@@ -654,8 +654,48 @@ export default function StockChart({ symbol, timeRange }: StockChartProps) {
       {/* Normal view */}
       {!isFullscreen && (
         <div className="w-full space-y-4">
+          {/* Main Tabs */}
+          <div className="flex gap-2 mb-4">
+            <button
+              onClick={() => setMainTab('analytics')}
+              className={`px-6 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 ${
+                mainTab === 'analytics'
+                  ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg'
+                  : 'bg-gray-800 text-gray-300 hover:bg-gray-700 hover:text-white'
+              }`}
+            >
+              Advanced Analytics
+            </button>
+            <button
+              onClick={() => setMainTab('compare')}
+              className={`px-6 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 ${
+                mainTab === 'compare'
+                  ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg'
+                  : 'bg-gray-800 text-gray-300 hover:bg-gray-700 hover:text-white'
+              }`}
+            >
+              Compare Stocks
+            </button>
+          </div>
+
           {/* Analytics Panel */}
-          {renderAnalyticsPanel()}
+          {mainTab === 'analytics' && renderAnalyticsPanel()}
+
+          {/* Compare Stocks Panel */}
+          {mainTab === 'compare' && (
+            <div className="card">
+              <div className="card-body">
+                <h4 className="text-lg font-semibold mb-4" style={{ color: 'var(--text-primary)' }}>
+                  Compare Stocks
+                </h4>
+                <div className="text-center py-12">
+                  <p style={{ color: 'var(--text-secondary)' }}>
+                    Compare {symbol} with other stocks
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* Main Chart */}
           <div className="card">
@@ -668,21 +708,13 @@ export default function StockChart({ symbol, timeRange }: StockChartProps) {
                 
                 <div className="flex flex-wrap gap-2">
                   <button
-                    onClick={toggleFullscreen}
-                    className="glass-morphism p-2 rounded-lg hover:bg-white/10 transition-all duration-300"
-                    title="Chart Fullscreen"
-                  >
-                    <Maximize className="w-4 h-4" />
-                  </button>
-
-                  <button
                     onClick={() => setShowVolumeChart(!showVolumeChart)}
-                    className={`p-2 rounded-lg transition-all duration-300 ${
+                    className={`px-3 py-2 rounded-lg transition-all duration-300 text-xs font-medium ${
                       showVolumeChart ? 'btn-primary' : 'glass-morphism hover:bg-white/10'
                     }`}
                     title="Toggle Volume"
                   >
-                    <Volume2 className="w-4 h-4" />
+                    VOL
                   </button>
 
                   <button

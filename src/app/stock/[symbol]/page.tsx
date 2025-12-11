@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { TrendingUp, TrendingDown, ArrowLeft, Clock, BarChart3, DollarSign, Activity, TrendingUpIcon, Users, Sparkles } from 'lucide-react';
 import TradingModal from '@/components/trading/TradingModal';
 import StockChart from '@/components/charts/StockChart';
+import OptionsChain from '@/components/options/OptionsChain';
 
 interface StockData {
   symbol: string;
@@ -35,6 +36,7 @@ export default function StockPage({ params }: { params: Promise<{ symbol: string
   const [showTradeModal, setShowTradeModal] = useState(false);
   const [timeRange, setTimeRange] = useState<'1D' | '1W' | '1M' | '3M' | '6M' | '1Y' | 'ALL'>('1D');
   const [symbol, setSymbol] = useState<string>('');
+  const [tradingMode, setTradingMode] = useState<'stock' | 'options'>('stock');
 
   // Order form state
   const [orderType, setOrderType] = useState<'market' | 'limit' | 'stop' | 'stop-limit'>('market');
@@ -226,7 +228,7 @@ export default function StockPage({ params }: { params: Promise<{ symbol: string
   };
 
   return (
-    <div className="min-h-screen" style={{ background: 'var(--gradient-background)' }}>
+    <div className="min-h-screen trading-background">
       <div className="max-w-[95%] mx-auto px-6 py-6 pt-24">
         {/* Header - Back Arrow and Title */}
         <div className="absolute top-24 left-6">
@@ -240,12 +242,42 @@ export default function StockPage({ params }: { params: Promise<{ symbol: string
         </div>
 
         <div className="mb-6">
-          <h1 className="text-3xl font-bold text-gradient mb-1">
-            {stockData.symbol}
-          </h1>
-          <p className="text-base" style={{ color: 'var(--text-secondary)' }}>
-            {stockData.name}
-          </p>
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-3xl font-bold text-gradient mb-1">
+                {stockData.symbol}
+              </h1>
+              <p className="text-base" style={{ color: 'var(--text-secondary)' }}>
+                {stockData.name}
+              </p>
+            </div>
+
+            {/* Stock/Options Toggle */}
+            <div className="flex items-center gap-2 bg-black/30 p-1.5 rounded-xl">
+              <button
+                onClick={() => setTradingMode('stock')}
+                className={`px-6 py-2.5 rounded-lg text-sm font-semibold transition-all duration-200 ${
+                  tradingMode === 'stock'
+                    ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg'
+                    : 'hover:bg-white/5'
+                }`}
+                style={tradingMode !== 'stock' ? { color: 'var(--text-tertiary)' } : {}}
+              >
+                Stock
+              </button>
+              <button
+                onClick={() => setTradingMode('options')}
+                className={`px-6 py-2.5 rounded-lg text-sm font-semibold transition-all duration-200 ${
+                  tradingMode === 'options'
+                    ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg'
+                    : 'hover:bg-white/5'
+                }`}
+                style={tradingMode !== 'options' ? { color: 'var(--text-tertiary)' } : {}}
+              >
+                Options
+              </button>
+            </div>
+          </div>
         </div>
 
         {/* Main Layout - Chart Left/Center, Stats Right */}
@@ -323,6 +355,13 @@ export default function StockPage({ params }: { params: Promise<{ symbol: string
                 </div>
               </div>
             </div>
+
+            {/* Options Chain - Shows when Options mode is selected */}
+            {tradingMode === 'options' && (
+              <div className="mt-6">
+                <OptionsChain symbol={symbol} />
+              </div>
+            )}
 
             {/* Additional Statistics - Bottom */}
             <div className="grid grid-cols-3 gap-4 mt-6">
@@ -685,44 +724,6 @@ export default function StockPage({ params }: { params: Promise<{ symbol: string
                       <div className="h-2 rounded-full bg-green-400" style={{ width: '100%' }} />
                     </div>
                   </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Quick Actions */}
-            <div className="card">
-              <div className="card-header">
-                <h3 className="text-lg font-bold text-gradient">Quick Actions</h3>
-              </div>
-              <div className="card-body">
-                <div className="space-y-2">
-                  <button className="w-full glass-morphism p-3 rounded-lg text-left hover:scale-105 transition-all duration-300 group">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        <DollarSign className="w-4 h-4" style={{ color: 'var(--primary-blue)' }} />
-                        <span className="text-sm" style={{ color: 'var(--text-secondary)' }}>Set Price Alert</span>
-                      </div>
-                      <span className="text-xs opacity-0 group-hover:opacity-100 transition-opacity" style={{ color: 'var(--text-tertiary)' }}>→</span>
-                    </div>
-                  </button>
-                  <button className="w-full glass-morphism p-3 rounded-lg text-left hover:scale-105 transition-all duration-300 group">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        <Activity className="w-4 h-4" style={{ color: 'var(--primary-blue)' }} />
-                        <span className="text-sm" style={{ color: 'var(--text-secondary)' }}>View Analysis</span>
-                      </div>
-                      <span className="text-xs opacity-0 group-hover:opacity-100 transition-opacity" style={{ color: 'var(--text-tertiary)' }}>→</span>
-                    </div>
-                  </button>
-                  <button className="w-full glass-morphism p-3 rounded-lg text-left hover:scale-105 transition-all duration-300 group">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        <Users className="w-4 h-4" style={{ color: 'var(--primary-blue)' }} />
-                        <span className="text-sm" style={{ color: 'var(--text-secondary)' }}>Compare Stocks</span>
-                      </div>
-                      <span className="text-xs opacity-0 group-hover:opacity-100 transition-opacity" style={{ color: 'var(--text-tertiary)' }}>→</span>
-                    </div>
-                  </button>
                 </div>
               </div>
             </div>

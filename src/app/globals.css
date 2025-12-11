@@ -14,18 +14,18 @@
   --text-tertiary: #a1a1aa;
   --text-muted: #71717a;
   --text-accent: #60a5fa;
-  
+
   --primary-blue: #3b82f6;
   --primary-purple: #8b5cf6;
   --accent-violet: #a855f7;
   --success: #10b981;
   --error: #ef4444;
   --warning: #f59e0b;
-  
+
   --border-primary: #27272a;
   --border-secondary: #3f3f46;
   --glass-border: #27272a;
-  
+
   --gradient-primary: linear-gradient(135deg, #3b82f6, #8b5cf6);
   --gradient-secondary: linear-gradient(135deg, #8b5cf6, #a855f7);
   --gradient-accent: linear-gradient(135deg, #6366f1, #8b5cf6);
@@ -752,8 +752,21 @@ h3 {
 
 /* Enhanced stock card hover effects */
 .glass-morphism:hover {
-  box-shadow: 
+  box-shadow:
     0 20px 40px rgba(0, 0, 0, 0.1),
     0 0 30px color-mix(in srgb, var(--primary-blue) 15%, transparent);
   backdrop-filter: blur(20px);
+}
+
+/* Trading-themed background - clean slate */
+[data-theme="dark"] .trading-background {
+  background: #020617;
+  position: relative;
+  overflow: hidden;
+}
+
+[data-theme="light"] .trading-background {
+  background: #fefcfb;
+  position: relative;
+  overflow: hidden;
 }
