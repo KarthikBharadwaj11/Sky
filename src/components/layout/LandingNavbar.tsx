@@ -3,12 +3,10 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { useState } from 'react';
-import { Menu, X, Sun, Moon } from 'lucide-react';
-import { useTheme } from '../theme/ThemeProvider';
+import { Menu, X } from 'lucide-react';
 
 export default function LandingNavbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const { theme, toggleTheme } = useTheme();
 
   return (
     <div className="fixed top-6 left-1/2 transform -translate-x-1/2 z-50 w-full max-w-6xl px-4">
@@ -62,26 +60,9 @@ export default function LandingNavbar() {
               >
                 Support
               </Link>
-              
-              <button
-                onClick={toggleTheme}
-                className="p-2 rounded-lg transition-all duration-300 hover:scale-110"
-                style={{ 
-                  background: 'var(--glass-bg)', 
-                  border: '1px solid var(--glass-border-color)',
-                  color: 'var(--text-primary)'
-                }}
-                title={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
-              >
-                {theme === 'light' ? (
-                  <Moon className="w-5 h-5" />
-                ) : (
-                  <Sun className="w-5 h-5" />
-                )}
-              </button>
-              
+
               <div className="h-6 w-px bg-white/20"></div>
-              
+
               <Link 
                 href="/login" 
                 className="nav-link"
@@ -150,31 +131,6 @@ export default function LandingNavbar() {
                 </Link>
                 
                 <div className="h-px bg-white/10 my-2"></div>
-                
-                <button
-                  onClick={() => {
-                    toggleTheme();
-                    setIsMenuOpen(false);
-                  }}
-                  className="flex items-center justify-center p-3 rounded-lg transition-all duration-300"
-                  style={{ 
-                    background: 'var(--glass-bg)', 
-                    border: '1px solid var(--glass-border-color)',
-                    color: 'var(--text-primary)'
-                  }}
-                >
-                  {theme === 'light' ? (
-                    <>
-                      <Moon className="w-5 h-5 mr-2" />
-                      Dark Mode
-                    </>
-                  ) : (
-                    <>
-                      <Sun className="w-5 h-5 mr-2" />
-                      Light Mode
-                    </>
-                  )}
-                </button>
                 
                 <Link 
                   href="/login" 

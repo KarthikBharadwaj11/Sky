@@ -413,6 +413,74 @@ export default function StockPage({ params }: { params: Promise<{ symbol: string
                 </div>
               </div>
             </div>
+
+            {/* News Section */}
+            <div className="card mt-6">
+              <div className="card-body p-6">
+                <h3 className="text-lg font-bold mb-4" style={{ color: 'var(--text-primary)' }}>
+                  Latest News for {symbol}
+                </h3>
+
+                <div className="space-y-4">
+                  {/* News Item 1 */}
+                  <div className="p-4 rounded-lg hover:bg-white/5 transition-all cursor-pointer" style={{ background: 'var(--glass-bg)' }}>
+                    <div className="flex items-start gap-3">
+                      <div className="flex-1">
+                        <h4 className="font-semibold mb-2" style={{ color: 'var(--text-primary)' }}>
+                          {symbol} Reports Strong Quarterly Earnings
+                        </h4>
+                        <p className="text-sm mb-2" style={{ color: 'var(--text-secondary)' }}>
+                          Company exceeds analyst expectations with revenue growth of 15% year-over-year, driven by increased demand and operational efficiency.
+                        </p>
+                        <div className="flex items-center gap-3 text-xs" style={{ color: 'var(--text-tertiary)' }}>
+                          <span>MarketWatch</span>
+                          <span>•</span>
+                          <span>2 hours ago</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* News Item 2 */}
+                  <div className="p-4 rounded-lg hover:bg-white/5 transition-all cursor-pointer" style={{ background: 'var(--glass-bg)' }}>
+                    <div className="flex items-start gap-3">
+                      <div className="flex-1">
+                        <h4 className="font-semibold mb-2" style={{ color: 'var(--text-primary)' }}>
+                          Analysts Upgrade {symbol} Price Target
+                        </h4>
+                        <p className="text-sm mb-2" style={{ color: 'var(--text-secondary)' }}>
+                          Major investment banks raise price targets citing strong market position and positive outlook for the sector.
+                        </p>
+                        <div className="flex items-center gap-3 text-xs" style={{ color: 'var(--text-tertiary)' }}>
+                          <span>Bloomberg</span>
+                          <span>•</span>
+                          <span>5 hours ago</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* News Item 3 */}
+                  <div className="p-4 rounded-lg hover:bg-white/5 transition-all cursor-pointer" style={{ background: 'var(--glass-bg)' }}>
+                    <div className="flex items-start gap-3">
+                      <div className="flex-1">
+                        <h4 className="font-semibold mb-2" style={{ color: 'var(--text-primary)' }}>
+                          {symbol} Announces New Product Launch
+                        </h4>
+                        <p className="text-sm mb-2" style={{ color: 'var(--text-secondary)' }}>
+                          The company unveils innovative product line expected to capture significant market share in the coming quarters.
+                        </p>
+                        <div className="flex items-center gap-3 text-xs" style={{ color: 'var(--text-tertiary)' }}>
+                          <span>CNBC</span>
+                          <span>•</span>
+                          <span>1 day ago</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
 
           {/* Right Sidebar - Key Statistics */}

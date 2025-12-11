@@ -265,17 +265,6 @@ export default function AboutPage() {
                     </span>
                   </button>
                 </div>
-
-                <div className="flex justify-center gap-6">
-                  <div className="text-center">
-                    <MapPin className="w-6 h-6 mx-auto mb-2" style={{ color: 'var(--text-accent)' }} />
-                    <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>San Francisco, CA</p>
-                  </div>
-                  <div className="text-center">
-                    <Mail className="w-6 h-6 mx-auto mb-2" style={{ color: 'var(--text-accent)' }} />
-                    <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>hello@sky-trading.com</p>
-                  </div>
-                </div>
               </div>
             </div>
           </div>

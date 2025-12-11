@@ -446,7 +446,7 @@ export default function SocialFeed() {
   }
 
   return (
-    <div className="min-h-screen" style={{ background: 'var(--background-primary)' }}>
+    <div className="min-h-screen trading-background">
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-7xl mx-auto">
 

@@ -6,6 +6,7 @@ import { User, CreditCard, Settings, Gift, Share2, MapPin, Mail, Briefcase, Doll
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recharts';
 import TransferFundsModal from '@/components/accounts/TransferFundsModal';
 import AddPaymentMethodModal, { BankAccountData, CardData } from '@/components/accounts/AddPaymentMethodModal';
+import SubscriptionStep from '@/components/onboarding/SubscriptionStep';
 
 interface Beneficiary {
   id: string;
@@ -80,6 +81,7 @@ export default function Profile() {
   const [accountSection, setAccountSection] = useState<'brokerage' | 'bank'>('brokerage');
   const [bankAccounts, setBankAccounts] = useState<BankAccount[]>([]);
   const [showAddBankAccountModal, setShowAddBankAccountModal] = useState(false);
+  const [showSubscriptionModal, setShowSubscriptionModal] = useState(false);
 
   // Shared Portfolio state
   const [showAddMemberModal, setShowAddMemberModal] = useState(false);
@@ -2077,6 +2079,32 @@ export default function Profile() {
         </div>
       </div>
 
+      {/* Subscription */}
+      <div className="glass-morphism rounded-xl overflow-hidden">
+        <div className="px-6 py-4 border-b border-white/10">
+          <h3 className="text-base font-bold flex items-center gap-2" style={{ color: 'var(--text-primary)' }}>
+            <Star className="w-5 h-5" style={{ color: 'var(--warning)' }} />
+            Subscription
+          </h3>
+        </div>
+        <div className="p-6">
+          <div className="mb-4">
+            <p className="font-medium mb-1" style={{ color: 'var(--text-primary)' }}>Current Plan</p>
+            <p className="text-2xl font-bold text-gradient mb-2">Free</p>
+            <p className="text-sm" style={{ color: 'var(--text-tertiary)' }}>
+              Upgrade to unlock premium features
+            </p>
+          </div>
+
+          <button
+            onClick={() => setShowSubscriptionModal(true)}
+            className="w-full px-6 py-3 rounded-xl font-semibold transition-all duration-300 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white"
+          >
+            Upgrade to Premium
+          </button>
+        </div>
+      </div>
+
       {/* Danger Zone */}
       <div className="glass-morphism rounded-xl overflow-hidden border border-red-500/30">
         <div className="px-6 py-4 border-b border-red-500/30">
@@ -2826,7 +2854,7 @@ export default function Profile() {
   };
 
   return (
-    <div className="flex min-h-screen" style={{ background: 'var(--background-primary)' }}>
+    <div className="flex min-h-screen trading-background">
       {/* Left Sidebar - Fixed */}
       <div className="w-80 glass-morphism border-r border-white/10 p-5 fixed left-0 top-0 h-screen overflow-y-auto">
         <div className="mb-6">
@@ -2923,6 +2951,31 @@ export default function Profile() {
           alert(`${data.type === 'bank' ? 'Bank account' : 'Card'} added successfully!`);
         }}
       />
+
+      {/* Subscription Modal */}
+      {showSubscriptionModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ background: 'rgba(0, 0, 0, 0.8)' }}>
+          <div className="card max-w-6xl w-full relative max-h-[90vh] overflow-y-auto">
+            <button
+              onClick={() => setShowSubscriptionModal(false)}
+              className="absolute top-4 right-4 p-2 rounded-lg hover:bg-white/10 transition-colors z-10"
+            >
+              <X className="w-5 h-5" style={{ color: 'var(--text-secondary)' }} />
+            </button>
+
+            <div className="card-body p-6">
+              <SubscriptionStep
+                onComplete={(data) => {
+                  console.log('Subscription selected:', data);
+                  setShowSubscriptionModal(false);
+                  alert(`Successfully subscribed to ${data.subscription} plan!`);
+                }}
+                onSkip={() => setShowSubscriptionModal(false)}
+              />
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

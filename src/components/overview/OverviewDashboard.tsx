@@ -473,7 +473,7 @@ export default function OverviewDashboard() {
   };
 
   return (
-    <div className="flex min-h-screen" style={{ background: 'var(--background-primary)' }}>
+    <div className="flex min-h-screen">
       {/* Left Sidebar - Watchlist - Fixed */}
       <div className="w-[20.8rem] glass-morphism border-r border-white/10 fixed left-0 top-[120px] h-[calc(100vh-120px)] overflow-hidden z-20 flex flex-col">
         {/* Watchlist Header */}

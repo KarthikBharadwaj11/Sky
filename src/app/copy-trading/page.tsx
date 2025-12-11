@@ -647,7 +647,7 @@ export default function CopyTrading() {
   // Show preview/info page when user is not logged in
   if (!user) {
     return (
-      <div className="min-h-screen" style={{ background: 'var(--background-primary)' }}>
+      <div className="min-h-screen trading-background">
         <section className="pt-48 pb-16">
           <div className="container mx-auto px-4">
             <div className="max-w-6xl mx-auto text-center mb-16">
@@ -2257,7 +2257,7 @@ export default function CopyTrading() {
   );
 
   return (
-    <div className="flex min-h-screen" style={{ background: 'var(--background-primary)' }}>
+    <div className="flex min-h-screen trading-background">
       {/* Left Sidebar - Fixed */}
       <div className="w-80 glass-morphism border-r border-white/10 p-5 fixed left-0 top-20 overflow-y-auto" style={{ height: 'calc(100vh - 5rem)' }}>
         <div className="mb-8">

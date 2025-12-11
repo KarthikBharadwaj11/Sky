@@ -3,12 +3,9 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { useAuth } from '../auth/AuthProvider';
-import { useTheme } from '../theme/ThemeProvider';
-import { Sun, Moon } from 'lucide-react';
 
 export default function Navbar() {
   const { user, logout } = useAuth();
-  const { theme, toggleTheme } = useTheme();
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 border-b-2 navbar-bg" style={{ 
@@ -91,23 +88,6 @@ export default function Navbar() {
                 </Link>
 
                 <button
-                  onClick={toggleTheme}
-                  className="p-3 rounded-xl transition-all duration-300 hover:scale-110"
-                  style={{
-                    background: 'var(--glass-bg)',
-                    border: '2px solid var(--glass-border-color)',
-                    color: 'var(--text-primary)'
-                  }}
-                  title={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
-                >
-                  {theme === 'light' ? (
-                    <Moon className="w-5 h-5" />
-                  ) : (
-                    <Sun className="w-5 h-5" />
-                  )}
-                </button>
-
-                <button
                   onClick={logout}
                   className="bg-gradient-to-r from-red-500 to-red-600 text-white px-6 py-3 rounded-xl hover:from-red-600 hover:to-red-700 transition-all duration-300 font-semibold shadow-lg hover:shadow-xl transform hover:scale-105 hover:-translate-y-1"
                 >
@@ -134,24 +114,7 @@ export default function Navbar() {
                   Login
                 </Link>
               </div>
-              
-              <button
-                onClick={toggleTheme}
-                className="p-3 rounded-xl transition-all duration-300 hover:scale-110"
-                style={{
-                  background: 'var(--glass-bg)',
-                  border: '2px solid var(--glass-border-color)',
-                  color: 'var(--text-primary)'
-                }}
-                title={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
-              >
-                {theme === 'light' ? (
-                  <Moon className="w-5 h-5" />
-                ) : (
-                  <Sun className="w-5 h-5" />
-                )}
-              </button>
-              
+
               <Link href="/register" className="btn-primary px-6 py-3 font-semibold whitespace-nowrap">
                 Get Started
               </Link>

@@ -13,6 +13,7 @@ import ComplianceRiskAssessment from '@/components/onboarding/ComplianceRiskAsse
 import AddFamilyMemberPrompt from '@/components/onboarding/AddFamilyMemberPrompt';
 import FamilyMemberDetailsStep from '@/components/onboarding/FamilyMemberDetailsStep';
 import AddAccountPrompt from '@/components/onboarding/AddAccountPrompt';
+import SubscriptionStep from '@/components/onboarding/SubscriptionStep';
 import ProgressStepper from '@/components/onboarding/ProgressStepper';
 import { ChevronLeft } from 'lucide-react';
 
@@ -83,6 +84,7 @@ export default function OnboardingPage() {
     { id: 8, name: 'Family/Advisor Access', shortName: 'Family' },
     { id: 9, name: 'Member Details', shortName: 'Details' },
     { id: 10, name: 'Create Account', shortName: 'Account Setup' },
+    { id: 11, name: 'Choose Plan', shortName: 'Subscription' },
   ];
 
   const handleStepComplete = (stepData: any) => {
@@ -216,6 +218,12 @@ export default function OnboardingPage() {
             <AddAccountPrompt
               data={onboardingData}
               onComplete={handleStepComplete}
+            />
+          )}
+          {currentStep === 11 && (
+            <SubscriptionStep
+              onComplete={handleStepComplete}
+              onSkip={handleComplete}
             />
           )}
         </div>
