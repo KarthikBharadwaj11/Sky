@@ -4,9 +4,10 @@ import { useState } from 'react';
 import OptionsChain from '@/components/options/OptionsChain';
 import { OptionsPosition } from '@/types/options';
 import { TrendingUp, TrendingDown, Search, Calendar, Activity } from 'lucide-react';
+import AccountSwitcher from '@/components/trading/AccountSwitcher';
 
 export default function OptionsPage() {
-  const [selectedSymbol, setSelectedSymbol] = useState<string>('AAPL');
+  const [selectedSymbol, setSelectedSymbol] = useState<string>('NVDA');
   const [searchQuery, setSearchQuery] = useState('');
 
   // Mock active positions
@@ -99,6 +100,11 @@ export default function OptionsPage() {
   return (
     <div className="min-h-screen" style={{ background: 'var(--background)' }}>
       <div className="max-w-[95vw] mx-auto px-6 py-6 space-y-6">
+        {/* Account Switcher */}
+        <div className="flex justify-end mb-4">
+          <AccountSwitcher />
+        </div>
+
         {/* Page Header */}
         <div className="flex items-center justify-between">
           <div>
@@ -118,7 +124,7 @@ export default function OptionsPage() {
             <div className="card-body">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-sm font-medium" style={{ color: 'var(--text-secondary)' }}>
-                  Total Options Value
+                  Total Options Buying Power
                 </span>
                 <Activity className="w-4 h-4" style={{ color: 'var(--text-tertiary)' }} />
               </div>

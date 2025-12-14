@@ -18,7 +18,7 @@ export default function AccountTypeSelection({
     {
       type: 'individual' as const,
       icon: Users,
-      title: 'Individual Brokerage',
+      title: 'Individual Account',
       description: 'Standard investment account for buying stocks, ETFs, and options',
       features: ['No contribution limits', 'Taxable gains', 'Full trading access'],
       color: 'from-blue-500 to-cyan-500'

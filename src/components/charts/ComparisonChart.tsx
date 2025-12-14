@@ -97,6 +97,7 @@ export default function ComparisonChart({
               }
             }}
             filter="url(#lineGlow)"
+            isAnimationActive={false}
           />
           <Line
             type="monotone"
@@ -117,6 +118,7 @@ export default function ComparisonChart({
               }
             }}
             filter="url(#lineGlow)"
+            isAnimationActive={false}
           />
         </LineChart>
       </ResponsiveContainer>

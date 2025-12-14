@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/components/auth/AuthProvider';
 import LineChart from '@/components/charts/LineChart';
+import AccountSwitcher from '@/components/trading/AccountSwitcher';
 import { TrendingUp, Users, Award, Bell, MessageCircle, Share2, TrendingDown, Star, Shield, Target, Calendar, DollarSign, Activity, ExternalLink, UserMinus, Settings, BarChart3, BookOpen, User, TrendingDown as TrendingDownIcon, Copy, Brain, Zap, CheckCircle, PlayCircle, UserCheck, Clock, PieChart, LineChart as LineChartIcon, Heart, Sparkles, Globe, Lock, ArrowRight, ArrowDown } from 'lucide-react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
@@ -38,7 +39,7 @@ interface Expert {
 }
 
 interface CopySettings {
-  maxTradeAmount: number;
+  tradePercentage: number;
   allowBuyOnly: boolean;
   allowSellOnly: boolean;
   stopLossPercentage: number;
@@ -107,7 +108,7 @@ export default function CopyTrading() {
 
   // Default copy settings
   const defaultCopySettings: CopySettings = {
-    maxTradeAmount: 1000,
+    tradePercentage: 50,
     allowBuyOnly: false,
     allowSellOnly: false,
     stopLossPercentage: 5,
@@ -1168,7 +1169,6 @@ export default function CopyTrading() {
                               {expert.name}
                               {expert.isVerified && <Award className="w-4 h-4" style={{ color: 'var(--primary-blue)' }} />}
                             </p>
-                            <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>{expert.username}</p>
                           </div>
                         </div>
                         <span className="status-positive text-xs px-2 py-1">
@@ -1202,25 +1202,10 @@ export default function CopyTrading() {
                       </div>
                     </div>
 
-                    <div className="grid grid-cols-3 gap-2">
+                    <div className="grid grid-cols-2 gap-2">
                       <button
-                        onClick={(e) => {
-                          e.preventDefault();
-                          e.stopPropagation();
-                          openSettingsModal(sub.expertId);
-                        }}
-                        className="btn-secondary py-2 px-2 text-xs flex items-center justify-center gap-1 hover:scale-105 transition-all duration-300"
-                      >
-                        <Settings className="w-4 h-4" />
-                        Settings
-                      </button>
-                      <button
-                        onClick={(e) => {
-                          e.preventDefault();
-                          e.stopPropagation();
-                          window.open(`/social-feed?user=${expert.username}`, '_blank');
-                        }}
-                        className="btn-secondary py-2 px-2 text-xs flex items-center justify-center gap-1 hover:scale-105 transition-all duration-300"
+                        disabled
+                        className="py-2 px-2 text-xs flex items-center justify-center gap-1 opacity-50 cursor-not-allowed glass-morphism rounded-lg"
                       >
                         <MessageCircle className="w-4 h-4" />
                         Feed
@@ -1787,13 +1772,14 @@ export default function CopyTrading() {
                 Comprehensive insights into your copy trading performance
               </p>
             </div>
-            <Link href="/copy-trading-portfolio">
-              <button className="btn-primary px-6 py-3 flex items-center gap-2 hover:scale-105 transition-all duration-300 shadow-lg">
-                <PieChart className="w-5 h-5" />
-                <span>Manage Portfolio</span>
-                <ArrowRight className="w-4 h-4" />
-              </button>
-            </Link>
+            <button
+              disabled
+              className="px-6 py-3 flex items-center gap-2 rounded-lg opacity-50 cursor-not-allowed glass-morphism"
+            >
+              <PieChart className="w-5 h-5" />
+              <span>Manage Portfolio</span>
+              <ArrowRight className="w-4 h-4" />
+            </button>
           </div>
         </div>
       </div>
@@ -2337,6 +2323,11 @@ export default function CopyTrading() {
 
       {/* Main Content */}
       <div className="flex-1 p-5 overflow-y-auto ml-80">
+        {/* Account Switcher */}
+        <div className="flex justify-end mb-4">
+          <AccountSwitcher />
+        </div>
+
         {activeTab === 'dashboard' && renderDashboard()}
         {activeTab === 'portfolio-center' && renderPortfolioCenter()}
         {activeTab === 'your-trading' && renderYourTrading()}
@@ -2433,22 +2424,30 @@ export default function CopyTrading() {
                     </h4>
 
                     <div className="space-y-4">
-                      {/* Max Trade Amount - shown for both modes */}
+                      {/* Trade Percentage - shown for both modes */}
                       <div>
                         <label className="block text-sm font-semibold mb-2" style={{ color: 'var(--text-secondary)' }}>
-                          Max Amount Per Trade ($)
+                          Set Percentage Amount Per Trade
                         </label>
-                        <input
-                          type="number"
-                          min="100"
-                          max={subscriptionAmount}
-                          value={currentSettings.maxTradeAmount}
-                          onChange={(e) => setCurrentSettings({...currentSettings, maxTradeAmount: Math.max(100, parseInt(e.target.value) || 100)})}
-                          disabled={!autoCopyEnabled}
-                          className="form-input"
-                        />
-                        <p className="text-xs mt-1" style={{ color: 'var(--text-tertiary)' }}>
-                          Maximum amount to invest in a single trade
+                        <div className="grid grid-cols-4 gap-2">
+                          {[25, 50, 75, 100].map((percentage) => (
+                            <button
+                              key={percentage}
+                              onClick={() => setCurrentSettings({...currentSettings, tradePercentage: percentage})}
+                              disabled={!autoCopyEnabled}
+                              className={`py-2.5 px-3 rounded-lg font-semibold text-sm transition-all ${
+                                currentSettings.tradePercentage === percentage
+                                  ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white'
+                                  : 'glass-morphism hover:bg-white/10'
+                              } ${!autoCopyEnabled ? 'opacity-50 cursor-not-allowed' : ''}`}
+                              style={currentSettings.tradePercentage !== percentage ? { color: 'var(--text-secondary)' } : {}}
+                            >
+                              {percentage}%
+                            </button>
+                          ))}
+                        </div>
+                        <p className="text-xs mt-2" style={{ color: 'var(--text-tertiary)' }}>
+                          Percentage of expert's trade size to copy
                         </p>
                       </div>
 
@@ -2793,7 +2792,6 @@ export default function CopyTrading() {
                         <div className="text-5xl">{expert.avatar}</div>
                         <div className="flex-1">
                           <h3 className="text-lg font-bold" style={{ color: 'var(--text-primary)' }}>{expert.name}</h3>
-                          <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>@{expert.username}</p>
                         </div>
                         <div className="text-right">
                           <p className="text-xs" style={{ color: 'var(--text-tertiary)' }}>Allocated</p>
@@ -2884,21 +2882,30 @@ export default function CopyTrading() {
                           </h4>
 
                           <div className="space-y-4">
-                            {/* Max Trade Amount */}
+                            {/* Trade Percentage */}
                             <div>
                               <label className="block text-sm font-semibold mb-2" style={{ color: 'var(--text-secondary)' }}>
-                                Max Amount Per Trade ($)
+                                Set Percentage Amount Per Trade
                               </label>
-                              <input
-                                type="number"
-                                min="100"
-                                value={currentSettings.maxTradeAmount}
-                                onChange={(e) => setCurrentSettings({...currentSettings, maxTradeAmount: Math.max(100, parseInt(e.target.value) || 100)})}
-                                disabled={!subscription?.autoCopy}
-                                className="form-input"
-                              />
-                              <p className="text-xs mt-1" style={{ color: 'var(--text-tertiary)' }}>
-                                Maximum amount to invest in a single trade
+                              <div className="grid grid-cols-4 gap-2">
+                                {[25, 50, 75, 100].map((percentage) => (
+                                  <button
+                                    key={percentage}
+                                    onClick={() => setCurrentSettings({...currentSettings, tradePercentage: percentage})}
+                                    disabled={!subscription?.autoCopy}
+                                    className={`py-2.5 px-3 rounded-lg font-semibold text-sm transition-all ${
+                                      currentSettings.tradePercentage === percentage
+                                        ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white'
+                                        : 'glass-morphism hover:bg-white/10'
+                                    } ${!subscription?.autoCopy ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                    style={currentSettings.tradePercentage !== percentage ? { color: 'var(--text-secondary)' } : {}}
+                                  >
+                                    {percentage}%
+                                  </button>
+                                ))}
+                              </div>
+                              <p className="text-xs mt-2" style={{ color: 'var(--text-tertiary)' }}>
+                                Percentage of expert's trade size to copy
                               </p>
                             </div>
 

@@ -36,68 +36,16 @@ export default function SearchStocks() {
 
   useEffect(() => {
     const mockStocks: Stock[] = [
-      // Tech Giants
       { symbol: 'AAPL', name: 'Apple Inc.', price: 175.43, change: 2.15, changePercent: 1.24, volume: 45678900, marketCap: '2.8T', sector: 'Technology' },
+      { symbol: 'TSLA', name: 'Tesla Inc.', price: 248.42, change: -5.23, changePercent: -2.06, volume: 67890123, marketCap: '789B', sector: 'Automotive' },
+      { symbol: 'META', name: 'Meta Platforms Inc.', price: 644.23, change: -2.45, changePercent: -0.38, volume: 45678901, marketCap: '1.5T', sector: 'Technology' },
       { symbol: 'GOOGL', name: 'Alphabet Inc.', price: 138.21, change: -1.32, changePercent: -0.95, volume: 23456789, marketCap: '1.7T', sector: 'Technology' },
+      { symbol: 'NFLX', name: 'Netflix Inc.', price: 95.98, change: -8.12, changePercent: -7.80, volume: 34567891, marketCap: '42B', sector: 'Communication' },
+      { symbol: 'NVDA', name: 'NVIDIA Corp.', price: 180.00, change: -2.85, changePercent: -1.55, volume: 78901234, marketCap: '2.2T', sector: 'Technology' },
       { symbol: 'MSFT', name: 'Microsoft Corp.', price: 378.85, change: 4.12, changePercent: 1.10, volume: 34567890, marketCap: '2.9T', sector: 'Technology' },
-      { symbol: 'META', name: 'Meta Platforms Inc.', price: 312.96, change: -2.45, changePercent: -0.78, volume: 45678901, marketCap: '791B', sector: 'Technology' },
-      { symbol: 'NVDA', name: 'NVIDIA Corp.', price: 875.28, change: 15.67, changePercent: 1.83, volume: 78901234, marketCap: '2.2T', sector: 'Technology' },
-      { symbol: 'NFLX', name: 'Netflix Inc.', price: 445.87, change: -8.12, changePercent: -1.79, volume: 34567891, marketCap: '198B', sector: 'Communication' },
-      { symbol: 'CRM', name: 'Salesforce Inc.', price: 218.54, change: 3.21, changePercent: 1.49, volume: 23456790, marketCap: '214B', sector: 'Technology' },
-
-      // E-commerce & Retail
-      { symbol: 'AMZN', name: 'Amazon.com Inc.', price: 127.74, change: 1.89, changePercent: 1.50, volume: 56789012, marketCap: '1.3T', sector: 'Consumer Discretionary' },
-      { symbol: 'SHOP', name: 'Shopify Inc.', price: 67.89, change: 2.34, changePercent: 3.57, volume: 12345678, marketCap: '84B', sector: 'Technology' },
-      { symbol: 'WMT', name: 'Walmart Inc.', price: 158.92, change: 1.23, changePercent: 0.78, volume: 23456781, marketCap: '434B', sector: 'Consumer Staples' },
-
-      // Automotive
-      { symbol: 'TSLA', name: 'Tesla Inc.', price: 248.42, change: -5.23, changePercent: -2.06, volume: 67890123, marketCap: '789B', sector: 'Consumer Discretionary' },
-      { symbol: 'F', name: 'Ford Motor Co.', price: 12.45, change: 0.34, changePercent: 2.81, volume: 78901235, marketCap: '50B', sector: 'Consumer Discretionary' },
-      { symbol: 'GM', name: 'General Motors Co.', price: 38.76, change: -0.89, changePercent: -2.25, volume: 34567892, marketCap: '56B', sector: 'Consumer Discretionary' },
-
-      // Financial Services
-      { symbol: 'JPM', name: 'JPMorgan Chase & Co.', price: 154.32, change: 2.87, changePercent: 1.89, volume: 45678903, marketCap: '453B', sector: 'Financial Services' },
-      { symbol: 'BAC', name: 'Bank of America Corp.', price: 32.18, change: -0.45, changePercent: -1.38, volume: 56789013, marketCap: '259B', sector: 'Financial Services' },
-      { symbol: 'WFC', name: 'Wells Fargo & Co.', price: 43.91, change: 1.12, changePercent: 2.62, volume: 23456782, marketCap: '162B', sector: 'Financial Services' },
-      { symbol: 'V', name: 'Visa Inc.', price: 267.45, change: 3.21, changePercent: 1.22, volume: 34567893, marketCap: '570B', sector: 'Financial Services' },
-      { symbol: 'MA', name: 'Mastercard Inc.', price: 412.87, change: 4.56, changePercent: 1.12, volume: 12345679, marketCap: '395B', sector: 'Financial Services' },
-
-      // Transportation & Logistics
-      { symbol: 'UBER', name: 'Uber Technologies Inc.', price: 62.31, change: -1.08, changePercent: -1.70, volume: 45678902, marketCap: '129B', sector: 'Technology' },
-      { symbol: 'LYFT', name: 'Lyft Inc.', price: 14.82, change: 0.67, changePercent: 4.73, volume: 23456783, marketCap: '5.2B', sector: 'Technology' },
-      { symbol: 'FDX', name: 'FedEx Corp.', price: 251.34, change: -2.45, changePercent: -0.97, volume: 34567894, marketCap: '65B', sector: 'Industrials' },
-
-      // Healthcare & Pharma
-      { symbol: 'JNJ', name: 'Johnson & Johnson', price: 158.92, change: 1.87, changePercent: 1.19, volume: 56789014, marketCap: '418B', sector: 'Healthcare' },
-      { symbol: 'PFE', name: 'Pfizer Inc.', price: 28.45, change: -0.34, changePercent: -1.18, volume: 78901236, marketCap: '160B', sector: 'Healthcare' },
-      { symbol: 'MRNA', name: 'Moderna Inc.', price: 87.23, change: 2.91, changePercent: 3.45, volume: 23456784, marketCap: '32B', sector: 'Healthcare' },
-
-      // Energy
-      { symbol: 'XOM', name: 'Exxon Mobil Corp.', price: 108.76, change: 3.21, changePercent: 3.04, volume: 34567895, marketCap: '456B', sector: 'Energy' },
-      { symbol: 'CVX', name: 'Chevron Corp.', price: 147.89, change: 2.34, changePercent: 1.61, volume: 45678904, marketCap: '284B', sector: 'Energy' },
-
-      // Aerospace & Defense
-      { symbol: 'BA', name: 'Boeing Co.', price: 198.45, change: -4.23, changePercent: -2.09, volume: 56789015, marketCap: '118B', sector: 'Industrials' },
-      { symbol: 'LMT', name: 'Lockheed Martin Corp.', price: 432.18, change: 1.87, changePercent: 0.43, volume: 12345680, marketCap: '108B', sector: 'Industrials' },
-
-      // Food & Beverage
-      { symbol: 'KO', name: 'Coca-Cola Co.', price: 59.87, change: 0.45, changePercent: 0.76, volume: 23456785, marketCap: '259B', sector: 'Consumer Staples' },
-      { symbol: 'PEP', name: 'PepsiCo Inc.', price: 172.34, change: -0.89, changePercent: -0.51, volume: 34567896, marketCap: '237B', sector: 'Consumer Staples' },
-      { symbol: 'MCD', name: 'McDonald\'s Corp.', price: 289.76, change: 2.14, changePercent: 0.74, volume: 45678905, marketCap: '214B', sector: 'Consumer Discretionary' },
-
-      // Entertainment & Media
-      { symbol: 'DIS', name: 'Walt Disney Co.', price: 91.23, change: -1.45, changePercent: -1.56, volume: 56789016, marketCap: '166B', sector: 'Communication' },
-      { symbol: 'SPOT', name: 'Spotify Technology SA', price: 156.78, change: 3.21, changePercent: 2.09, volume: 23456786, marketCap: '30B', sector: 'Communication' },
-
-      // Semiconductors
-      { symbol: 'AMD', name: 'Advanced Micro Devices Inc.', price: 134.56, change: 4.23, changePercent: 3.25, volume: 34567897, marketCap: '217B', sector: 'Technology' },
-      { symbol: 'INTC', name: 'Intel Corp.', price: 43.21, change: -0.78, changePercent: -1.77, volume: 45678906, marketCap: '183B', sector: 'Technology' },
-
-      // Real Estate
-      { symbol: 'AMT', name: 'American Tower Corp.', price: 198.45, change: 1.23, changePercent: 0.62, volume: 12345681, marketCap: '89B', sector: 'Real Estate' },
-
-      // Cryptocurrency Related
-      { symbol: 'COIN', name: 'Coinbase Global Inc.', price: 89.76, change: 5.67, changePercent: 6.74, volume: 23456787, marketCap: '22B', sector: 'Financial Services' }
+      { symbol: 'AMZN', name: 'Amazon.com Inc.', price: 127.74, change: 1.89, changePercent: 1.50, volume: 56789012, marketCap: '1.3T', sector: 'E-commerce' },
+      { symbol: 'AMD', name: 'Advanced Micro Devices Inc.', price: 210.50, change: 3.21, changePercent: 1.55, volume: 34567897, marketCap: '340B', sector: 'Technology' },
+      { symbol: 'RIVN', name: 'Rivian Automotive Inc.', price: 18.92, change: 2.12, changePercent: 12.61, volume: 23456788, marketCap: '18B', sector: 'Automotive' }
     ];
 
     setStocks(mockStocks);

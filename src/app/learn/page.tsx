@@ -167,33 +167,18 @@ export default function LearnPage() {
         {/* Hero Section */}
         <div className="max-w-6xl mx-auto text-center mb-16">
           <h1 className="text-5xl md:text-7xl font-bold gradient-shift leading-tight mb-6">
-            Learn Trading the Fun Way! 🚀
+            Learn Trading the Fun Way!
           </h1>
-          
-          <p className="text-xl md:text-2xl mb-8" style={{ color: 'var(--text-secondary)' }}>
+
+          <p className="text-xl md:text-2xl mb-12" style={{ color: 'var(--text-secondary)' }}>
             Interactive flashcards, fun facts, and bite-sized lessons to make you a trading pro!
           </p>
-          
-          <div className="flex flex-wrap justify-center gap-4 mb-12">
-            <div className="glass-morphism px-6 py-3 rounded-full">
-              <span className="text-2xl mr-2">🎯</span>
-              <span style={{ color: 'var(--text-primary)' }}>Interactive Learning</span>
-            </div>
-            <div className="glass-morphism px-6 py-3 rounded-full">
-              <span className="text-2xl mr-2">⚡</span>
-              <span style={{ color: 'var(--text-primary)' }}>Quick & Fun</span>
-            </div>
-            <div className="glass-morphism px-6 py-3 rounded-full">
-              <span className="text-2xl mr-2">🎮</span>
-              <span style={{ color: 'var(--text-primary)' }}>Gamified</span>
-            </div>
-          </div>
         </div>
 
         {/* Interactive Flashcards */}
         <section className="mb-20">
           <div className="text-center mb-12">
-            <h2 className="text-4xl font-bold text-gradient mb-4">💡 Trading Flashcards</h2>
+            <h2 className="text-4xl font-bold text-gradient mb-4">Trading Flashcards</h2>
             <p className="text-lg" style={{ color: 'var(--text-secondary)' }}>
               Click any card to reveal the answer! Master the basics one flip at a time.
             </p>
@@ -245,7 +230,7 @@ export default function LearnPage() {
         {/* Fun Facts Ticker */}
         <section className="mb-20">
           <div className="text-center mb-8">
-            <h2 className="text-4xl font-bold text-gradient mb-4">🎉 Fun Trading Facts</h2>
+            <h2 className="text-4xl font-bold text-gradient mb-4">Fun Trading Facts</h2>
           </div>
           
           <div className="glass-morphism rounded-2xl p-8 max-w-6xl mx-auto">
@@ -263,7 +248,7 @@ export default function LearnPage() {
         {/* Risk Levels Visual */}
         <section className="mb-20">
           <div className="text-center mb-12">
-            <h2 className="text-4xl font-bold text-gradient mb-4">⚖️ Risk Levels Explained</h2>
+            <h2 className="text-4xl font-bold text-gradient mb-4">Risk Levels Explained</h2>
             <p className="text-lg" style={{ color: 'var(--text-secondary)' }}>
               Different risk levels for different goals and comfort zones
             </p>
@@ -299,7 +284,7 @@ export default function LearnPage() {
         {/* Quick Tips Grid */}
         <section className="mb-20">
           <div className="text-center mb-12">
-            <h2 className="text-4xl font-bold text-gradient mb-4">🎯 Quick Pro Tips</h2>
+            <h2 className="text-4xl font-bold text-gradient mb-4">Quick Pro Tips</h2>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
@@ -330,7 +315,7 @@ export default function LearnPage() {
         {/* Video Learning Hub */}
         <section className="mb-20">
           <div className="text-center mb-12">
-            <h2 className="text-4xl font-bold text-gradient mb-4">🎬 Video Learning Hub</h2>
+            <h2 className="text-4xl font-bold text-gradient mb-4">Video Learning Hub</h2>
             <p className="text-lg" style={{ color: 'var(--text-secondary)' }}>
               Visual learning with animated explanations and expert insights
             </p>
@@ -349,7 +334,7 @@ export default function LearnPage() {
                   </div>
                 </div>
                 <h3 className="text-xl font-bold mb-2" style={{ color: 'var(--text-primary)' }}>
-                  📊 How Markets Work
+                  How Markets Work
                 </h3>
                 <p className="mb-4" style={{ color: 'var(--text-secondary)' }}>
                   Animated 3-minute explanation of supply, demand, and price movement
@@ -408,7 +393,7 @@ export default function LearnPage() {
         {/* Interactive Learning Games */}
         <section className="mb-20">
           <div className="text-center mb-12">
-            <h2 className="text-4xl font-bold text-gradient mb-4">🎮 Interactive Learning</h2>
+            <h2 className="text-4xl font-bold text-gradient mb-4">Interactive Learning</h2>
             <p className="text-lg" style={{ color: 'var(--text-secondary)' }}>
               Learn by doing with our interactive simulations and games
             </p>
@@ -423,7 +408,7 @@ export default function LearnPage() {
                     <Zap className="w-10 h-10" style={{ color: 'var(--text-primary)' }} />
                   </div>
                   <h3 className="text-2xl font-bold mb-4" style={{ color: 'var(--text-primary)' }}>
-                    📊 Trading Simulator
+                    Trading Simulator
                   </h3>
                   <p className="mb-8" style={{ color: 'var(--text-secondary)' }}>
                     Practice trading with $100,000 virtual money using real market data
@@ -460,7 +445,6 @@ export default function LearnPage() {
         <section>
           <div className="card max-w-4xl mx-auto">
             <div className="card-body text-center p-12">
-              <div className="text-6xl mb-6">🎓</div>
               <h2 className="text-4xl font-bold text-gradient mb-6">
                 Ready to Put Your Knowledge to Work?
               </h2>

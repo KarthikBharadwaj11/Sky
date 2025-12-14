@@ -7,6 +7,7 @@ import AreaChart from '../charts/AreaChart';
 import ComparisonChart from '../charts/ComparisonChart';
 import PieChart from '../charts/PieChart';
 import TradingModal from '../trading/TradingModal';
+import AccountSwitcher from '../trading/AccountSwitcher';
 import Link from 'next/link';
 import { Sparkles } from 'lucide-react';
 
@@ -81,28 +82,15 @@ export default function OverviewDashboard() {
   // All available stocks for search
   const allStocks: Stock[] = [
     { symbol: 'AAPL', name: 'Apple Inc.', price: 175.43, change: 2.15, changePercent: 1.24 },
-    { symbol: 'GOOGL', name: 'Alphabet Inc.', price: 138.21, change: -1.32, changePercent: -0.95 },
-    { symbol: 'MSFT', name: 'Microsoft Corp.', price: 378.85, change: 4.12, changePercent: 1.10 },
     { symbol: 'TSLA', name: 'Tesla Inc.', price: 248.42, change: -5.23, changePercent: -2.06 },
+    { symbol: 'META', name: 'Meta Platforms', price: 644.23, change: -2.45, changePercent: -0.38 },
+    { symbol: 'GOOGL', name: 'Alphabet Inc.', price: 138.21, change: -1.32, changePercent: -0.95 },
+    { symbol: 'NFLX', name: 'Netflix Inc.', price: 95.98, change: -8.12, changePercent: -7.80 },
+    { symbol: 'NVDA', name: 'NVIDIA Corp.', price: 180.00, change: -2.85, changePercent: -1.55 },
+    { symbol: 'MSFT', name: 'Microsoft Corp.', price: 378.85, change: 4.12, changePercent: 1.10 },
     { symbol: 'AMZN', name: 'Amazon.com Inc.', price: 127.74, change: 1.89, changePercent: 1.50 },
-    { symbol: 'NVDA', name: 'NVIDIA Corp.', price: 875.28, change: 15.67, changePercent: 1.83 },
-    { symbol: 'META', name: 'Meta Platforms', price: 312.96, change: -2.45, changePercent: -0.78 },
-    { symbol: 'AMD', name: 'Advanced Micro Devices', price: 142.33, change: 3.21, changePercent: 2.31 },
-    { symbol: 'NFLX', name: 'Netflix Inc.', price: 445.87, change: -8.12, changePercent: -1.79 },
-    { symbol: 'COIN', name: 'Coinbase Global', price: 167.89, change: 12.34, changePercent: 7.93 },
-    { symbol: 'V', name: 'Visa Inc.', price: 245.67, change: 1.89, changePercent: 0.78 },
-    { symbol: 'JPM', name: 'JPMorgan Chase', price: 156.34, change: -2.11, changePercent: -1.33 },
-    { symbol: 'WMT', name: 'Walmart Inc.', price: 159.88, change: 0.45, changePercent: 0.28 },
-    { symbol: 'DIS', name: 'Walt Disney Co.', price: 92.15, change: 1.23, changePercent: 1.35 },
-    { symbol: 'BA', name: 'Boeing Co.', price: 186.54, change: -3.45, changePercent: -1.82 },
-    { symbol: 'NKE', name: 'Nike Inc.', price: 108.92, change: 2.34, changePercent: 2.20 },
-    { symbol: 'INTC', name: 'Intel Corp.', price: 43.78, change: 0.89, changePercent: 2.07 },
-    { symbol: 'PYPL', name: 'PayPal Holdings', price: 62.45, change: -1.12, changePercent: -1.76 },
-    { symbol: 'ADBE', name: 'Adobe Inc.', price: 578.32, change: 5.67, changePercent: 0.99 },
-    { symbol: 'CRM', name: 'Salesforce Inc.', price: 234.56, change: -4.23, changePercent: -1.77 },
-    { symbol: 'SPY', name: 'SPDR S&P 500 ETF', price: 452.89, change: 3.45, changePercent: 0.77 },
-    { symbol: 'QQQ', name: 'Invesco QQQ Trust', price: 389.12, change: 2.78, changePercent: 0.72 },
-    { symbol: 'VOO', name: 'Vanguard S&P 500 ETF', price: 415.34, change: 3.12, changePercent: 0.76 }
+    { symbol: 'AMD', name: 'Advanced Micro Devices', price: 210.50, change: 3.21, changePercent: 1.55 },
+    { symbol: 'RIVN', name: 'Rivian Automotive', price: 18.92, change: 2.12, changePercent: 12.61 }
   ];
 
   // Handle click outside search
@@ -137,11 +125,10 @@ export default function OverviewDashboard() {
         {
           name: 'My Watchlist',
           stocks: [
-            { symbol: 'NVDA', name: 'NVIDIA Corp.', price: 875.28, change: 15.67, changePercent: 1.83 },
-            { symbol: 'META', name: 'Meta Platforms', price: 312.96, change: -2.45, changePercent: -0.78 },
-            { symbol: 'AMD', name: 'Advanced Micro Devices', price: 142.33, change: 3.21, changePercent: 2.31 },
-            { symbol: 'NFLX', name: 'Netflix Inc.', price: 445.87, change: -8.12, changePercent: -1.79 },
-            { symbol: 'COIN', name: 'Coinbase Global', price: 167.89, change: 12.34, changePercent: 7.93 }
+            { symbol: 'NVDA', name: 'NVIDIA Corp.', price: 180.00, change: -2.85, changePercent: -1.55 },
+            { symbol: 'META', name: 'Meta Platforms', price: 644.23, change: -2.45, changePercent: -0.38 },
+            { symbol: 'AMD', name: 'Advanced Micro Devices', price: 210.50, change: 3.21, changePercent: 1.55 },
+            { symbol: 'NFLX', name: 'Netflix Inc.', price: 95.98, change: -8.12, changePercent: -7.80 }
           ]
         },
         {
@@ -162,24 +149,23 @@ export default function OverviewDashboard() {
 
     // Backward compatibility with old watchlist
     setWatchlist([
-      { symbol: 'NVDA', name: 'NVIDIA Corp.', price: 875.28, change: 15.67, changePercent: 1.83 },
-      { symbol: 'META', name: 'Meta Platforms', price: 312.96, change: -2.45, changePercent: -0.78 },
-      { symbol: 'AMD', name: 'Advanced Micro Devices', price: 142.33, change: 3.21, changePercent: 2.31 },
-      { symbol: 'NFLX', name: 'Netflix Inc.', price: 445.87, change: -8.12, changePercent: -1.79 }
+      { symbol: 'NVDA', name: 'NVIDIA Corp.', price: 180.00, change: -2.85, changePercent: -1.55 },
+      { symbol: 'META', name: 'Meta Platforms', price: 644.23, change: -2.45, changePercent: -0.38 },
+      { symbol: 'AMD', name: 'Advanced Micro Devices', price: 210.50, change: 3.21, changePercent: 1.55 },
+      { symbol: 'NFLX', name: 'Netflix Inc.', price: 95.98, change: -8.12, changePercent: -7.80 }
     ]);
 
     // Market Movers
     setMarketMovers({
       gainers: [
-        { symbol: 'NVDA', name: 'NVIDIA Corp.', price: 875.28, change: 45.23, changePercent: 5.45 },
-        { symbol: 'AMD', name: 'AMD Inc.', price: 142.33, change: 8.42, changePercent: 6.29 },
-        { symbol: 'COIN', name: 'Coinbase', price: 167.89, change: 12.34, changePercent: 7.93 },
+        { symbol: 'NVDA', name: 'NVIDIA Corp.', price: 180.00, change: -2.85, changePercent: -1.55 },
+        { symbol: 'AMD', name: 'AMD Inc.', price: 210.50, change: 8.42, changePercent: 4.16 },
         { symbol: 'PLTR', name: 'Palantir', price: 23.45, change: 1.89, changePercent: 8.78 },
         { symbol: 'RIVN', name: 'Rivian', price: 18.92, change: 2.12, changePercent: 12.61 }
       ],
       losers: [
         { symbol: 'TSLA', name: 'Tesla Inc.', price: 248.42, change: -15.23, changePercent: -5.78 },
-        { symbol: 'NFLX', name: 'Netflix', price: 445.87, change: -22.12, changePercent: -4.73 },
+        { symbol: 'NFLX', name: 'Netflix', price: 95.98, change: -22.12, changePercent: -18.73 },
         { symbol: 'SNAP', name: 'Snap Inc.', price: 12.34, change: -0.98, changePercent: -7.36 },
         { symbol: 'UBER', name: 'Uber', price: 62.31, change: -3.42, changePercent: -5.20 },
         { symbol: 'LYFT', name: 'Lyft', price: 14.56, change: -1.23, changePercent: -7.79 }
@@ -187,7 +173,7 @@ export default function OverviewDashboard() {
       mostActive: [
         { symbol: 'AAPL', name: 'Apple Inc.', price: 175.43, change: 2.15, changePercent: 1.24 },
         { symbol: 'TSLA', name: 'Tesla Inc.', price: 248.42, change: -5.23, changePercent: -2.06 },
-        { symbol: 'NVDA', name: 'NVIDIA', price: 875.28, change: 15.67, changePercent: 1.83 },
+        { symbol: 'NVDA', name: 'NVIDIA', price: 180.00, change: -2.85, changePercent: -1.55 },
         { symbol: 'AMZN', name: 'Amazon', price: 127.74, change: 1.89, changePercent: 1.50 },
         { symbol: 'MSFT', name: 'Microsoft', price: 378.85, change: 4.12, changePercent: 1.10 }
       ]
@@ -239,7 +225,7 @@ export default function OverviewDashboard() {
       { id: 1, type: 'buy', symbol: 'AAPL', shares: 10, price: 175.43, time: '2 minutes ago', value: 1754.30 },
       { id: 2, type: 'sell', symbol: 'TSLA', shares: 5, price: 248.42, time: '15 minutes ago', value: 1242.10 },
       { id: 3, type: 'dividend', symbol: 'MSFT', amount: 45.20, time: '1 hour ago' },
-      { id: 4, type: 'buy', symbol: 'NVDA', shares: 3, price: 875.28, time: '3 hours ago', value: 2625.84 },
+      { id: 4, type: 'buy', symbol: 'NVDA', shares: 3, price: 180.00, time: '3 hours ago', value: 540.00 },
       { id: 5, type: 'watchlist', symbol: 'META', time: '5 hours ago' },
       { id: 6, type: 'sell', symbol: 'GOOGL', shares: 8, price: 138.21, time: 'Yesterday', value: 1105.68 },
       { id: 7, type: 'buy', symbol: 'AMD', shares: 15, price: 142.33, time: 'Yesterday', value: 2134.95 },
@@ -254,102 +240,168 @@ export default function OverviewDashboard() {
   }, [user, selectedTimeframe, selectedComparisonTimeframe]);
 
   const generatePortfolioHistory = (timeframe: string) => {
-    const today = new Date();
-    const historyData = [];
-    let days = 30;
-    let dateFormat: Intl.DateTimeFormatOptions = { month: 'short', day: 'numeric' };
+    const baseValue = (user?.balance || 10000);
 
-    switch (timeframe) {
-      case '30d':
-        days = 30;
-        dateFormat = { month: 'short', day: 'numeric' };
-        break;
-      case '3m':
-        days = 90;
-        dateFormat = { month: 'short', day: 'numeric' };
-        break;
-      case '6m':
-        days = 180;
-        dateFormat = { month: 'short', day: 'numeric' };
-        break;
-      case '1y':
-        days = 365;
-        dateFormat = { year: 'numeric', month: 'short' };
-        break;
-      case '5y':
-        days = 1825;
-        dateFormat = { year: 'numeric', month: 'short' };
-        break;
-    }
+    // Static data for each timeframe
+    const staticData: { [key: string]: { name: string; value: number }[] } = {
+      '30d': [
+        { name: 'Nov 13', value: baseValue + 1200 },
+        { name: 'Nov 14', value: baseValue + 1450 },
+        { name: 'Nov 15', value: baseValue + 1150 },
+        { name: 'Nov 16', value: baseValue + 1350 },
+        { name: 'Nov 17', value: baseValue + 1680 },
+        { name: 'Nov 18', value: baseValue + 1420 },
+        { name: 'Nov 19', value: baseValue + 1590 },
+        { name: 'Nov 20', value: baseValue + 1820 },
+        { name: 'Nov 21', value: baseValue + 1650 },
+        { name: 'Nov 22', value: baseValue + 1900 },
+        { name: 'Nov 23', value: baseValue + 2100 },
+        { name: 'Nov 24', value: baseValue + 1880 },
+        { name: 'Nov 25', value: baseValue + 2050 },
+        { name: 'Nov 26', value: baseValue + 2280 },
+        { name: 'Nov 27', value: baseValue + 2120 },
+        { name: 'Nov 28', value: baseValue + 2350 },
+        { name: 'Nov 29', value: baseValue + 2580 },
+        { name: 'Nov 30', value: baseValue + 2420 },
+        { name: 'Dec 1', value: baseValue + 2650 },
+        { name: 'Dec 2', value: baseValue + 2720 },
+        { name: 'Dec 3', value: baseValue + 2580 },
+        { name: 'Dec 4', value: baseValue + 2750 },
+        { name: 'Dec 5', value: baseValue + 2920 },
+        { name: 'Dec 6', value: baseValue + 2780 },
+        { name: 'Dec 7', value: baseValue + 3050 },
+        { name: 'Dec 8', value: baseValue + 3180 },
+        { name: 'Dec 9', value: baseValue + 2950 },
+        { name: 'Dec 10', value: baseValue + 3220 },
+        { name: 'Dec 11', value: baseValue + 3350 },
+        { name: 'Dec 12', value: baseValue + 3500 }
+      ],
+      '3m': [
+        { name: 'Sep 12', value: baseValue - 500 },
+        { name: 'Sep 19', value: baseValue - 300 },
+        { name: 'Sep 26', value: baseValue - 100 },
+        { name: 'Oct 3', value: baseValue + 100 },
+        { name: 'Oct 10', value: baseValue + 300 },
+        { name: 'Oct 17', value: baseValue + 500 },
+        { name: 'Oct 24', value: baseValue + 700 },
+        { name: 'Oct 31', value: baseValue + 900 },
+        { name: 'Nov 7', value: baseValue + 1200 },
+        { name: 'Nov 14', value: baseValue + 1500 },
+        { name: 'Nov 21', value: baseValue + 1800 },
+        { name: 'Nov 28', value: baseValue + 2200 },
+        { name: 'Dec 5', value: baseValue + 2700 },
+        { name: 'Dec 12', value: baseValue + 3200 }
+      ],
+      '6m': [
+        { name: 'Jun 12', value: baseValue - 2000 },
+        { name: 'Jun 26', value: baseValue - 1700 },
+        { name: 'Jul 10', value: baseValue - 1400 },
+        { name: 'Jul 24', value: baseValue - 1100 },
+        { name: 'Aug 7', value: baseValue - 800 },
+        { name: 'Aug 21', value: baseValue - 500 },
+        { name: 'Sep 4', value: baseValue - 200 },
+        { name: 'Sep 18', value: baseValue + 100 },
+        { name: 'Oct 2', value: baseValue + 500 },
+        { name: 'Oct 16', value: baseValue + 900 },
+        { name: 'Oct 30', value: baseValue + 1400 },
+        { name: 'Nov 13', value: baseValue + 1900 },
+        { name: 'Nov 27', value: baseValue + 2500 },
+        { name: 'Dec 12', value: baseValue + 3200 }
+      ],
+      '1y': [
+        { name: '2024 Jan', value: baseValue - 5000 },
+        { name: '2024 Feb', value: baseValue - 4200 },
+        { name: '2024 Mar', value: baseValue - 3500 },
+        { name: '2024 Apr', value: baseValue - 2800 },
+        { name: '2024 May', value: baseValue - 2100 },
+        { name: '2024 Jun', value: baseValue - 1500 },
+        { name: '2024 Jul', value: baseValue - 900 },
+        { name: '2024 Aug', value: baseValue - 400 },
+        { name: '2024 Sep', value: baseValue + 200 },
+        { name: '2024 Oct', value: baseValue + 900 },
+        { name: '2024 Nov', value: baseValue + 1800 },
+        { name: '2024 Dec', value: baseValue + 3200 }
+      ],
+      '5y': [
+        { name: '2020 Jan', value: baseValue - 8000 },
+        { name: '2020 Jul', value: baseValue - 6000 },
+        { name: '2021 Jan', value: baseValue - 4000 },
+        { name: '2021 Jul', value: baseValue - 2000 },
+        { name: '2022 Jan', value: baseValue - 500 },
+        { name: '2022 Jul', value: baseValue + 500 },
+        { name: '2023 Jan', value: baseValue + 1500 },
+        { name: '2023 Jul', value: baseValue + 2000 },
+        { name: '2024 Jan', value: baseValue + 2500 },
+        { name: '2024 Jul', value: baseValue + 2800 },
+        { name: '2024 Dec', value: baseValue + 3200 }
+      ]
+    };
 
-    const interval = days > 365 ? Math.floor(days / 50) : Math.floor(days / 30);
-    const dataPoints = Math.min(50, days);
-
-    for (let i = dataPoints - 1; i >= 0; i--) {
-      const date = new Date(today);
-      const daysBack = i * interval;
-      date.setDate(date.getDate() - daysBack);
-
-      const baseValue = (user?.balance || 10000) + Math.random() * 5000;
-      const longTermTrend = timeframe === '5y' ? (i * 50) : (timeframe === '1y' ? (i * 20) : 0);
-      const variation = Math.sin(i * 0.2) * 1000 + Math.random() * 500;
-
-      historyData.push({
-        name: date.toLocaleDateString('en-US', dateFormat),
-        value: Math.max(0, baseValue + variation + longTermTrend)
-      });
-    }
-
-    setPortfolioHistory(historyData.reverse());
+    setPortfolioHistory(staticData[timeframe] || staticData['30d']);
   };
 
   const generateComparisonData = (timeframe: string) => {
-    const comparisonData = [];
-    let dataPoints = 30;
-    let dateFormat: Intl.DateTimeFormatOptions = { month: 'short', day: 'numeric' };
+    // Static comparison data for each timeframe
+    const staticComparisonData: { [key: string]: { name: string; userPerformance: number; marketPerformance: number }[] } = {
+      '7d': [
+        { name: 'Mon', userPerformance: 0.5, marketPerformance: 0.3 },
+        { name: 'Tue', userPerformance: 1.2, marketPerformance: 0.8 },
+        { name: 'Wed', userPerformance: 0.8, marketPerformance: 0.6 },
+        { name: 'Thu', userPerformance: 1.5, marketPerformance: 1.1 },
+        { name: 'Fri', userPerformance: 2.1, marketPerformance: 1.5 },
+        { name: 'Sat', userPerformance: 2.4, marketPerformance: 1.7 },
+        { name: 'Sun', userPerformance: 2.8, marketPerformance: 2.0 }
+      ],
+      '30d': [
+        { name: 'Nov 13', userPerformance: -0.5, marketPerformance: -0.3 },
+        { name: 'Nov 15', userPerformance: 0.8, marketPerformance: 0.4 },
+        { name: 'Nov 17', userPerformance: 0.3, marketPerformance: 0.2 },
+        { name: 'Nov 19', userPerformance: 1.2, marketPerformance: 0.8 },
+        { name: 'Nov 21', userPerformance: 2.1, marketPerformance: 1.3 },
+        { name: 'Nov 23', userPerformance: 1.6, marketPerformance: 1.0 },
+        { name: 'Nov 25', userPerformance: 2.8, marketPerformance: 1.9 },
+        { name: 'Nov 27', userPerformance: 3.5, marketPerformance: 2.4 },
+        { name: 'Nov 29', userPerformance: 3.0, marketPerformance: 2.0 },
+        { name: 'Dec 1', userPerformance: 4.2, marketPerformance: 2.9 },
+        { name: 'Dec 3', userPerformance: 5.5, marketPerformance: 3.7 },
+        { name: 'Dec 5', userPerformance: 4.8, marketPerformance: 3.2 },
+        { name: 'Dec 7', userPerformance: 6.2, marketPerformance: 4.3 },
+        { name: 'Dec 9', userPerformance: 7.0, marketPerformance: 4.8 },
+        { name: 'Dec 12', userPerformance: 8.5, marketPerformance: 5.7 }
+      ],
+      '3m': [
+        { name: 'Sep 12', userPerformance: -2.5, marketPerformance: -1.8 },
+        { name: 'Sep 19', userPerformance: -1.8, marketPerformance: -1.2 },
+        { name: 'Sep 26', userPerformance: -0.8, marketPerformance: -0.5 },
+        { name: 'Oct 3', userPerformance: 0.3, marketPerformance: 0.2 },
+        { name: 'Oct 10', userPerformance: 1.5, marketPerformance: 1.0 },
+        { name: 'Oct 17', userPerformance: 2.8, marketPerformance: 1.9 },
+        { name: 'Oct 24', userPerformance: 4.2, marketPerformance: 2.9 },
+        { name: 'Oct 31', userPerformance: 5.6, marketPerformance: 3.8 },
+        { name: 'Nov 7', userPerformance: 6.8, marketPerformance: 4.6 },
+        { name: 'Nov 14', userPerformance: 7.5, marketPerformance: 5.2 },
+        { name: 'Nov 21', userPerformance: 8.2, marketPerformance: 5.7 },
+        { name: 'Nov 28', userPerformance: 9.0, marketPerformance: 6.3 },
+        { name: 'Dec 5', userPerformance: 10.2, marketPerformance: 7.1 },
+        { name: 'Dec 12', userPerformance: 11.5, marketPerformance: 8.0 }
+      ],
+      '1y': [
+        { name: '2024 Jan', userPerformance: -5.2, marketPerformance: -3.8 },
+        { name: '2024 Feb', userPerformance: -3.5, marketPerformance: -2.4 },
+        { name: '2024 Mar', userPerformance: -1.8, marketPerformance: -1.2 },
+        { name: '2024 Apr', userPerformance: 0.5, marketPerformance: 0.3 },
+        { name: '2024 May', userPerformance: 2.8, marketPerformance: 1.9 },
+        { name: '2024 Jun', userPerformance: 5.2, marketPerformance: 3.6 },
+        { name: '2024 Jul', userPerformance: 7.5, marketPerformance: 5.2 },
+        { name: '2024 Aug', userPerformance: 9.8, marketPerformance: 6.8 },
+        { name: '2024 Sep', userPerformance: 12.2, marketPerformance: 8.5 },
+        { name: '2024 Oct', userPerformance: 14.5, marketPerformance: 10.1 },
+        { name: '2024 Nov', userPerformance: 16.8, marketPerformance: 11.7 },
+        { name: '2024 Dec', userPerformance: 19.2, marketPerformance: 13.4 }
+      ]
+    };
 
-    switch (timeframe) {
-      case '7d':
-        dataPoints = 7;
-        dateFormat = { weekday: 'short' };
-        break;
-      case '30d':
-        dataPoints = 30;
-        dateFormat = { month: 'short', day: 'numeric' };
-        break;
-      case '3m':
-        dataPoints = 90;
-        dateFormat = { month: 'short', day: 'numeric' };
-        break;
-      case '1y':
-        dataPoints = 365;
-        dateFormat = { year: 'numeric', month: 'short' };
-        break;
-    }
-
-    const interval = Math.floor(dataPoints / 15); // Show max 15 points
-
-    for (let i = Math.floor(dataPoints / interval) - 1; i >= 0; i--) {
-      const date = new Date();
-      const daysBack = i * interval;
-      date.setDate(date.getDate() - daysBack);
-
-      // User performance (slightly better than market on average)
-      const userBasePerformance = Math.sin(i * 0.3) * 8 + Math.random() * 6 - 3;
-      const userPerformance = userBasePerformance + 2; // User doing slightly better
-
-      // Market performance (S&P 500-like)
-      const marketBasePerformance = Math.sin(i * 0.25) * 6 + Math.random() * 4 - 2;
-      const marketPerformance = marketBasePerformance;
-
-      comparisonData.push({
-        name: date.toLocaleDateString('en-US', dateFormat),
-        userPerformance: Math.max(-20, Math.min(25, userPerformance)), // Clamp between -20% and 25%
-        marketPerformance: Math.max(-15, Math.min(20, marketPerformance)) // Market slightly less volatile
-      });
-    }
-
-    setComparisonData(comparisonData.reverse());
+    setComparisonData(staticComparisonData[timeframe] || staticComparisonData['30d']);
   };
 
   const timeframeOptions = [
@@ -643,7 +695,12 @@ export default function OverviewDashboard() {
       </div>
 
       {/* Main Content - with left margin to account for sidebar */}
-      <div className="flex-1 ml-[20.8rem] px-8 pt-8 pb-8">
+      <div className="flex-1 ml-[20.8rem] px-8 pt-4 pb-8">
+        {/* Account Switcher */}
+        <div className="flex justify-end mb-4">
+          <AccountSwitcher />
+        </div>
+
         {/* 1. Stats Cards */}
         <div className="mb-6">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">

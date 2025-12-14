@@ -187,7 +187,7 @@ export default function CustomLineChart({
             }}
             filter={minimalistic ? 'none' : 'url(#lineGlow)'}
             strokeDasharray="0"
-            animationDuration={800}
+            isAnimationActive={false}
           />
           {enableZoom && !minimalistic && (
             <Brush

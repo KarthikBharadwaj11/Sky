@@ -7,6 +7,7 @@ import { TrendingUp, TrendingDown, Calendar, Globe, BarChart3, Activity, Sparkle
 export default function MarketPage() {
   const { user } = useAuth();
   const [selectedTimeframe, setSelectedTimeframe] = useState('1D');
+  const [selectedNewsCategory, setSelectedNewsCategory] = useState('Technology');
 
   // Mock data for major indices
   const majorIndices = [
@@ -34,52 +35,72 @@ export default function MarketPage() {
     { name: 'Industrials', changePercent: -0.12, color: 'var(--error)' },
   ];
 
-  // Mock data for market news
-  const marketNews = [
-    {
-      id: 1,
-      headline: 'Fed Signals Potential Rate Cuts in Q2 2025',
-      source: 'Bloomberg',
-      time: '15 minutes ago',
-      category: 'Monetary Policy',
-      aiInsight: 'AI analysis suggests 70% probability of rate cut in March',
-      sentiment: 'bullish'
-    },
-    {
-      id: 2,
-      headline: 'Tech Stocks Rally as AI Revenue Growth Exceeds Expectations',
-      source: 'Reuters',
-      time: '1 hour ago',
-      category: 'Technology',
-      aiInsight: 'Pattern recognition indicates continued momentum for AI sector',
-      sentiment: 'bullish'
-    },
-    {
-      id: 3,
-      headline: 'Oil Prices Decline Amid Global Demand Concerns',
-      source: 'CNBC',
-      time: '2 hours ago',
-      category: 'Energy',
-      aiInsight: 'Historical correlations suggest energy sector volatility ahead',
-      sentiment: 'bearish'
-    },
-    {
-      id: 4,
-      headline: 'Retail Sales Data Shows Stronger Than Expected Consumer Spending',
-      source: 'MarketWatch',
-      time: '3 hours ago',
-      category: 'Economy',
-      aiInsight: 'AI models predict sustained consumer confidence through Q1',
-      sentiment: 'bullish'
-    },
-  ];
+  // Mock data for market news organized by category
+  const newsCategories = ['Technology', 'Energy', 'Economy'];
+
+  const marketNewsByCategory = {
+    'Technology': [
+      {
+        id: 1,
+        headline: 'Tech Stocks Rally as AI Revenue Growth Exceeds Expectations',
+        source: 'Reuters',
+        time: '1 hour ago',
+        aiInsight: 'Pattern recognition indicates continued momentum for AI sector',
+        sentiment: 'bullish'
+      },
+      {
+        id: 2,
+        headline: 'Major Cloud Provider Announces 40% Increase in Data Center Capacity',
+        source: 'TechCrunch',
+        time: '3 hours ago',
+        aiInsight: 'AI predicts positive spillover effects for semiconductor stocks',
+        sentiment: 'bullish'
+      }
+    ],
+    'Energy': [
+      {
+        id: 3,
+        headline: 'Oil Prices Decline Amid Global Demand Concerns',
+        source: 'CNBC',
+        time: '2 hours ago',
+        aiInsight: 'Historical correlations suggest energy sector volatility ahead',
+        sentiment: 'bearish'
+      },
+      {
+        id: 4,
+        headline: 'Renewable Energy Investments Hit Record Highs in Q4 2024',
+        source: 'Bloomberg Energy',
+        time: '4 hours ago',
+        aiInsight: 'Long-term trend analysis shows sustained growth in clean energy sector',
+        sentiment: 'bullish'
+      }
+    ],
+    'Economy': [
+      {
+        id: 5,
+        headline: 'Retail Sales Data Shows Stronger Than Expected Consumer Spending',
+        source: 'MarketWatch',
+        time: '3 hours ago',
+        aiInsight: 'AI models predict sustained consumer confidence through Q1',
+        sentiment: 'bullish'
+      },
+      {
+        id: 6,
+        headline: 'Fed Signals Potential Rate Cuts in Q2 2025',
+        source: 'Bloomberg',
+        time: '15 minutes ago',
+        aiInsight: 'AI analysis suggests 70% probability of rate cut in March',
+        sentiment: 'bullish'
+      }
+    ]
+  };
 
   // Mock data for economic calendar
   const economicEvents = [
-    { event: 'CPI Report', date: 'Today, 8:30 AM EST', impact: 'High', aiPrediction: 'Slight increase expected' },
-    { event: 'Fed Meeting Minutes', date: 'Tomorrow, 2:00 PM EST', impact: 'High', aiPrediction: 'Dovish tone anticipated' },
-    { event: 'Jobless Claims', date: 'Jan 18, 8:30 AM EST', impact: 'Medium', aiPrediction: 'Stable at current levels' },
-    { event: 'GDP Data', date: 'Jan 25, 8:30 AM EST', impact: 'High', aiPrediction: 'Growth of 2.3% forecasted' },
+    { event: 'CPI Report', date: 'Today, 8:30 AM EST', impact: 'High' },
+    { event: 'Fed Meeting Minutes', date: 'Tomorrow, 2:00 PM EST', impact: 'High' },
+    { event: 'Jobless Claims', date: 'Jan 18, 8:30 AM EST', impact: 'Medium' },
+    { event: 'GDP Data', date: 'Jan 25, 8:30 AM EST', impact: 'High' },
   ];
 
   // Mock data for trending themes
@@ -140,7 +161,7 @@ export default function MarketPage() {
               <div className="flex items-center gap-2 mb-4">
                 <Sparkles className="w-5 h-5 text-purple-400" />
                 <h2 className="text-xl font-bold" style={{ color: 'var(--text-primary)' }}>
-                  Market Outlook
+                  AI Market Outlook
                 </h2>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -257,10 +278,6 @@ export default function MarketPage() {
                 <h3 className="text-lg font-bold" style={{ color: 'var(--text-primary)' }}>
                   Volatility (VIX)
                 </h3>
-                <div className="flex items-center gap-1" title="AI Forecast">
-                  <Sparkles className="w-4 h-4 text-purple-400" />
-                  <span className="text-xs text-purple-400">AI</span>
-                </div>
               </div>
               <p className="text-3xl font-bold mb-2" style={{ color: 'var(--text-primary)' }}>
                 14.23
@@ -307,24 +324,34 @@ export default function MarketPage() {
             <h2 className="text-xl font-bold" style={{ color: 'var(--text-primary)' }}>
               Market News
             </h2>
-            <div className="flex items-center gap-2 px-3 py-1 rounded-lg" style={{ background: 'var(--glass-bg)' }}>
-              <Sparkles className="w-4 h-4 text-purple-400" />
-              <span className="text-sm text-purple-400">AI-Enhanced</span>
-            </div>
           </div>
+
+          {/* News Category Tabs */}
+          <div className="flex gap-3 mb-4">
+            {newsCategories.map((category) => (
+              <button
+                key={category}
+                onClick={() => setSelectedNewsCategory(category)}
+                className={`px-5 py-2.5 rounded-lg font-semibold text-sm transition-all duration-200 ${
+                  selectedNewsCategory === category
+                    ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg'
+                    : 'glass-morphism hover:bg-white/10'
+                }`}
+                style={selectedNewsCategory !== category ? { color: 'var(--text-secondary)' } : {}}
+              >
+                {category}
+              </button>
+            ))}
+          </div>
+
+          {/* News Articles for Selected Category */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-            {marketNews.map((news) => (
+            {marketNewsByCategory[selectedNewsCategory].map((news) => (
               <div key={news.id} className="card hover:scale-102 transition-all duration-300 cursor-pointer">
                 <div className="card-body p-5">
                   <div className="flex items-start justify-between mb-3">
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-2">
-                        <span className="text-xs px-2 py-1 rounded" style={{
-                          background: 'var(--glass-bg)',
-                          color: 'var(--primary-blue)'
-                        }}>
-                          {news.category}
-                        </span>
                         <span className={`text-xs px-2 py-1 rounded ${
                           news.sentiment === 'bullish' ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'
                         }`}>
@@ -362,22 +389,16 @@ export default function MarketPage() {
           {/* Economic Calendar */}
           <div className="card">
             <div className="card-body p-5">
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center gap-2">
-                  <Calendar className="w-5 h-5" style={{ color: 'var(--primary-blue)' }} />
-                  <h3 className="text-lg font-bold" style={{ color: 'var(--text-primary)' }}>
-                    Economic Calendar
-                  </h3>
-                </div>
-                <div className="flex items-center gap-1" title="AI Predictions">
-                  <Sparkles className="w-4 h-4 text-purple-400" />
-                  <span className="text-xs text-purple-400">AI</span>
-                </div>
+              <div className="flex items-center gap-2 mb-4">
+                <Calendar className="w-5 h-5" style={{ color: 'var(--primary-blue)' }} />
+                <h3 className="text-lg font-bold" style={{ color: 'var(--text-primary)' }}>
+                  Economic Calendar
+                </h3>
               </div>
               <div className="space-y-3">
                 {economicEvents.map((event, index) => (
                   <div key={index} className="glass-morphism p-4 rounded-lg">
-                    <div className="flex items-start justify-between mb-2">
+                    <div className="flex items-start justify-between">
                       <div>
                         <p className="text-sm font-bold mb-1" style={{ color: 'var(--text-primary)' }}>
                           {event.event}
@@ -391,11 +412,6 @@ export default function MarketPage() {
                       }`}>
                         {event.impact}
                       </span>
-                    </div>
-                    <div className="flex items-center gap-1 text-xs" style={{ color: 'var(--text-secondary)' }}>
-                      <Sparkles className="w-3 h-3 text-purple-400" />
-                      <span className="text-purple-400">Prediction:</span>
-                      <span>{event.aiPrediction}</span>
                     </div>
                   </div>
                 ))}

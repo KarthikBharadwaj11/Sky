@@ -140,7 +140,7 @@ export default function Profile() {
             status: 'active',
             openedDate: new Date(Date.now() - 365 * 24 * 60 * 60 * 1000).toISOString(),
             details: {
-              accountType: 'Individual Brokerage',
+              accountType: 'Individual Account',
               marginEnabled: false,
               cashBalance: 5420.50,
               buyingPower: 5420.50
@@ -980,7 +980,7 @@ export default function Profile() {
                 : 'text-gray-400 hover:text-white'
             }`}
           >
-            Brokerage Accounts
+            Individual Accounts
           </button>
           <button
             onClick={() => setAccountSection('bank')}
@@ -997,7 +997,7 @@ export default function Profile() {
         <div className="card">
           <div className="card-header flex justify-between items-center">
             <h2 className="text-lg font-bold text-gradient">
-              {accountSection === 'brokerage' ? 'Brokerage Accounts' : 'Bank Accounts'}
+              {accountSection === 'brokerage' ? 'Individual Accounts' : 'Bank Accounts'}
             </h2>
             {accountSection === 'brokerage' && (
               <button
@@ -1005,7 +1005,7 @@ export default function Profile() {
                 className="btn-primary px-4 py-2.5 flex items-center gap-2"
               >
                 <Plus className="w-4 h-4" />
-                Add Brokerage Account
+                Add Individual Account
               </button>
             )}
           </div>
@@ -1404,7 +1404,7 @@ export default function Profile() {
                         Individual Account
                       </h3>
                       <p className="text-sm" style={{ color: 'var(--text-tertiary)' }}>
-                        Standard brokerage account for individuals with no tax advantages
+                        Standard individual account for individuals with no tax advantages
                       </p>
                     </div>
                   </div>
@@ -2105,13 +2105,10 @@ export default function Profile() {
         </div>
       </div>
 
-      {/* Danger Zone */}
+      {/* Account Deletion */}
       <div className="glass-morphism rounded-xl overflow-hidden border border-red-500/30">
         <div className="px-6 py-4 border-b border-red-500/30">
-          <h3 className="text-base font-bold flex items-center gap-2 text-red-400">
-            <X className="w-5 h-5" />
-            Danger Zone
-          </h3>
+          <h3 className="text-base font-bold text-red-400">Account Deletion</h3>
         </div>
         <div className="px-6 py-4">
           <div className="flex items-start justify-between gap-4">

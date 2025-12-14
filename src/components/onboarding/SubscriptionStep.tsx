@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Check, X, Sparkles, TrendingUp, Zap, Shield, Crown } from 'lucide-react';
+import { Check, X, Sparkles, TrendingUp, Zap, Shield, Crown, Users, Brain } from 'lucide-react';
 
 interface SubscriptionStepProps {
   onComplete: (data: any) => void;
@@ -43,9 +43,14 @@ function PaymentModal({ isOpen, onClose, planType, onConfirm }: PaymentModalProp
           <h3 className="text-2xl font-bold mb-2" style={{ color: 'var(--text-primary)' }}>
             Complete Payment
           </h3>
-          <p className="mb-6" style={{ color: 'var(--text-secondary)' }}>
+          <p className="mb-2" style={{ color: 'var(--text-secondary)' }}>
             Subscribe to {planType === 'monthly' ? 'Monthly' : 'Annual'} Plan - ${amount.toFixed(2)}
           </p>
+          <div className="mb-6 p-3 rounded-lg bg-blue-500/10 border border-blue-500/20">
+            <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>
+              You'll receive a 7-day free trial. Your card will be charged ${amount.toFixed(2)} after the trial period ends.
+            </p>
+          </div>
 
           {/* Payment Method Selection */}
           <div className="mb-6">
@@ -243,9 +248,14 @@ export default function SubscriptionStep({ onComplete, onSkip }: SubscriptionSte
           <h2 className="text-3xl font-bold mb-3" style={{ color: 'var(--text-primary)' }}>
             Choose Your Plan
           </h2>
-          <p className="text-lg" style={{ color: 'var(--text-secondary)' }}>
+          <p className="text-lg mb-2" style={{ color: 'var(--text-secondary)' }}>
             Start trading with our free plan or unlock premium features
           </p>
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-500/20 border border-blue-500/30">
+            <p className="text-sm font-semibold text-blue-400">
+              7-day free trial on all premium plans
+            </p>
+          </div>
         </div>
 
         {/* Pricing Cards */}
@@ -263,6 +273,25 @@ export default function SubscriptionStep({ onComplete, onSkip }: SubscriptionSte
               <p className="text-sm mb-6" style={{ color: 'var(--text-secondary)' }}>
                 Perfect for getting started
               </p>
+
+              <ul className="space-y-3 mb-6">
+                <li className="flex items-center gap-2 text-sm" style={{ color: 'var(--text-secondary)' }}>
+                  <Check className="w-4 h-4 text-green-400 flex-shrink-0" />
+                  <span>Basic trading features</span>
+                </li>
+                <li className="flex items-center gap-2 text-sm" style={{ color: 'var(--text-secondary)' }}>
+                  <Check className="w-4 h-4 text-green-400 flex-shrink-0" />
+                  <span>Paper trading</span>
+                </li>
+                <li className="flex items-center gap-2 text-sm" style={{ color: 'var(--text-tertiary)' }}>
+                  <X className="w-4 h-4 text-red-400 flex-shrink-0" />
+                  <span>Copy Trading</span>
+                </li>
+                <li className="flex items-center gap-2 text-sm" style={{ color: 'var(--text-tertiary)' }}>
+                  <X className="w-4 h-4 text-red-400 flex-shrink-0" />
+                  <span>AI Analytics</span>
+                </li>
+              </ul>
 
               <button
                 onClick={() => handlePlanSelect('free')}
@@ -292,6 +321,25 @@ export default function SubscriptionStep({ onComplete, onSkip }: SubscriptionSte
                 Billed monthly, cancel anytime
               </p>
 
+              <ul className="space-y-3 mb-6">
+                <li className="flex items-center gap-2 text-sm" style={{ color: 'var(--text-secondary)' }}>
+                  <Check className="w-4 h-4 text-green-400 flex-shrink-0" />
+                  <span>All free features</span>
+                </li>
+                <li className="flex items-center gap-2 text-sm" style={{ color: 'var(--text-secondary)' }}>
+                  <Check className="w-4 h-4 text-green-400 flex-shrink-0" />
+                  <span className="font-semibold">Copy Trading</span>
+                </li>
+                <li className="flex items-center gap-2 text-sm" style={{ color: 'var(--text-secondary)' }}>
+                  <Check className="w-4 h-4 text-green-400 flex-shrink-0" />
+                  <span className="font-semibold">AI Analytics</span>
+                </li>
+                <li className="flex items-center gap-2 text-sm" style={{ color: 'var(--text-secondary)' }}>
+                  <Check className="w-4 h-4 text-green-400 flex-shrink-0" />
+                  <span>Advanced charts & indicators</span>
+                </li>
+              </ul>
+
               <button
                 onClick={() => handlePlanSelect('monthly')}
                 className="w-full btn-primary py-3"
@@ -320,6 +368,25 @@ export default function SubscriptionStep({ onComplete, onSkip }: SubscriptionSte
               <p className="text-sm mb-6" style={{ color: 'var(--text-secondary)' }}>
                 Best value for serious traders
               </p>
+
+              <ul className="space-y-3 mb-6">
+                <li className="flex items-center gap-2 text-sm" style={{ color: 'var(--text-secondary)' }}>
+                  <Check className="w-4 h-4 text-green-400 flex-shrink-0" />
+                  <span>All free features</span>
+                </li>
+                <li className="flex items-center gap-2 text-sm" style={{ color: 'var(--text-secondary)' }}>
+                  <Check className="w-4 h-4 text-green-400 flex-shrink-0" />
+                  <span className="font-semibold">Copy Trading</span>
+                </li>
+                <li className="flex items-center gap-2 text-sm" style={{ color: 'var(--text-secondary)' }}>
+                  <Check className="w-4 h-4 text-green-400 flex-shrink-0" />
+                  <span className="font-semibold">AI Analytics</span>
+                </li>
+                <li className="flex items-center gap-2 text-sm" style={{ color: 'var(--text-secondary)' }}>
+                  <Check className="w-4 h-4 text-green-400 flex-shrink-0" />
+                  <span>Advanced charts & indicators</span>
+                </li>
+              </ul>
 
               <button
                 onClick={() => handlePlanSelect('annual')}

@@ -1,17 +1,18 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { useState } from 'react';
-import { 
-  TrendingUp, 
-  Shield, 
-  Smartphone, 
-  Users, 
-  BarChart3, 
-  Zap, 
-  Star, 
-  ChevronRight, 
-  Check, 
+import {
+  TrendingUp,
+  Shield,
+  Smartphone,
+  Users,
+  BarChart3,
+  Zap,
+  Star,
+  ChevronRight,
+  Check,
   Play,
   Award,
   Lock,
@@ -41,7 +42,7 @@ export default function LandingPage() {
     },
     {
       icon: <Users className="w-8 h-8" />,
-      title: "Social Trading",
+      title: "Copy Trading",
       description: "Follow top traders, copy their strategies, and learn from the best in the community"
     },
     {
@@ -123,8 +124,16 @@ export default function LandingPage() {
         <div className="container mx-auto px-4 pt-48 pb-32">
           <div className="max-w-6xl mx-auto text-center">
             
-            <h1 className="text-6xl md:text-8xl font-bold gradient-shift leading-tight mb-8">
-              Trade Smarter with Sky
+            <h1 className="text-6xl md:text-8xl font-bold gradient-shift leading-tight mb-8 flex items-center justify-center gap-1 flex-wrap">
+              Trade Smarter with
+              <Image
+                src="/logo.png"
+                alt="Sky Logo"
+                width={200}
+                height={80}
+                className="inline-block -ml-10"
+                priority
+              />
             </h1>
             
             <p className="text-2xl md:text-3xl mb-12 leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
@@ -151,7 +160,16 @@ export default function LandingPage() {
                 </span>
               </button>
             </div>
-            
+
+            {/* Broker-Dealer Partnership Notice */}
+            <div className="mt-12 mb-8">
+              <div className="glass-morphism p-8 rounded-xl border-2 border-blue-500/30 max-w-5xl mx-auto">
+                <p className="text-lg leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
+                  SkyTrades App, a product of MarketMinds LLC, has partnered with American Global Wealth Services, an SEC-registered broker-dealer and member of FINRA/SIPC. All trades executed through the SkyTrade app are carried out and cleared via AGWS under its broker-dealer registration.
+                </p>
+              </div>
+            </div>
+
             {/* Stats */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-16">
               <div className="glass-morphism p-6 rounded-xl">

@@ -3,10 +3,10 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/components/auth/AuthProvider';
 import { useRouter } from 'next/navigation';
-import { TrendingUp, TrendingDown, ArrowLeft, Clock, BarChart3, DollarSign, Activity, TrendingUpIcon, Users, Sparkles } from 'lucide-react';
+import { TrendingUp, TrendingDown, ArrowLeft, Clock, BarChart3, DollarSign, Activity, TrendingUpIcon, Users, Sparkles, ThumbsUp, ThumbsDown, Minus, Brain, TrendingUpIcon as TrendUp } from 'lucide-react';
 import TradingModal from '@/components/trading/TradingModal';
 import StockChart from '@/components/charts/StockChart';
-import OptionsChain from '@/components/options/OptionsChain';
+import AccountSwitcher from '@/components/trading/AccountSwitcher';
 
 interface StockData {
   symbol: string;
@@ -36,7 +36,6 @@ export default function StockPage({ params }: { params: Promise<{ symbol: string
   const [showTradeModal, setShowTradeModal] = useState(false);
   const [timeRange, setTimeRange] = useState<'1D' | '1W' | '1M' | '3M' | '6M' | '1Y' | 'ALL'>('1D');
   const [symbol, setSymbol] = useState<string>('');
-  const [tradingMode, setTradingMode] = useState<'stock' | 'options'>('stock');
 
   // Order form state
   const [orderType, setOrderType] = useState<'market' | 'limit' | 'stop' | 'stop-limit'>('market');
@@ -116,9 +115,9 @@ export default function StockPage({ params }: { params: Promise<{ symbol: string
       'NVDA': {
         symbol: 'NVDA',
         name: 'NVIDIA Corp.',
-        price: 875.28,
-        change: 15.67,
-        changePercent: 1.83,
+        price: 180.00,
+        change: -2.85,
+        changePercent: -1.55,
         volume: 78901234,
         marketCap: '2.2T',
         dayHigh: 882.50,
@@ -130,8 +129,8 @@ export default function StockPage({ params }: { params: Promise<{ symbol: string
         dividend: 0.16,
         avgVolume: 45670000,
         beta: 1.68,
-        previousClose: 859.61,
-        open: 870.25
+        previousClose: 182.85,
+        open: 181.50
       }
     };
 
@@ -241,38 +240,47 @@ export default function StockPage({ params }: { params: Promise<{ symbol: string
           </button>
         </div>
 
+        {/* Account Switcher */}
+        <div className="flex justify-end mb-4">
+          <AccountSwitcher />
+        </div>
+
         <div className="mb-6">
           <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-3xl font-bold text-gradient mb-1">
-                {stockData.symbol}
-              </h1>
-              <p className="text-base" style={{ color: 'var(--text-secondary)' }}>
-                {stockData.name}
-              </p>
+            <div className="flex items-center gap-4">
+              {/* Stock Logo */}
+              <div className="w-16 h-16 rounded-xl overflow-hidden glass-morphism p-2 flex items-center justify-center bg-white">
+                <img
+                  src={`/stocks/${symbol || stockData.symbol}.png`}
+                  alt={`${symbol || stockData.symbol} logo`}
+                  className="w-12 h-12 object-contain"
+                  onError={(e) => {
+                    console.log('Image failed to load:', `/stocks/${symbol || stockData.symbol}.png`);
+                  }}
+                />
+              </div>
+
+              <div>
+                <h1 className="text-3xl font-bold text-gradient mb-1">
+                  {stockData.symbol}
+                </h1>
+                <p className="text-base" style={{ color: 'var(--text-secondary)' }}>
+                  {stockData.name}
+                </p>
+              </div>
             </div>
 
             {/* Stock/Options Toggle */}
             <div className="flex items-center gap-2 bg-black/30 p-1.5 rounded-xl">
               <button
-                onClick={() => setTradingMode('stock')}
-                className={`px-6 py-2.5 rounded-lg text-sm font-semibold transition-all duration-200 ${
-                  tradingMode === 'stock'
-                    ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg'
-                    : 'hover:bg-white/5'
-                }`}
-                style={tradingMode !== 'stock' ? { color: 'var(--text-tertiary)' } : {}}
+                className="px-6 py-2.5 rounded-lg text-sm font-semibold transition-all duration-200 bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg"
               >
                 Stock
               </button>
               <button
-                onClick={() => setTradingMode('options')}
-                className={`px-6 py-2.5 rounded-lg text-sm font-semibold transition-all duration-200 ${
-                  tradingMode === 'options'
-                    ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg'
-                    : 'hover:bg-white/5'
-                }`}
-                style={tradingMode !== 'options' ? { color: 'var(--text-tertiary)' } : {}}
+                onClick={() => router.push('/options')}
+                className="px-6 py-2.5 rounded-lg text-sm font-semibold transition-all duration-200 hover:bg-white/5"
+                style={{ color: 'var(--text-tertiary)' }}
               >
                 Options
               </button>
@@ -294,74 +302,67 @@ export default function StockPage({ params }: { params: Promise<{ symbol: string
                         ${stockData.price.toFixed(2)}
                       </div>
 
-                      {/* Timeframe Selector - Far Right */}
-                      <div className="flex items-center gap-1.5 bg-black/30 p-1.5 rounded-xl">
-                        {timeRangeOptions.map((range) => (
-                          <button
-                            key={range.value}
-                            onClick={() => setTimeRange(range.value as typeof timeRange)}
-                            className={`px-3 py-1.5 rounded-lg text-sm font-semibold transition-all duration-200 ${
-                              timeRange === range.value
-                                ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg'
-                                : 'hover:bg-white/5'
-                            }`}
-                            style={timeRange !== range.value ? { color: 'var(--text-tertiary)' } : {}}
-                          >
-                            {range.label}
-                          </button>
-                        ))}
+                        {/* Timeframe Selector - Far Right */}
+                        <div className="flex items-center gap-1.5 bg-black/30 p-1.5 rounded-xl">
+                          {timeRangeOptions.map((range) => (
+                            <button
+                              key={range.value}
+                              onClick={() => setTimeRange(range.value as typeof timeRange)}
+                              className={`px-3 py-1.5 rounded-lg text-sm font-semibold transition-all duration-200 ${
+                                timeRange === range.value
+                                  ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg'
+                                  : 'hover:bg-white/5'
+                              }`}
+                              style={timeRange !== range.value ? { color: 'var(--text-tertiary)' } : {}}
+                            >
+                              {range.label}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                      <div className={`text-xl font-semibold flex items-center gap-2 ${
+                        stockData.change >= 0 ? 'text-green-400' : 'text-red-400'
+                      }`}>
+                        {stockData.change >= 0 ? <TrendingUp className="w-5 h-5" /> : <TrendingDown className="w-5 h-5" />}
+                        {stockData.change >= 0 ? '+' : ''}{stockData.change.toFixed(2)} ({stockData.changePercent.toFixed(2)}%)
+                      </div>
+                      <div className="text-sm mt-2" style={{ color: 'var(--text-tertiary)' }}>
+                        <Clock className="w-4 h-4 inline mr-1" />
+                        Last updated: {new Date().toLocaleTimeString()}
                       </div>
                     </div>
-                    <div className={`text-xl font-semibold flex items-center gap-2 ${
-                      stockData.change >= 0 ? 'text-green-400' : 'text-red-400'
-                    }`}>
-                      {stockData.change >= 0 ? <TrendingUp className="w-5 h-5" /> : <TrendingDown className="w-5 h-5" />}
-                      {stockData.change >= 0 ? '+' : ''}{stockData.change.toFixed(2)} ({stockData.changePercent.toFixed(2)}%)
-                    </div>
-                    <div className="text-sm mt-2" style={{ color: 'var(--text-tertiary)' }}>
-                      <Clock className="w-4 h-4 inline mr-1" />
-                      Last updated: {new Date().toLocaleTimeString()}
-                    </div>
                   </div>
-                </div>
 
-                {/* Chart */}
-                <div className="mb-6">
-                  <StockChart symbol={symbol} timeRange={timeRange} />
-                </div>
+                  {/* Chart */}
+                  <div className="mb-6">
+                    <StockChart symbol={symbol} timeRange={timeRange} />
+                  </div>
 
-                {/* Technical Indicators */}
-                <div className="grid grid-cols-4 gap-4 pt-4 border-t border-white/10">
-                  <div className="text-center">
-                    <div className="text-xs mb-1" style={{ color: 'var(--text-tertiary)' }}>Open</div>
-                    <div className="text-base font-bold" style={{ color: 'var(--text-primary)' }}>${stockData.open.toFixed(2)}</div>
-                  </div>
-                  <div className="text-center">
-                    <div className="text-xs mb-1" style={{ color: 'var(--text-tertiary)' }}>Prev Close</div>
-                    <div className="text-base font-bold" style={{ color: 'var(--text-primary)' }}>${stockData.previousClose.toFixed(2)}</div>
-                  </div>
-                  <div className="text-center">
-                    <div className="text-xs mb-1" style={{ color: 'var(--text-tertiary)' }}>Day Range</div>
-                    <div className="text-base font-bold" style={{ color: 'var(--text-primary)' }}>
-                      ${stockData.dayLow.toFixed(2)} - ${stockData.dayHigh.toFixed(2)}
+                  {/* Technical Indicators */}
+                  <div className="grid grid-cols-4 gap-4 pt-4 border-t border-white/10">
+                    <div className="text-center">
+                      <div className="text-xs mb-1" style={{ color: 'var(--text-tertiary)' }}>Open</div>
+                      <div className="text-base font-bold" style={{ color: 'var(--text-primary)' }}>${stockData.open.toFixed(2)}</div>
                     </div>
-                  </div>
-                  <div className="text-center">
-                    <div className="text-xs mb-1" style={{ color: 'var(--text-tertiary)' }}>Volume</div>
-                    <div className="text-base font-bold" style={{ color: 'var(--text-primary)' }}>
-                      {(stockData.volume / 1000000).toFixed(1)}M
+                    <div className="text-center">
+                      <div className="text-xs mb-1" style={{ color: 'var(--text-tertiary)' }}>Prev Close</div>
+                      <div className="text-base font-bold" style={{ color: 'var(--text-primary)' }}>${stockData.previousClose.toFixed(2)}</div>
+                    </div>
+                    <div className="text-center">
+                      <div className="text-xs mb-1" style={{ color: 'var(--text-tertiary)' }}>Day Range</div>
+                      <div className="text-base font-bold" style={{ color: 'var(--text-primary)' }}>
+                        ${stockData.dayLow.toFixed(2)} - ${stockData.dayHigh.toFixed(2)}
+                      </div>
+                    </div>
+                    <div className="text-center">
+                      <div className="text-xs mb-1" style={{ color: 'var(--text-tertiary)' }}>Volume</div>
+                      <div className="text-base font-bold" style={{ color: 'var(--text-primary)' }}>
+                        {(stockData.volume / 1000000).toFixed(1)}M
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
-            </div>
-
-            {/* Options Chain - Shows when Options mode is selected */}
-            {tradingMode === 'options' && (
-              <div className="mt-6">
-                <OptionsChain symbol={symbol} />
-              </div>
-            )}
 
             {/* Additional Statistics - Bottom */}
             <div className="grid grid-cols-3 gap-4 mt-6">

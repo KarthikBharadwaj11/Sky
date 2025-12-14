@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { LineChart, BarChart3, TrendingUp, Settings, Eye, EyeOff, Plus, Minus, Maximize, Minimize, Volume2, Activity, BarChart, X } from 'lucide-react';
+import { LineChart, BarChart3, TrendingUp, Settings, Eye, EyeOff, Plus, Minus, Maximize, Minimize, Volume2, Activity, BarChart, X, Brain, Sparkles, ThumbsUp, ThumbsDown, TrendingDown } from 'lucide-react';
 import { ComposedChart, Line, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine, Brush, Area, Cell } from 'recharts';
 
 interface ChartData {
@@ -112,7 +112,7 @@ export default function StockChart({ symbol, timeRange }: StockChartProps) {
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [showVolumeChart, setShowVolumeChart] = useState(true);
   const [activeAnalyticsTab, setActiveAnalyticsTab] = useState<'overview' | 'technical' | 'volume' | 'volatility'>('overview');
-  const [mainTab, setMainTab] = useState<'analytics' | 'compare'>('analytics');
+  const [mainTab, setMainTab] = useState<'analytics' | 'compare' | 'ai-news'>('analytics');
 
   // Auto-determine chart type based on timeframe
   const chartType = ['1m', '5m', '15m', '30m', '1h', '4h'].includes(timeRange) ? 'candlestick' : 'line';
@@ -676,6 +676,16 @@ export default function StockChart({ symbol, timeRange }: StockChartProps) {
             >
               Compare Stocks
             </button>
+            <button
+              onClick={() => setMainTab('ai-news')}
+              className={`px-6 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 ${
+                mainTab === 'ai-news'
+                  ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg'
+                  : 'bg-gray-800 text-gray-300 hover:bg-gray-700 hover:text-white'
+              }`}
+            >
+              AI News
+            </button>
           </div>
 
           {/* Analytics Panel */}
@@ -692,6 +702,209 @@ export default function StockChart({ symbol, timeRange }: StockChartProps) {
                   <p style={{ color: 'var(--text-secondary)' }}>
                     Compare {symbol} with other stocks
                   </p>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* AI News Panel */}
+          {mainTab === 'ai-news' && (
+            <div className="space-y-6">
+              {/* AI Sentiment Summary */}
+              <div className="card">
+                <div className="card-body p-6">
+                  <div className="flex items-center gap-2 mb-4">
+                    <Brain className="w-6 h-6 text-purple-400" />
+                    <h3 className="text-xl font-bold" style={{ color: 'var(--text-primary)' }}>
+                      AI Sentiment Analysis
+                    </h3>
+                  </div>
+
+                  {/* Overall Sentiment */}
+                  <div className="grid grid-cols-3 gap-4 mb-6">
+                    <div className="p-4 rounded-xl text-center" style={{ background: 'rgba(34, 197, 94, 0.1)', border: '1px solid rgba(34, 197, 94, 0.3)' }}>
+                      <ThumbsUp className="w-8 h-8 text-green-400 mx-auto mb-2" />
+                      <div className="text-2xl font-bold text-green-400">68%</div>
+                      <div className="text-sm" style={{ color: 'var(--text-secondary)' }}>Positive</div>
+                    </div>
+                    <div className="p-4 rounded-xl text-center" style={{ background: 'rgba(148, 163, 184, 0.1)', border: '1px solid rgba(148, 163, 184, 0.3)' }}>
+                      <Minus className="w-8 h-8 text-gray-400 mx-auto mb-2" />
+                      <div className="text-2xl font-bold text-gray-400">22%</div>
+                      <div className="text-sm" style={{ color: 'var(--text-secondary)' }}>Neutral</div>
+                    </div>
+                    <div className="p-4 rounded-xl text-center" style={{ background: 'rgba(239, 68, 68, 0.1)', border: '1px solid rgba(239, 68, 68, 0.3)' }}>
+                      <ThumbsDown className="w-8 h-8 text-red-400 mx-auto mb-2" />
+                      <div className="text-2xl font-bold text-red-400">10%</div>
+                      <div className="text-sm" style={{ color: 'var(--text-secondary)' }}>Negative</div>
+                    </div>
+                  </div>
+
+                  {/* AI Summary */}
+                  <div className="p-4 rounded-xl" style={{ background: 'rgba(168, 85, 247, 0.1)', border: '1px solid rgba(168, 85, 247, 0.2)' }}>
+                    <div className="flex items-start gap-3">
+                      <Sparkles className="w-5 h-5 text-purple-400 mt-1 flex-shrink-0" />
+                      <div>
+                        <h4 className="font-semibold mb-2 text-purple-400">AI Summary</h4>
+                        <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>
+                          Market sentiment for {symbol} is predominantly bullish with strong positive momentum driven by recent earnings beat and product announcements. Analyst upgrades and institutional buying activity support continued upward trajectory. Watch for potential resistance near $950 level.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* News with Analytics */}
+              <div className="card">
+                <div className="card-body p-6">
+                  <h3 className="text-lg font-bold mb-4" style={{ color: 'var(--text-primary)' }}>
+                    Recent News & Analysis
+                  </h3>
+
+                  <div className="space-y-4">
+                    {/* News Item 1 */}
+                    <div className="p-4 rounded-lg hover:bg-white/5 transition-all cursor-pointer" style={{ background: 'var(--glass-bg)' }}>
+                      <div className="flex items-start justify-between gap-4 mb-3">
+                        <h4 className="font-semibold flex-1" style={{ color: 'var(--text-primary)' }}>
+                          {symbol} Reports Strong Quarterly Earnings, Beats Expectations
+                        </h4>
+                        <div className="flex items-center gap-1 px-2 py-1 rounded" style={{ background: 'rgba(34, 197, 94, 0.2)' }}>
+                          <TrendingUp className="w-4 h-4 text-green-400" />
+                          <span className="text-xs font-semibold text-green-400">Bullish</span>
+                        </div>
+                      </div>
+                      <p className="text-sm mb-3" style={{ color: 'var(--text-secondary)' }}>
+                        Company exceeds analyst expectations with revenue growth of 15% year-over-year, driven by strong demand in AI and data center segments.
+                      </p>
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3 text-xs" style={{ color: 'var(--text-tertiary)' }}>
+                          <span>MarketWatch</span>
+                          <span>•</span>
+                          <span>2 hours ago</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <div className="text-xs" style={{ color: 'var(--text-tertiary)' }}>
+                            Impact: <span className="font-semibold text-green-400">+2.3%</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* News Item 2 */}
+                    <div className="p-4 rounded-lg hover:bg-white/5 transition-all cursor-pointer" style={{ background: 'var(--glass-bg)' }}>
+                      <div className="flex items-start justify-between gap-4 mb-3">
+                        <h4 className="font-semibold flex-1" style={{ color: 'var(--text-primary)' }}>
+                          Major Investment Banks Raise {symbol} Price Target
+                        </h4>
+                        <div className="flex items-center gap-1 px-2 py-1 rounded" style={{ background: 'rgba(34, 197, 94, 0.2)' }}>
+                          <TrendingUp className="w-4 h-4 text-green-400" />
+                          <span className="text-xs font-semibold text-green-400">Bullish</span>
+                        </div>
+                      </div>
+                      <p className="text-sm mb-3" style={{ color: 'var(--text-secondary)' }}>
+                        Leading analysts upgrade price targets citing strong market position, innovation pipeline, and favorable industry tailwinds.
+                      </p>
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3 text-xs" style={{ color: 'var(--text-tertiary)' }}>
+                          <span>Bloomberg</span>
+                          <span>•</span>
+                          <span>5 hours ago</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <div className="text-xs" style={{ color: 'var(--text-tertiary)' }}>
+                            Impact: <span className="font-semibold text-green-400">+1.8%</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* News Item 3 */}
+                    <div className="p-4 rounded-lg hover:bg-white/5 transition-all cursor-pointer" style={{ background: 'var(--glass-bg)' }}>
+                      <div className="flex items-start justify-between gap-4 mb-3">
+                        <h4 className="font-semibold flex-1" style={{ color: 'var(--text-primary)' }}>
+                          {symbol} Announces Strategic Partnership Expansion
+                        </h4>
+                        <div className="flex items-center gap-1 px-2 py-1 rounded" style={{ background: 'rgba(148, 163, 184, 0.2)' }}>
+                          <Minus className="w-4 h-4 text-gray-400" />
+                          <span className="text-xs font-semibold text-gray-400">Neutral</span>
+                        </div>
+                      </div>
+                      <p className="text-sm mb-3" style={{ color: 'var(--text-secondary)' }}>
+                        Company expands partnerships in cloud infrastructure, positioning for long-term growth in enterprise markets.
+                      </p>
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3 text-xs" style={{ color: 'var(--text-tertiary)' }}>
+                          <span>Reuters</span>
+                          <span>•</span>
+                          <span>8 hours ago</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <div className="text-xs" style={{ color: 'var(--text-tertiary)' }}>
+                            Impact: <span className="font-semibold text-gray-400">+0.5%</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* News Item 4 */}
+                    <div className="p-4 rounded-lg hover:bg-white/5 transition-all cursor-pointer" style={{ background: 'var(--glass-bg)' }}>
+                      <div className="flex items-start justify-between gap-4 mb-3">
+                        <h4 className="font-semibold flex-1" style={{ color: 'var(--text-primary)' }}>
+                          Regulatory Concerns Raised Over Market Dominance
+                        </h4>
+                        <div className="flex items-center gap-1 px-2 py-1 rounded" style={{ background: 'rgba(239, 68, 68, 0.2)' }}>
+                          <TrendingDown className="w-4 h-4 text-red-400" />
+                          <span className="text-xs font-semibold text-red-400">Bearish</span>
+                        </div>
+                      </div>
+                      <p className="text-sm mb-3" style={{ color: 'var(--text-secondary)' }}>
+                        Government agencies examining competitive practices, though analysts view regulatory risk as manageable in near term.
+                      </p>
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3 text-xs" style={{ color: 'var(--text-tertiary)' }}>
+                          <span>CNBC</span>
+                          <span>•</span>
+                          <span>1 day ago</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <div className="text-xs" style={{ color: 'var(--text-tertiary)' }}>
+                            Impact: <span className="font-semibold text-red-400">-0.8%</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Key Metrics */}
+              <div className="card">
+                <div className="card-body p-6">
+                  <h3 className="text-lg font-bold mb-4" style={{ color: 'var(--text-primary)' }}>
+                    News Activity Metrics
+                  </h3>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="p-4 rounded-xl" style={{ background: 'var(--glass-bg)' }}>
+                      <div className="text-sm mb-1" style={{ color: 'var(--text-tertiary)' }}>Articles (24h)</div>
+                      <div className="text-2xl font-bold" style={{ color: 'var(--text-primary)' }}>47</div>
+                      <div className="text-xs text-green-400">+23% vs avg</div>
+                    </div>
+                    <div className="p-4 rounded-xl" style={{ background: 'var(--glass-bg)' }}>
+                      <div className="text-sm mb-1" style={{ color: 'var(--text-tertiary)' }}>Social Mentions</div>
+                      <div className="text-2xl font-bold" style={{ color: 'var(--text-primary)' }}>12.4K</div>
+                      <div className="text-xs text-green-400">+45% vs avg</div>
+                    </div>
+                    <div className="p-4 rounded-xl" style={{ background: 'var(--glass-bg)' }}>
+                      <div className="text-sm mb-1" style={{ color: 'var(--text-tertiary)' }}>Analyst Ratings</div>
+                      <div className="text-2xl font-bold text-green-400">Buy</div>
+                      <div className="text-xs" style={{ color: 'var(--text-tertiary)' }}>15 Buy, 3 Hold, 1 Sell</div>
+                    </div>
+                    <div className="p-4 rounded-xl" style={{ background: 'var(--glass-bg)' }}>
+                      <div className="text-sm mb-1" style={{ color: 'var(--text-tertiary)' }}>Price Target</div>
+                      <div className="text-2xl font-bold" style={{ color: 'var(--text-primary)' }}>$985</div>
+                      <div className="text-xs text-green-400">+12.5% upside</div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
