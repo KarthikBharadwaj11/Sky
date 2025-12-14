@@ -79,6 +79,7 @@ export default function CopyTrading() {
   const [showSubscribeModal, setShowSubscribeModal] = useState(false);
   const [subscriptionAmount, setSubscriptionAmount] = useState(1000);
   const [autoCopyEnabled, setAutoCopyEnabled] = useState(true);
+  const [agreedToTerms, setAgreedToTerms] = useState(false);
   const [activeTab, setActiveTab] = useState<'dashboard' | 'your-trading' | 'live-feed' | 'portfolio-center' | 'pending-trades'>('dashboard');
   const [currentTestimonial, setCurrentTestimonial] = useState(0);
   const [riskLevel, setRiskLevel] = useState<'conservative' | 'moderate' | 'aggressive'>('moderate');
@@ -1383,6 +1384,7 @@ export default function CopyTrading() {
                         onClick={() => {
                           setSelectedExpert(expert);
                           setShowSubscribeModal(true);
+                          setAgreedToTerms(false);
                         }}
                         className="flex-1 btn-primary py-3 px-4 rounded-lg font-semibold transition-all duration-300 hover:scale-105 flex items-center justify-center gap-2"
                       >
@@ -2553,10 +2555,11 @@ export default function CopyTrading() {
                         <div className="space-y-2">
                           <label className="flex items-center gap-2 cursor-pointer">
                             <input
-                              type="checkbox"
+                              type="radio"
+                              name="tradeType"
                               checked={currentSettings.allowBuyOnly}
-                              onChange={(e) => setCurrentSettings({...currentSettings, allowBuyOnly: e.target.checked, allowSellOnly: e.target.checked ? false : currentSettings.allowSellOnly})}
-                              className="w-4 h-4 rounded"
+                              onChange={(e) => setCurrentSettings({...currentSettings, allowBuyOnly: true, allowSellOnly: false})}
+                              className="w-4 h-4"
                             />
                             <span className="text-sm" style={{ color: 'var(--text-secondary)' }}>
                               {autoCopyEnabled ? 'Copy BUY trades only' : 'Show BUY trades only'}
@@ -2564,13 +2567,14 @@ export default function CopyTrading() {
                           </label>
                           <label className="flex items-center gap-2 cursor-pointer">
                             <input
-                              type="checkbox"
-                              checked={currentSettings.allowSellOnly}
-                              onChange={(e) => setCurrentSettings({...currentSettings, allowSellOnly: e.target.checked, allowBuyOnly: e.target.checked ? false : currentSettings.allowBuyOnly})}
-                              className="w-4 h-4 rounded"
+                              type="radio"
+                              name="tradeType"
+                              checked={!currentSettings.allowBuyOnly && !currentSettings.allowSellOnly}
+                              onChange={(e) => setCurrentSettings({...currentSettings, allowBuyOnly: false, allowSellOnly: false})}
+                              className="w-4 h-4"
                             />
                             <span className="text-sm" style={{ color: 'var(--text-secondary)' }}>
-                              {autoCopyEnabled ? 'Copy SELL trades only' : 'Show SELL trades only'}
+                              {autoCopyEnabled ? 'Copy BUY and SELL trades' : 'Show BUY and SELL trades'}
                             </span>
                           </label>
                         </div>
@@ -2604,11 +2608,30 @@ export default function CopyTrading() {
                 </div>
               </div>
 
+              {/* Disclosure and Agreement */}
+              <div className="glass-morphism p-5 rounded-xl mb-5" style={{ background: 'rgba(59, 130, 246, 0.05)', border: '1px solid rgba(59, 130, 246, 0.2)' }}>
+                <p className="text-sm mb-4" style={{ color: 'var(--text-secondary)' }}>
+                  By choosing to copy this expert, you authorize Sky Trades to {autoCopyEnabled ? 'automatically execute trades' : 'send you trade notifications'} on your behalf based on {selectedExpert?.name}'s trading activity. {autoCopyEnabled ? 'Trades will be executed in real-time according to your configured settings and allocation amount.' : 'You will receive notifications for trades matching your filters and can choose to execute them manually.'} You acknowledge that trading involves risk and past performance does not guarantee future results.
+                </p>
+                <label className="flex items-start gap-3 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={agreedToTerms}
+                    onChange={(e) => setAgreedToTerms(e.target.checked)}
+                    className="w-5 h-5 rounded mt-0.5"
+                  />
+                  <span className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>
+                    I understand and agree to the terms of {autoCopyEnabled ? 'automatic' : 'manual'} copy trading, including the risks involved.
+                  </span>
+                </label>
+              </div>
+
               <div className="flex space-x-4">
                 <button
                   onClick={() => {
                     setShowSubscribeModal(false);
                     setSelectedExpert(null);
+                    setAgreedToTerms(false);
                   }}
                   className="btn-secondary flex-1 py-4"
                 >
@@ -2616,7 +2639,12 @@ export default function CopyTrading() {
                 </button>
                 <button
                   onClick={() => handleSubscribe(selectedExpert)}
-                  className="btn-primary flex-1 py-4"
+                  disabled={!agreedToTerms}
+                  className={`flex-1 py-4 ${
+                    agreedToTerms
+                      ? 'btn-primary'
+                      : 'bg-gray-600 text-gray-400 cursor-not-allowed'
+                  }`}
                 >
                   Copy
                 </button>
@@ -2964,10 +2992,11 @@ export default function CopyTrading() {
                               <div className="space-y-2">
                                 <label className="flex items-center gap-2 cursor-pointer">
                                   <input
-                                    type="checkbox"
+                                    type="radio"
+                                    name="tradeTypeEdit"
                                     checked={currentSettings.allowBuyOnly}
-                                    onChange={(e) => setCurrentSettings({...currentSettings, allowBuyOnly: e.target.checked, allowSellOnly: e.target.checked ? false : currentSettings.allowSellOnly})}
-                                    className="w-4 h-4 rounded"
+                                    onChange={(e) => setCurrentSettings({...currentSettings, allowBuyOnly: true, allowSellOnly: false})}
+                                    className="w-4 h-4"
                                   />
                                   <span className="text-sm" style={{ color: 'var(--text-secondary)' }}>
                                     {subscription?.autoCopy ? 'Copy BUY trades only' : 'Show BUY trades only'}
@@ -2975,13 +3004,14 @@ export default function CopyTrading() {
                                 </label>
                                 <label className="flex items-center gap-2 cursor-pointer">
                                   <input
-                                    type="checkbox"
-                                    checked={currentSettings.allowSellOnly}
-                                    onChange={(e) => setCurrentSettings({...currentSettings, allowSellOnly: e.target.checked, allowBuyOnly: e.target.checked ? false : currentSettings.allowBuyOnly})}
-                                    className="w-4 h-4 rounded"
+                                    type="radio"
+                                    name="tradeTypeEdit"
+                                    checked={!currentSettings.allowBuyOnly && !currentSettings.allowSellOnly}
+                                    onChange={(e) => setCurrentSettings({...currentSettings, allowBuyOnly: false, allowSellOnly: false})}
+                                    className="w-4 h-4"
                                   />
                                   <span className="text-sm" style={{ color: 'var(--text-secondary)' }}>
-                                    {subscription?.autoCopy ? 'Copy SELL trades only' : 'Show SELL trades only'}
+                                    {subscription?.autoCopy ? 'Copy BUY and SELL trades' : 'Show BUY and SELL trades'}
                                   </span>
                                 </label>
                               </div>
@@ -3167,6 +3197,7 @@ export default function CopyTrading() {
                         onClick={() => {
                           setSelectedExpert(selectedExpertForVideo);
                           setShowSubscribeModal(true);
+                          setAgreedToTerms(false);
                           setShowVideoModal(false);
                           setSelectedExpertForVideo(null);
                         }}

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { LineChart, BarChart3, TrendingUp, Settings, Eye, EyeOff, Plus, Minus, Maximize, Minimize, Volume2, Activity, BarChart, X, Brain, Sparkles, ThumbsUp, ThumbsDown, TrendingDown } from 'lucide-react';
+import { LineChart, BarChart3, TrendingUp, Settings, Eye, EyeOff, Plus, Minus, Maximize, Minimize, Volume2, Activity, BarChart, X, Brain, Sparkles, ThumbsUp, ThumbsDown, TrendingDown, Bell } from 'lucide-react';
 import { ComposedChart, Line, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine, Brush, Area, Cell } from 'recharts';
 
 interface ChartData {
@@ -49,6 +49,14 @@ interface SupportResistance {
   id: string;
   level: number;
   type: 'support' | 'resistance' | 'stop_loss';
+  color: string;
+  enabled: boolean;
+}
+
+interface PriceAlert {
+  id: string;
+  level: number;
+  type: 'above' | 'below';
   color: string;
   enabled: boolean;
 }
@@ -110,7 +118,7 @@ export default function StockChart({ symbol, timeRange }: StockChartProps) {
   const [analytics, setAnalytics] = useState<AnalyticsData | null>(null);
   const [showIndicatorPanel, setShowIndicatorPanel] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
-  const [showVolumeChart, setShowVolumeChart] = useState(true);
+  const [showVolumeChart, setShowVolumeChart] = useState(false);
   const [activeAnalyticsTab, setActiveAnalyticsTab] = useState<'overview' | 'technical' | 'volume' | 'volatility'>('overview');
   const [mainTab, setMainTab] = useState<'analytics' | 'compare' | 'ai-news'>('analytics');
 
@@ -143,6 +151,8 @@ export default function StockChart({ symbol, timeRange }: StockChartProps) {
 
   const [supportResistanceLines, setSupportResistanceLines] = useState<SupportResistance[]>([]);
   const [showLinesPanel, setShowLinesPanel] = useState(false);
+  const [priceAlerts, setPriceAlerts] = useState<PriceAlert[]>([]);
+  const [showPriceAlertsPanel, setShowPriceAlertsPanel] = useState(false);
 
   // Handle chart fullscreen (overlay mode)
   const toggleFullscreen = useCallback(() => {
@@ -446,6 +456,30 @@ export default function StockChart({ symbol, timeRange }: StockChartProps) {
   const updateLineLevel = (id: string, newLevel: number) => {
     setSupportResistanceLines(prev =>
       prev.map(line => line.id === id ? { ...line, level: newLevel } : line)
+    );
+  };
+
+  const addPriceAlert = (type: 'above' | 'below') => {
+    if (chartData.length === 0) return;
+    const currentPrice = chartData[chartData.length - 1].close;
+    const alertLevel = type === 'above' ? currentPrice * 1.05 : currentPrice * 0.95;
+    const newAlert: PriceAlert = {
+      id: Date.now().toString(),
+      level: Number(alertLevel.toFixed(2)),
+      type,
+      color: type === 'above' ? '#3b82f6' : '#a855f7',
+      enabled: true
+    };
+    setPriceAlerts(prev => [...prev, newAlert]);
+  };
+
+  const removePriceAlert = (id: string) => {
+    setPriceAlerts(prev => prev.filter(alert => alert.id !== id));
+  };
+
+  const updateAlertLevel = (id: string, newLevel: number) => {
+    setPriceAlerts(prev =>
+      prev.map(alert => alert.id === id ? { ...alert, level: newLevel } : alert)
     );
   };
 
@@ -927,27 +961,37 @@ export default function StockChart({ symbol, timeRange }: StockChartProps) {
                     }`}
                     title="Toggle Volume"
                   >
-                    VOL
+                    Volume
                   </button>
 
                   <button
                     onClick={() => setShowIndicatorPanel(!showIndicatorPanel)}
-                    className={`p-2 rounded-lg transition-all duration-300 ${
+                    className={`px-3 py-2 rounded-lg transition-all duration-300 text-xs font-medium ${
                       showIndicatorPanel ? 'btn-primary' : 'glass-morphism hover:bg-white/10'
                     }`}
                     title="Indicators"
                   >
-                    <TrendingUp className="w-4 h-4" />
+                    Indicators
                   </button>
-                  
+
                   <button
                     onClick={() => setShowLinesPanel(!showLinesPanel)}
-                    className={`p-2 rounded-lg transition-all duration-300 ${
+                    className={`px-3 py-2 rounded-lg transition-all duration-300 text-xs font-medium ${
                       showLinesPanel ? 'btn-primary' : 'glass-morphism hover:bg-white/10'
                     }`}
                     title="Lines"
                   >
-                    <Settings className="w-4 h-4" />
+                    Lines
+                  </button>
+
+                  <button
+                    onClick={() => setShowPriceAlertsPanel(!showPriceAlertsPanel)}
+                    className={`px-3 py-2 rounded-lg transition-all duration-300 text-xs font-medium ${
+                      showPriceAlertsPanel ? 'btn-primary' : 'glass-morphism hover:bg-white/10'
+                    }`}
+                    title="Set Price Alerts"
+                  >
+                    Price Alerts
                   </button>
                 </div>
               </div>
@@ -1019,13 +1063,13 @@ export default function StockChart({ symbol, timeRange }: StockChartProps) {
                       </button>
                     </div>
                   </div>
-                  
+
                   {supportResistanceLines.length > 0 && (
                     <div className="space-y-2 max-h-32 overflow-y-auto">
                       {supportResistanceLines.map((line) => (
                         <div key={line.id} className="flex items-center justify-between p-2 glass-morphism rounded-lg">
                           <div className="flex items-center gap-3">
-                            <div 
+                            <div
                               className="w-3 h-3 rounded-full"
                               style={{ backgroundColor: line.color }}
                             />
@@ -1049,6 +1093,80 @@ export default function StockChart({ symbol, timeRange }: StockChartProps) {
                           </button>
                         </div>
                       ))}
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Price Alerts Panel */}
+              {showPriceAlertsPanel && (
+                <div className="glass-morphism rounded-xl p-4 mb-4" style={{ background: 'rgba(59, 130, 246, 0.05)', border: '1px solid rgba(59, 130, 246, 0.2)' }}>
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="flex items-center gap-2">
+                      <Bell className="w-5 h-5 text-blue-400" />
+                      <h4 className="text-lg font-semibold text-blue-400">
+                        Price Alerts
+                      </h4>
+                    </div>
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => addPriceAlert('above')}
+                        className="glass-morphism px-3 py-1.5 rounded-lg hover:bg-white/10 transition-all duration-300 text-xs font-medium"
+                        title="Alert when price goes above"
+                      >
+                        <div className="flex items-center gap-1.5">
+                          <Plus className="w-3 h-3 text-blue-400" />
+                          <span className="text-blue-400">Above</span>
+                        </div>
+                      </button>
+                      <button
+                        onClick={() => addPriceAlert('below')}
+                        className="glass-morphism px-3 py-1.5 rounded-lg hover:bg-white/10 transition-all duration-300 text-xs font-medium"
+                        title="Alert when price goes below"
+                      >
+                        <div className="flex items-center gap-1.5">
+                          <Plus className="w-3 h-3 text-purple-400" />
+                          <span className="text-purple-400">Below</span>
+                        </div>
+                      </button>
+                    </div>
+                  </div>
+
+                  {priceAlerts.length > 0 ? (
+                    <div className="space-y-2 max-h-32 overflow-y-auto">
+                      {priceAlerts.map((alert) => (
+                        <div key={alert.id} className="flex items-center justify-between p-2 glass-morphism rounded-lg">
+                          <div className="flex items-center gap-3">
+                            <Bell
+                              className="w-3.5 h-3.5"
+                              style={{ color: alert.color }}
+                            />
+                            <span className="text-sm capitalize" style={{ color: 'var(--text-secondary)' }}>
+                              {alert.type === 'above' ? '↑ Above' : '↓ Below'}
+                            </span>
+                            <input
+                              type="number"
+                              value={alert.level}
+                              onChange={(e) => updateAlertLevel(alert.id, parseFloat(e.target.value) || 0)}
+                              className="w-20 px-2 py-1 text-xs bg-white/10 border border-white/20 rounded text-center"
+                              style={{ color: 'var(--text-primary)' }}
+                              step="0.01"
+                            />
+                          </div>
+                          <button
+                            onClick={() => removePriceAlert(alert.id)}
+                            className="p-1 hover:bg-red-500/20 rounded transition-all duration-300"
+                          >
+                            <X className="w-3 h-3 text-red-400" />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="text-center py-4">
+                      <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>
+                        No price alerts set. Click above to add alerts.
+                      </p>
                     </div>
                   )}
                 </div>
@@ -1084,16 +1202,32 @@ export default function StockChart({ symbol, timeRange }: StockChartProps) {
                     
                     {/* Support/Resistance Lines */}
                     {supportResistanceLines.map((line) => (
-                      <ReferenceLine 
+                      <ReferenceLine
                         key={line.id}
-                        y={line.level} 
+                        y={line.level}
                         stroke={line.color}
                         strokeDasharray="5 5"
                         strokeWidth={2}
-                        label={{ 
-                          value: `$${line.level}`, 
+                        label={{
+                          value: `$${line.level}`,
                           position: 'topRight',
                           style: { fontSize: '10px', fill: line.color }
+                        }}
+                      />
+                    ))}
+
+                    {/* Price Alerts */}
+                    {priceAlerts.map((alert) => (
+                      <ReferenceLine
+                        key={alert.id}
+                        y={alert.level}
+                        stroke={alert.color}
+                        strokeDasharray="3 3"
+                        strokeWidth={2}
+                        label={{
+                          value: `🔔 $${alert.level}`,
+                          position: 'topLeft',
+                          style: { fontSize: '10px', fill: alert.color, fontWeight: 'bold' }
                         }}
                       />
                     ))}
@@ -1151,12 +1285,14 @@ export default function StockChart({ symbol, timeRange }: StockChartProps) {
                       </linearGradient>
                     </defs>
 
-                    {/* Zoom Brush */}
-                    <Brush 
-                      dataKey="date" 
-                      height={30} 
+                    {/* Zoom Brush - Non-interactive */}
+                    <Brush
+                      dataKey="date"
+                      height={30}
                       stroke="#22d3ee"
                       tickFormatter={formatXAxisLabel}
+                      onChange={() => {}}
+                      style={{ pointerEvents: 'none', opacity: 0.5 }}
                     />
                   </ComposedChart>
                 </ResponsiveContainer>
@@ -1357,16 +1493,32 @@ export default function StockChart({ symbol, timeRange }: StockChartProps) {
                   
                   {/* Support/Resistance Lines */}
                   {supportResistanceLines.map((line) => (
-                    <ReferenceLine 
+                    <ReferenceLine
                       key={line.id}
-                      y={line.level} 
+                      y={line.level}
                       stroke={line.color}
                       strokeDasharray="5 5"
                       strokeWidth={2}
-                      label={{ 
-                        value: `$${line.level}`, 
+                      label={{
+                        value: `$${line.level}`,
                         position: 'topRight',
                         style: { fontSize: '12px', fill: line.color }
+                      }}
+                    />
+                  ))}
+
+                  {/* Price Alerts */}
+                  {priceAlerts.map((alert) => (
+                    <ReferenceLine
+                      key={alert.id}
+                      y={alert.level}
+                      stroke={alert.color}
+                      strokeDasharray="3 3"
+                      strokeWidth={2}
+                      label={{
+                        value: `🔔 $${alert.level}`,
+                        position: 'topLeft',
+                        style: { fontSize: '12px', fill: alert.color, fontWeight: 'bold' }
                       }}
                     />
                   ))}
@@ -1421,12 +1573,14 @@ export default function StockChart({ symbol, timeRange }: StockChartProps) {
                     </linearGradient>
                   </defs>
 
-                  {/* Enhanced Zoom Brush for fullscreen */}
-                  <Brush 
-                    dataKey="date" 
-                    height={40} 
+                  {/* Enhanced Zoom Brush for fullscreen - Non-interactive */}
+                  <Brush
+                    dataKey="date"
+                    height={40}
                     stroke="#22d3ee"
                     tickFormatter={formatXAxisLabel}
+                    onChange={() => {}}
+                    style={{ pointerEvents: 'none', opacity: 0.5 }}
                   />
                 </ComposedChart>
               </ResponsiveContainer>
