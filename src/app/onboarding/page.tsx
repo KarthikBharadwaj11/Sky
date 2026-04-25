@@ -74,17 +74,17 @@ export default function OnboardingPage() {
   }
 
   const steps = [
-    { id: 1, name: 'Account Type', shortName: 'Account' },
-    { id: 2, name: 'Verification', shortName: 'Verification' },
-    { id: 3, name: 'Residency Status', shortName: 'Residency' },
-    { id: 4, name: 'Professional Details', shortName: 'Professional' },
-    { id: 5, name: 'Funding Source', shortName: 'Funding' },
-    { id: 6, name: 'Investment Goals', shortName: 'Goals' },
-    { id: 7, name: 'Risk Assessment', shortName: 'Risk' },
-    { id: 8, name: 'Family/Advisor Access', shortName: 'Family' },
-    { id: 9, name: 'Member Details', shortName: 'Details' },
-    { id: 10, name: 'Create Account', shortName: 'Account Setup' },
-    { id: 11, name: 'Choose Plan', shortName: 'Subscription' },
+    { id: 1, name: 'Choose Plan', shortName: 'Subscription' },
+    { id: 2, name: 'Account Type', shortName: 'Account' },
+    { id: 3, name: 'Verification', shortName: 'Verification' },
+    { id: 4, name: 'Residency Status', shortName: 'Residency' },
+    { id: 5, name: 'Professional Details', shortName: 'Professional' },
+    { id: 6, name: 'Funding Source', shortName: 'Funding' },
+    { id: 7, name: 'Investment Goals', shortName: 'Goals' },
+    { id: 8, name: 'Risk Assessment', shortName: 'Risk' },
+    { id: 9, name: 'Family/Advisor Access', shortName: 'Family' },
+    { id: 10, name: 'Member Details', shortName: 'Details' },
+    { id: 11, name: 'Create Account', shortName: 'Account Setup' },
   ];
 
   const handleStepComplete = (stepData: any) => {
@@ -161,69 +161,69 @@ export default function OnboardingPage() {
 
           {/* Current Step Component */}
           {currentStep === 1 && (
+            <SubscriptionStep
+              onComplete={handleStepComplete}
+              onSkip={() => setCurrentStep(2)}
+            />
+          )}
+          {currentStep === 2 && (
             <AccountTypeAndBasicInfo
               data={onboardingData}
               onComplete={handleStepComplete}
             />
           )}
-          {currentStep === 2 && (
+          {currentStep === 3 && (
             <MobileVerificationStep
               data={onboardingData}
               onComplete={handleStepComplete}
             />
           )}
-          {currentStep === 3 && (
+          {currentStep === 4 && (
             <ResidencyVerificationStep
               data={onboardingData}
               onComplete={handleStepComplete}
             />
           )}
-          {currentStep === 4 && (
+          {currentStep === 5 && (
             <ProfessionalDetails
               data={onboardingData}
               onComplete={handleStepComplete}
             />
           )}
-          {currentStep === 5 && (
+          {currentStep === 6 && (
             <SourceOfFunds
               data={onboardingData}
               onComplete={handleStepComplete}
             />
           )}
-          {currentStep === 6 && (
+          {currentStep === 7 && (
             <InvestmentGoalsExperience
               data={onboardingData}
               onComplete={handleStepComplete}
             />
           )}
-          {currentStep === 7 && (
+          {currentStep === 8 && (
             <ComplianceRiskAssessment
               data={onboardingData}
               onComplete={handleStepComplete}
             />
           )}
-          {currentStep === 8 && (
+          {currentStep === 9 && (
             <AddFamilyMemberPrompt
               data={onboardingData}
               onComplete={handleStepComplete}
             />
           )}
-          {currentStep === 9 && (
+          {currentStep === 10 && (
             <FamilyMemberDetailsStep
               data={onboardingData}
               onComplete={handleStepComplete}
             />
           )}
-          {currentStep === 10 && (
+          {currentStep === 11 && (
             <AddAccountPrompt
               data={onboardingData}
               onComplete={handleStepComplete}
-            />
-          )}
-          {currentStep === 11 && (
-            <SubscriptionStep
-              onComplete={handleStepComplete}
-              onSkip={handleComplete}
             />
           )}
         </div>

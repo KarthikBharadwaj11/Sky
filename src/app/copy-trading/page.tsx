@@ -661,22 +661,34 @@ export default function CopyTrading() {
               </p>
             </div>
 
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-16 max-w-5xl mx-auto">
-              <div className="text-center">
-                <div className="text-4xl md:text-4xl font-black text-gradient mb-2">X</div>
-                <div className="text-sm font-medium" style={{ color: 'var(--text-tertiary)' }}>Active Traders</div>
+
+            {/* Why Copy Trading */}
+            <div className="max-w-6xl mx-auto mb-16">
+              <div className="text-center mb-12">
+                <h2 className="text-4xl font-bold text-gradient mb-4">Why Copy Trading?</h2>
+                <p className="text-lg" style={{ color: 'var(--text-secondary)' }}>
+                  Powerful features to help you succeed
+                </p>
               </div>
-              <div className="text-center">
-                <div className="text-4xl md:text-4xl font-black text-gradient mb-2">X</div>
-                <div className="text-sm font-medium" style={{ color: 'var(--text-tertiary)' }}>Expert Traders</div>
-              </div>
-              <div className="text-center">
-                <div className="text-4xl md:text-4xl font-black text-gradient mb-2">X</div>
-                <div className="text-sm font-medium" style={{ color: 'var(--text-tertiary)' }}>Assets Under Management</div>
-              </div>
-              <div className="text-center">
-                <div className="text-4xl md:text-4xl font-black text-gradient mb-2">X</div>
-                <div className="text-sm font-medium" style={{ color: 'var(--text-tertiary)' }}>Positive Returns</div>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {[
+                  { icon: <Copy className="w-8 h-8" />, title: "Automatic Copying", description: "Every trade your chosen expert makes is automatically replicated in your account proportionally." },
+                  { icon: <Shield className="w-8 h-8" />, title: "Risk Control", description: "Set your own risk limits, stop-losses, and maximum allocation per trade for complete control." },
+                  { icon: <Brain className="w-8 h-8" />, title: "Learn While You Earn", description: "See expert reasoning, analysis, and market insights to improve your own trading knowledge." },
+                  { icon: <Users className="w-8 h-8" />, title: "Social Trading", description: "Connect with expert traders, ask questions, and join a community of successful investors." },
+                  { icon: <BarChart3 className="w-8 h-8" />, title: "Transparent Performance", description: "View detailed performance metrics, trade history, and risk analysis for every expert." },
+                  { icon: <Clock className="w-8 h-8" />, title: "24/7 Trading", description: "Your investments work around the clock, even while you sleep or focus on other priorities." },
+                ].map((feature, index) => (
+                  <div key={index} className="card hover:scale-105 transition-all duration-300">
+                    <div className="card-body text-center p-6">
+                      <div className="flex justify-center mb-4" style={{ color: 'var(--text-accent)' }}>
+                        {feature.icon}
+                      </div>
+                      <h3 className="text-xl font-bold mb-3" style={{ color: 'var(--text-primary)' }}>{feature.title}</h3>
+                      <p style={{ color: 'var(--text-secondary)' }}>{feature.description}</p>
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
 
@@ -861,36 +873,6 @@ export default function CopyTrading() {
           </p>
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-5">
-          <div className="text-center group hover:scale-110 transition-all duration-300">
-            <div className="flex justify-center mb-4 opacity-60 group-hover:opacity-100 transition-opacity">
-              <Users className="w-10 h-10" style={{ color: 'var(--primary-blue)' }} />
-            </div>
-            <div className="text-4xl md:text-4xl font-black text-gradient mb-2">X</div>
-            <div className="text-sm font-medium" style={{ color: 'var(--text-tertiary)' }}>Active Copy Traders</div>
-          </div>
-          <div className="text-center group hover:scale-110 transition-all duration-300">
-            <div className="flex justify-center mb-4 opacity-60 group-hover:opacity-100 transition-opacity">
-              <Award className="w-10 h-10" style={{ color: 'var(--primary-blue)' }} />
-            </div>
-            <div className="text-4xl md:text-4xl font-black text-gradient mb-2">X</div>
-            <div className="text-sm font-medium" style={{ color: 'var(--text-tertiary)' }}>Expert Traders</div>
-          </div>
-          <div className="text-center group hover:scale-110 transition-all duration-300">
-            <div className="flex justify-center mb-4 opacity-60 group-hover:opacity-100 transition-opacity">
-              <DollarSign className="w-10 h-10" style={{ color: 'var(--primary-blue)' }} />
-            </div>
-            <div className="text-4xl md:text-4xl font-black text-gradient mb-2">X</div>
-            <div className="text-sm font-medium" style={{ color: 'var(--text-tertiary)' }}>Assets Under Management</div>
-          </div>
-          <div className="text-center group hover:scale-110 transition-all duration-300">
-            <div className="flex justify-center mb-4 opacity-60 group-hover:opacity-100 transition-opacity">
-              <TrendingUp className="w-10 h-10" style={{ color: 'var(--primary-blue)' }} />
-            </div>
-            <div className="text-4xl md:text-4xl font-black text-gradient mb-2">X</div>
-            <div className="text-sm font-medium" style={{ color: 'var(--text-tertiary)' }}>Positive Returns</div>
-          </div>
-        </div>
 
         <div className="flex flex-col sm:flex-row gap-5 justify-center">
           <button
@@ -2245,7 +2227,7 @@ export default function CopyTrading() {
   );
 
   return (
-    <div className="flex min-h-screen trading-background">
+    <div className="flex min-h-screen">
       {/* Left Sidebar - Fixed */}
       <div className="w-80 glass-morphism border-r border-white/10 p-5 fixed left-0 top-20 overflow-y-auto" style={{ height: 'calc(100vh - 5rem)' }}>
         <div className="mb-8">
@@ -2325,15 +2307,17 @@ export default function CopyTrading() {
 
       {/* Main Content */}
       <div className="flex-1 p-5 overflow-y-auto ml-80">
-        {/* Account Switcher */}
-        <div className="flex justify-end mb-4">
-          <AccountSwitcher />
-        </div>
+        <div className="max-w-[90%] mx-auto">
+          {/* Account Switcher */}
+          <div className="flex justify-end mb-4">
+            <AccountSwitcher />
+          </div>
 
-        {activeTab === 'dashboard' && renderDashboard()}
-        {activeTab === 'portfolio-center' && renderPortfolioCenter()}
-        {activeTab === 'your-trading' && renderYourTrading()}
-        {activeTab === 'live-feed' && renderLiveFeed()}
+          {activeTab === 'dashboard' && renderDashboard()}
+          {activeTab === 'portfolio-center' && renderPortfolioCenter()}
+          {activeTab === 'your-trading' && renderYourTrading()}
+          {activeTab === 'live-feed' && renderLiveFeed()}
+        </div>
       </div>
 
       {/* Subscribe Modal */}

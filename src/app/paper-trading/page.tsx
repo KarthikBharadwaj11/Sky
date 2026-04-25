@@ -4,7 +4,7 @@ import { useAuth } from '@/components/auth/AuthProvider';
 import { useTheme } from '@/components/theme/ThemeProvider';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { TrendingUp, TrendingDown, Activity, DollarSign, Target, BarChart3, Zap, BookOpen, Award } from 'lucide-react';
+import { TrendingUp, TrendingDown, Activity, DollarSign, Target, BarChart3, Zap, BookOpen, Award, Shield } from 'lucide-react';
 import LineChart from '@/components/charts/LineChart';
 
 interface PaperHolding {
@@ -162,9 +162,6 @@ export default function PaperTrading() {
         <section className="pt-48 pb-16">
           <div className="container mx-auto px-4">
             <div className="max-w-6xl mx-auto text-center mb-16">
-              <div className="inline-block px-4 py-2 rounded-full mb-6 glass-morphism">
-                <span className="text-sm font-bold" style={{ color: 'var(--text-accent)' }}>🎯 PRACTICE MODE</span>
-              </div>
               <h1 className="text-5xl md:text-7xl font-bold gradient-shift leading-tight mb-6">
                 Paper Trading
               </h1>
@@ -173,24 +170,6 @@ export default function PaperTrading() {
               </p>
             </div>
 
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-16 max-w-5xl mx-auto">
-              <div className="card p-6 text-center hover:scale-105 transition-all duration-300">
-                <div className="text-3xl font-bold mb-2 text-gradient">X</div>
-                <div className="text-sm font-medium" style={{ color: 'var(--text-secondary)' }}>Starting Balance</div>
-              </div>
-              <div className="card p-6 text-center hover:scale-105 transition-all duration-300">
-                <div className="text-3xl font-bold mb-2 text-gradient">X</div>
-                <div className="text-sm font-medium" style={{ color: 'var(--text-secondary)' }}>Live Market Prices</div>
-              </div>
-              <div className="card p-6 text-center hover:scale-105 transition-all duration-300">
-                <div className="text-3xl font-bold mb-2 text-gradient">X</div>
-                <div className="text-sm font-medium" style={{ color: 'var(--text-secondary)' }}>Practice Safely</div>
-              </div>
-              <div className="card p-6 text-center hover:scale-105 transition-all duration-300">
-                <div className="text-3xl font-bold mb-2 text-gradient">X</div>
-                <div className="text-sm font-medium" style={{ color: 'var(--text-secondary)' }}>All Trading Tools</div>
-              </div>
-            </div>
 
             {/* What is Paper Trading */}
             <div className="max-w-4xl mx-auto mb-16">
@@ -216,6 +195,61 @@ export default function PaperTrading() {
                     <h3 className="text-lg font-bold mb-2" style={{ color: 'var(--text-primary)' }}>Build Confidence</h3>
                     <p style={{ color: 'var(--text-secondary)' }}>Gain experience and confidence before using real money</p>
                   </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Why Paper Trade */}
+            <div className="max-w-6xl mx-auto mb-16">
+              <div className="text-center mb-12">
+                <h2 className="text-4xl font-bold text-gradient mb-4">Why Paper Trade?</h2>
+                <p className="text-lg" style={{ color: 'var(--text-secondary)' }}>
+                  The perfect way to start your trading journey
+                </p>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                {[
+                  { icon: <Target className="w-8 h-8" />, title: "Risk-Free Learning", description: "Make mistakes and learn from them without losing real money. Perfect for beginners." },
+                  { icon: <TrendingUp className="w-8 h-8" />, title: "Real Market Data", description: "Practice with live market prices and conditions to get an authentic trading experience." },
+                  { icon: <Shield className="w-8 h-8" />, title: "All Trading Tools", description: "Access the same powerful tools and features available in real trading mode." },
+                  { icon: <Zap className="w-8 h-8" />, title: "Instant Execution", description: "Execute trades instantly and see immediate results in your virtual portfolio." },
+                ].map((benefit, index) => (
+                  <div key={index} className="card hover:scale-105 transition-all duration-300">
+                    <div className="card-body text-center p-6">
+                      <div className="flex justify-center mb-4" style={{ color: 'var(--text-accent)' }}>
+                        {benefit.icon}
+                      </div>
+                      <h3 className="text-lg font-bold mb-2" style={{ color: 'var(--text-primary)' }}>{benefit.title}</h3>
+                      <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>{benefit.description}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* How It Works */}
+            <div className="max-w-4xl mx-auto mb-16">
+              <div className="card p-8">
+                <h2 className="text-3xl font-bold mb-4 text-center" style={{ color: 'var(--text-primary)' }}>How Paper Trading Works</h2>
+                <p className="text-lg text-center mb-8" style={{ color: 'var(--text-secondary)' }}>
+                  Start practicing in three simple steps
+                </p>
+                <div className="space-y-6">
+                  {[
+                    { step: 1, color: 'bg-blue-600', title: 'Get $100,000 Virtual Money', desc: 'Start with a virtual balance of $100,000 to practice trading without any risk.' },
+                    { step: 2, color: 'bg-purple-600', title: 'Trade with Real Market Data', desc: 'Buy and sell stocks using live market prices. Experience real trading conditions.' },
+                    { step: 3, color: 'bg-indigo-600', title: 'Track Your Performance', desc: 'Monitor your virtual portfolio, analyze your trades, and improve your strategy.' },
+                  ].map(({ step, color, title, desc }) => (
+                    <div key={step} className="flex gap-4 items-start">
+                      <div className={`flex-shrink-0 w-10 h-10 rounded-lg ${color} flex items-center justify-center`}>
+                        <span className="text-white font-bold">{step}</span>
+                      </div>
+                      <div>
+                        <h3 className="text-lg font-bold mb-2" style={{ color: 'var(--text-primary)' }}>{title}</h3>
+                        <p style={{ color: 'var(--text-secondary)' }}>{desc}</p>
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </div>
             </div>

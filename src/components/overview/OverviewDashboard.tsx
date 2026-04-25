@@ -527,7 +527,7 @@ export default function OverviewDashboard() {
   return (
     <div className="flex min-h-screen">
       {/* Left Sidebar - Watchlist - Fixed */}
-      <div className="w-[20.8rem] glass-morphism border-r border-white/10 fixed left-0 top-[120px] h-[calc(100vh-120px)] overflow-hidden z-20 flex flex-col">
+      <div className="w-[20.8rem] glass-morphism border-r border-white/10 fixed left-0 top-[128px] h-[calc(100vh-128px)] overflow-hidden z-20 flex flex-col">
         {/* Watchlist Header */}
         <div className="p-4 border-b border-white/10">
           <div className="flex items-center justify-between mb-3">

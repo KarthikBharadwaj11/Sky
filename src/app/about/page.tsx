@@ -1,31 +1,16 @@
 'use client';
 
-import { 
-  Target, 
-  Users, 
-  Award, 
-  Shield, 
-  Globe, 
-  TrendingUp,
+import {
+  Shield,
   Heart,
   Zap,
   Eye,
-  MapPin,
-  Star,
   CheckCircle,
-  Linkedin,
-  Twitter,
-  Mail
+  Mail,
+  Star
 } from 'lucide-react';
 
 export default function AboutPage() {
-  const stats = [
-    { icon: <Users className="w-8 h-8" />, value: "X", label: "Active Traders" },
-    { icon: <Globe className="w-8 h-8" />, value: "X", label: "Volume Traded" },
-    { icon: <TrendingUp className="w-8 h-8" />, value: "X", label: "Uptime" },
-    { icon: <Award className="w-8 h-8" />, value: "X", label: "Support" }
-  ];
-
   const values = [
     {
       icon: <Shield className="w-12 h-12" />,
@@ -50,34 +35,9 @@ export default function AboutPage() {
   ];
 
   const team = [
-    {
-      name: "Team Member",
-      role: "CEO & Co-Founder",
-      description: "Leadership experience in fintech and trading platforms.",
-      image: "👩‍💼",
-      social: { linkedin: "#", twitter: "#" }
-    },
-    {
-      name: "Team Member",
-      role: "CTO & Co-Founder", 
-      description: "Technical expertise in distributed systems and trading infrastructure.",
-      image: "👨‍💻",
-      social: { linkedin: "#", twitter: "#" }
-    },
-    {
-      name: "Team Member",
-      role: "Head of AI & Analytics",
-      description: "Advanced degree and research experience in machine learning and quantitative analysis.",
-      image: "👩‍🔬",
-      social: { linkedin: "#", twitter: "#" }
-    },
-    {
-      name: "Team Member",
-      role: "Head of Product",
-      description: "Product development experience in financial technology and trading platforms.",
-      image: "👨‍💼",
-      social: { linkedin: "#", twitter: "#" }
-    }
+    { name: "Sushma Srinivas", role: "Founder & CEO" },
+    { name: "Prakash Nair", role: "CTO" },
+    { name: "Karthik Surya", role: "IT Manager" },
   ];
 
 
@@ -93,18 +53,8 @@ export default function AboutPage() {
             </h1>
             
             <p className="text-xl md:text-2xl mb-8" style={{ color: 'var(--text-secondary)' }}>
-              We're on a mission to democratize trading and make financial markets accessible to everyone, 
-              backed by cutting-edge technology and unwavering commitment to our users.
+              Sky empowers the modern trader by fusing cutting-edge AI insights with a collaborative community. By removing the barriers to sophisticated trading, we provide every trader—at every level—with the intelligence and tools they need to thrive.
             </p>
-            
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-              {stats.map((stat, index) => (
-                <div key={index} className="glass-morphism p-6 rounded-xl text-center hover:scale-105 transition-all duration-300">
-                  <div className="text-3xl font-bold text-gradient mb-1">{stat.value}</div>
-                  <div className="text-sm" style={{ color: 'var(--text-secondary)' }}>{stat.label}</div>
-                </div>
-              ))}
-            </div>
           </div>
         </div>
       </section>
@@ -201,34 +151,27 @@ export default function AboutPage() {
         <div className="container mx-auto px-4">
           <div className="max-w-6xl mx-auto">
             <div className="text-center mb-12">
-              <h2 className="text-4xl font-bold text-gradient mb-4">Meet Our Team</h2>
+              <h2 className="text-4xl font-bold text-gradient mb-4">Our Team</h2>
               <p className="text-lg" style={{ color: 'var(--text-secondary)' }}>
-                Industry experts passionate about democratizing trading
+                The people building Sky
               </p>
             </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
               {team.map((member, index) => (
                 <div key={index} className="card hover:scale-105 transition-all duration-300">
-                  <div className="card-body text-center p-6">
-                    <div className="text-6xl mb-4">{member.image}</div>
+                  <div className="card-body text-center p-8">
+                    <div className="w-16 h-16 rounded-full mx-auto mb-4 flex items-center justify-center" style={{ background: 'var(--gradient-primary)' }}>
+                      <span className="text-xl font-bold text-white">
+                        {member.name.split(' ').map((n: string) => n[0]).join('')}
+                      </span>
+                    </div>
                     <h3 className="text-xl font-bold mb-1" style={{ color: 'var(--text-primary)' }}>
                       {member.name}
                     </h3>
-                    <p className="text-sm font-semibold mb-3" style={{ color: 'var(--text-accent)' }}>
+                    <p className="text-sm font-medium" style={{ color: 'var(--text-accent)' }}>
                       {member.role}
                     </p>
-                    <p className="text-sm mb-4" style={{ color: 'var(--text-secondary)' }}>
-                      {member.description}
-                    </p>
-                    <div className="flex justify-center gap-3">
-                      <a href={member.social.linkedin} className="p-2 glass-morphism rounded-lg hover:bg-white/10 transition-colors">
-                        <Linkedin className="w-4 h-4" style={{ color: 'var(--text-accent)' }} />
-                      </a>
-                      <a href={member.social.twitter} className="p-2 glass-morphism rounded-lg hover:bg-white/10 transition-colors">
-                        <Twitter className="w-4 h-4" style={{ color: 'var(--text-accent)' }} />
-                      </a>
-                    </div>
                   </div>
                 </div>
               ))}

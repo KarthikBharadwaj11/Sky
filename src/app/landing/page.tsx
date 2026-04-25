@@ -18,17 +18,14 @@ import {
   Lock,
   DollarSign,
   ArrowRight,
-  ChevronDown,
-  Quote
+  Quote,
+  ScrollText,
+  GraduationCap,
+  Newspaper,
+  Copy
 } from 'lucide-react';
 
 export default function LandingPage() {
-  const [openFaq, setOpenFaq] = useState<number | null>(null);
-
-  const toggleFaq = (index: number) => {
-    setOpenFaq(openFaq === index ? null : index);
-  };
-
   const features = [
     {
       icon: <TrendingUp className="w-8 h-8" />,
@@ -38,12 +35,12 @@ export default function LandingPage() {
     {
       icon: <Zap className="w-8 h-8" />,
       title: "AI-Powered Trading Signals",
-      description: "Smart recommendations and insights powered by advanced machine learning algorithms"
+      description: "A unified ecosystem for the modern trader: AI insights, live data, and shared expertise."
     },
     {
-      icon: <Users className="w-8 h-8" />,
+      icon: <Copy className="w-8 h-8" />,
       title: "Copy Trading",
-      description: "Follow top traders, copy their strategies, and learn from the best in the community"
+      description: "Mimic the experts. Master the markets by following the community's best."
     },
     {
       icon: <BarChart3 className="w-8 h-8" />,
@@ -53,12 +50,27 @@ export default function LandingPage() {
     {
       icon: <Smartphone className="w-8 h-8" />,
       title: "Mobile Trading",
-      description: "Trade anywhere, anytime with our responsive platform optimized for all devices"
+      description: "Total market access, 24/7. Built for your phone, tablet, or desktop."
+    },
+    {
+      icon: <ScrollText className="w-8 h-8" />,
+      title: "Paper Trading",
+      description: "Practice with $100,000 in virtual money using live market data. Build confidence and refine your strategy before going live."
+    },
+    {
+      icon: <GraduationCap className="w-8 h-8" />,
+      title: "Learn",
+      description: "From Investing 101 to advanced strategies — video lessons, articles, and guides to grow your knowledge at your own pace."
+    },
+    {
+      icon: <Newspaper className="w-8 h-8" />,
+      title: "News & Sentiment",
+      description: "Stay ahead with real-time financial news and AI-driven market sentiment analysis — know the mood of the market before you trade."
     },
     {
       icon: <DollarSign className="w-8 h-8" />,
       title: "Zero Commission",
-      description: "Commission-free stock trading with transparent pricing and no hidden fees"
+      description: "No commissions. No hidden fees. Just total transparency."
     }
   ];
 
@@ -121,7 +133,7 @@ export default function LandingPage() {
       
       {/* Hero Section */}
       <section className="relative overflow-hidden">
-        <div className="container mx-auto px-4 pt-48 pb-32">
+        <div className="container mx-auto px-4 pt-48 pb-12">
           <div className="max-w-6xl mx-auto text-center">
             
             <h1 className="text-6xl md:text-8xl font-bold gradient-shift leading-tight mb-8 flex items-center justify-center gap-1 flex-wrap">
@@ -161,30 +173,7 @@ export default function LandingPage() {
               </button>
             </div>
 
-            {/* Broker-Dealer Partnership Notice */}
-            <div className="mt-12 mb-8">
-              <div className="glass-morphism p-8 rounded-xl border-2 border-blue-500/30 max-w-5xl mx-auto">
-                <p className="text-lg leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
-                  SkyTrades App, a product of MarketMinds LLC, has partnered with American Global Wealth Services, an SEC-registered broker-dealer and member of FINRA/SIPC. All trades executed through the SkyTrade app are carried out and cleared via AGWS under its broker-dealer registration.
-                </p>
-              </div>
-            </div>
 
-            {/* Stats */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-16">
-              <div className="glass-morphism p-6 rounded-xl">
-                <div className="text-4xl font-bold text-gradient mb-2">X</div>
-                <div style={{ color: 'var(--text-secondary)' }}>Active Traders</div>
-              </div>
-              <div className="glass-morphism p-6 rounded-xl">
-                <div className="text-4xl font-bold text-gradient mb-2">X</div>
-                <div style={{ color: 'var(--text-secondary)' }}>Volume Traded</div>
-              </div>
-              <div className="glass-morphism p-6 rounded-xl">
-                <div className="text-4xl font-bold text-gradient mb-2">X</div>
-                <div style={{ color: 'var(--text-secondary)' }}>Uptime</div>
-              </div>
-            </div>
           </div>
         </div>
       </section>
@@ -287,35 +276,15 @@ export default function LandingPage() {
       <section className="py-20">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto">
-            <div className="text-center mb-16">
+            <div className="text-center mb-12">
               <h2 className="text-5xl font-bold text-gradient mb-6">Frequently Asked Questions</h2>
               <p className="text-xl" style={{ color: 'var(--text-secondary)' }}>
                 Everything you need to know about trading with Sky
               </p>
             </div>
-            
-            <div className="space-y-4">
-              {faqs.map((faq, index) => (
-                <div key={index} className="glass-morphism rounded-xl overflow-hidden">
-                  <button
-                    onClick={() => toggleFaq(index)}
-                    className="w-full p-6 text-left flex items-center justify-between hover:bg-white/5 transition-colors"
-                  >
-                    <span className="font-semibold text-lg" style={{ color: 'var(--text-primary)' }}>
-                      {faq.question}
-                    </span>
-                    <ChevronDown 
-                      className={`w-5 h-5 transition-transform ${openFaq === index ? 'rotate-180' : ''}`}
-                      style={{ color: 'var(--text-accent)' }}
-                    />
-                  </button>
-                  {openFaq === index && (
-                    <div className="px-6 pb-6" style={{ color: 'var(--text-secondary)' }}>
-                      {faq.answer}
-                    </div>
-                  )}
-                </div>
-              ))}
+            <div className="glass-morphism rounded-xl p-12 text-center">
+              <p className="text-2xl font-semibold mb-2" style={{ color: 'var(--text-primary)' }}>Coming Soon</p>
+              <p className="text-lg" style={{ color: 'var(--text-secondary)' }}>We're putting together answers to your most common questions.</p>
             </div>
           </div>
         </div>
