@@ -81,7 +81,7 @@ export default function CopyTradingPortfolio() {
       const mockSubscriptions: Subscription[] = [
         {
           expertId: '1',
-          expertName: 'Sarah Chen',
+          expertName: 'Expert 2',
           expertAvatar: '👩‍💼',
           startDate: new Date(Date.now() - 86400000 * 30).toISOString(),
           amount: 5000,
@@ -90,7 +90,7 @@ export default function CopyTradingPortfolio() {
         },
         {
           expertId: '2',
-          expertName: 'Marcus Johnson',
+          expertName: 'Expert 3',
           expertAvatar: '👨‍💼',
           startDate: new Date(Date.now() - 86400000 * 15).toISOString(),
           amount: 3000,
@@ -99,7 +99,7 @@ export default function CopyTradingPortfolio() {
         },
         {
           expertId: '3',
-          expertName: 'Alex Rodriguez',
+          expertName: 'Expert 1',
           expertAvatar: '👨‍💻',
           startDate: new Date(Date.now() - 86400000 * 10).toISOString(),
           amount: 2000,
@@ -122,7 +122,7 @@ export default function CopyTradingPortfolio() {
         {
           id: '1',
           expertId: '1',
-          expertName: 'Sarah Chen',
+          expertName: 'Expert 2',
           expertAvatar: '👩‍💼',
           symbol: 'TSLA',
           action: 'buy',
@@ -134,7 +134,7 @@ export default function CopyTradingPortfolio() {
         {
           id: '2',
           expertId: '3',
-          expertName: 'Alex Rodriguez',
+          expertName: 'Expert 1',
           expertAvatar: '👨‍💻',
           symbol: 'MSFT',
           action: 'buy',
@@ -145,7 +145,7 @@ export default function CopyTradingPortfolio() {
         },
         {
           id: '3',
-          expertName: 'Sarah Chen',
+          expertName: 'Expert 2',
           expertId: '1',
           expertAvatar: '👩‍💼',
           symbol: 'AMD',
@@ -171,7 +171,7 @@ export default function CopyTradingPortfolio() {
         {
           id: '1',
           expertId: '1',
-          expertName: 'Sarah Chen',
+          expertName: 'Expert 2',
           expertAvatar: '👩‍💼',
           symbol: 'AAPL',
           action: 'buy',
@@ -185,7 +185,7 @@ export default function CopyTradingPortfolio() {
         {
           id: '2',
           expertId: '2',
-          expertName: 'Marcus Johnson',
+          expertName: 'Expert 3',
           expertAvatar: '👨‍💼',
           symbol: 'JNJ',
           action: 'buy',
@@ -199,7 +199,7 @@ export default function CopyTradingPortfolio() {
         {
           id: '3',
           expertId: '1',
-          expertName: 'Sarah Chen',
+          expertName: 'Expert 2',
           expertAvatar: '👩‍💼',
           symbol: 'NVDA',
           action: 'buy',
@@ -213,7 +213,7 @@ export default function CopyTradingPortfolio() {
         {
           id: '4',
           expertId: '3',
-          expertName: 'Alex Rodriguez',
+          expertName: 'Expert 1',
           expertAvatar: '👨‍💻',
           symbol: 'COIN',
           action: 'buy',
@@ -229,7 +229,7 @@ export default function CopyTradingPortfolio() {
         {
           id: '5',
           expertId: '2',
-          expertName: 'Marcus Johnson',
+          expertName: 'Expert 3',
           expertAvatar: '👨‍💼',
           symbol: 'KO',
           action: 'buy',
@@ -567,9 +567,9 @@ export default function CopyTradingPortfolio() {
                       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                         {/* Expert Info */}
                         <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 rounded-lg flex items-center justify-center text-xl"
-                               style={{ background: 'var(--background-primary)' }}>
-                            {trade.expertAvatar}
+                          <div className="w-10 h-10 rounded-lg flex items-center justify-center"
+                               style={{ background: 'var(--gradient-primary)' }}>
+                            <User className="w-5 h-5 text-white" />
                           </div>
                           <div>
                             <p className="text-sm" style={{ color: 'var(--text-tertiary)' }}>Trade from</p>
@@ -974,7 +974,7 @@ export default function CopyTradingPortfolio() {
                     <tr key={trade.id} className="hover:bg-white/5 transition-colors">
                       <td>
                         <div className="flex items-center gap-3">
-                          <span className="text-2xl">{trade.expertAvatar}</span>
+                          <div className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: 'var(--gradient-primary)' }}><User className="w-5 h-5 text-white" /></div>
                           <div>
                             <p className="font-semibold" style={{ color: 'var(--text-primary)' }}>
                               {trade.expertName}
@@ -1116,9 +1116,9 @@ export default function CopyTradingPortfolio() {
                     <div key={subscription.expertId} className="rounded-lg border p-5" style={{ borderColor: 'var(--glass-border)', background: 'var(--background-secondary)' }}>
                       <div className="flex items-center justify-between mb-5">
                         <div className="flex items-center gap-3">
-                          <div className="w-12 h-12 rounded-lg flex items-center justify-center text-2xl"
-                               style={{ background: 'var(--background-primary)' }}>
-                            {subscription.expertAvatar}
+                          <div className="w-12 h-12 rounded-lg flex items-center justify-center"
+                               style={{ background: 'var(--gradient-primary)' }}>
+                            <User className="w-6 h-6 text-white" />
                           </div>
                           <div>
                             <h3 className="text-lg font-semibold" style={{ color: 'var(--text-primary)' }}>

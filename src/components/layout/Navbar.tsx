@@ -2,10 +2,17 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 import { useAuth } from '../auth/AuthProvider';
 
 export default function Navbar() {
   const { user, logout } = useAuth();
+  const router = useRouter();
+
+  const handleLogout = () => {
+    logout();
+    router.push('/landing');
+  };
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 border-b-2 navbar-bg" style={{ 
@@ -77,9 +84,6 @@ export default function Navbar() {
                 <Link href="/paper-trading" className="nav-link px-4 py-2">
                   Paper Trading
                 </Link>
-                <Link href="/social-feed" className="nav-link px-4 py-2">
-                  Social
-                </Link>
                 <Link href="/orders" className="nav-link px-4 py-2">
                   Orders
                 </Link>
@@ -88,7 +92,7 @@ export default function Navbar() {
                 </Link>
 
                 <button
-                  onClick={logout}
+                  onClick={handleLogout}
                   className="bg-gradient-to-r from-red-500 to-red-600 text-white px-6 py-3 rounded-xl hover:from-red-600 hover:to-red-700 transition-all duration-300 font-semibold shadow-lg hover:shadow-xl transform hover:scale-105 hover:-translate-y-1"
                 >
                   Logout

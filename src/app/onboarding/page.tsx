@@ -75,16 +75,9 @@ export default function OnboardingPage() {
 
   const steps = [
     { id: 1, name: 'Choose Plan', shortName: 'Subscription' },
-    { id: 2, name: 'Account Type', shortName: 'Account' },
+    { id: 2, name: 'Personal Details', shortName: 'Details' },
     { id: 3, name: 'Verification', shortName: 'Verification' },
-    { id: 4, name: 'Residency Status', shortName: 'Residency' },
-    { id: 5, name: 'Professional Details', shortName: 'Professional' },
-    { id: 6, name: 'Funding Source', shortName: 'Funding' },
-    { id: 7, name: 'Investment Goals', shortName: 'Goals' },
-    { id: 8, name: 'Risk Assessment', shortName: 'Risk' },
-    { id: 9, name: 'Family/Advisor Access', shortName: 'Family' },
-    { id: 10, name: 'Member Details', shortName: 'Details' },
-    { id: 11, name: 'Create Account', shortName: 'Account Setup' },
+    { id: 4, name: 'Risk Assessment', shortName: 'Risk' },
   ];
 
   const handleStepComplete = (stepData: any) => {
@@ -179,49 +172,7 @@ export default function OnboardingPage() {
             />
           )}
           {currentStep === 4 && (
-            <ResidencyVerificationStep
-              data={onboardingData}
-              onComplete={handleStepComplete}
-            />
-          )}
-          {currentStep === 5 && (
-            <ProfessionalDetails
-              data={onboardingData}
-              onComplete={handleStepComplete}
-            />
-          )}
-          {currentStep === 6 && (
-            <SourceOfFunds
-              data={onboardingData}
-              onComplete={handleStepComplete}
-            />
-          )}
-          {currentStep === 7 && (
-            <InvestmentGoalsExperience
-              data={onboardingData}
-              onComplete={handleStepComplete}
-            />
-          )}
-          {currentStep === 8 && (
             <ComplianceRiskAssessment
-              data={onboardingData}
-              onComplete={handleStepComplete}
-            />
-          )}
-          {currentStep === 9 && (
-            <AddFamilyMemberPrompt
-              data={onboardingData}
-              onComplete={handleStepComplete}
-            />
-          )}
-          {currentStep === 10 && (
-            <FamilyMemberDetailsStep
-              data={onboardingData}
-              onComplete={handleStepComplete}
-            />
-          )}
-          {currentStep === 11 && (
-            <AddAccountPrompt
               data={onboardingData}
               onComplete={handleStepComplete}
             />

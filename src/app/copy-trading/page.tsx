@@ -70,6 +70,23 @@ interface PendingTrade {
   reasoning?: string;
 }
 
+interface Signal {
+  id: string;
+  expertId: string;
+  expertName: string;
+  expertAvatar: string;
+  discordMessage: string;
+  trade: {
+    symbol: string;
+    action: 'BUY' | 'SELL';
+    quantity: number;
+    price: number;
+    orderType: 'market' | 'limit';
+  };
+  timestamp: string;
+  status: 'pending' | 'accepted' | 'declined';
+}
+
 export default function CopyTrading() {
   const { user, updateBalance } = useAuth();
   const searchParams = useSearchParams();
@@ -80,20 +97,64 @@ export default function CopyTrading() {
   const [subscriptionAmount, setSubscriptionAmount] = useState(1000);
   const [autoCopyEnabled, setAutoCopyEnabled] = useState(true);
   const [agreedToTerms, setAgreedToTerms] = useState(false);
-  const [activeTab, setActiveTab] = useState<'dashboard' | 'your-trading' | 'live-feed' | 'portfolio-center' | 'pending-trades'>('dashboard');
+  const [activeTab, setActiveTab] = useState<'dashboard' | 'your-trading' | 'portfolio-center' | 'pending-trades' | 'signals'>('dashboard');
   const [currentTestimonial, setCurrentTestimonial] = useState(0);
   const [riskLevel, setRiskLevel] = useState<'conservative' | 'moderate' | 'aggressive'>('moderate');
   const [stopLossEnabled, setStopLossEnabled] = useState(true);
   const [stopLossPercentage, setStopLossPercentage] = useState(5);
   const [maxDailyLoss, setMaxDailyLoss] = useState(2);
   const [portfolioAllocation, setPortfolioAllocation] = useState({
-    'alex-rodriguez': 40,
-    'sarah-chen': 35,
-    'marcus-johnson': 25
+    'expert-1': 40,
+    'expert-2': 35,
+    'expert-3': 25
   });
 
   // Pending Trades State
   const [pendingTrades, setPendingTrades] = useState<PendingTrade[]>([]);
+
+  // Signals State
+  const [signals, setSignals] = useState<Signal[]>([
+    {
+      id: 'sig-1',
+      expertId: 'expert-1',
+      expertName: 'Expert 1',
+      expertAvatar: 'AR',
+      discordMessage: '🚀 Loading up on NVDA here. Earnings coming up and the AI tailwind is still very much intact. This is a conviction buy for me. Setting a target of $950 and stop at $820. LFG 🔥',
+      trade: { symbol: 'NVDA', action: 'BUY', quantity: 20, price: 875.50, orderType: 'market' },
+      timestamp: '2026-04-28T09:14:00Z',
+      status: 'pending'
+    },
+    {
+      id: 'sig-2',
+      expertId: 'expert-2',
+      expertName: 'Expert 2',
+      expertAvatar: 'SC',
+      discordMessage: 'Trimming my TSLA position. Stock has had a great run but I want to lock in some gains ahead of the macro data this week. Not a full exit — just reducing exposure by 30%.',
+      trade: { symbol: 'TSLA', action: 'SELL', quantity: 15, price: 248.30, orderType: 'limit' },
+      timestamp: '2026-04-28T09:42:00Z',
+      status: 'pending'
+    },
+    {
+      id: 'sig-3',
+      expertId: 'expert-3',
+      expertName: 'Expert 3',
+      expertAvatar: 'MJ',
+      discordMessage: 'AAPL dip looks like an entry to me. Market overreacted to the news. Strong support at $175, I\'m adding here with a 3 month horizon. Classic buy-the-dip setup.',
+      trade: { symbol: 'AAPL', action: 'BUY', quantity: 30, price: 176.20, orderType: 'market' },
+      timestamp: '2026-04-28T10:05:00Z',
+      status: 'accepted'
+    },
+    {
+      id: 'sig-4',
+      expertId: 'expert-1',
+      expertName: 'Expert 1',
+      expertAvatar: 'AR',
+      discordMessage: 'Taking profits on MSFT. Up 18% on this trade since January. Going to wait for a pullback to re-enter. Cash is a position too 💰',
+      trade: { symbol: 'MSFT', action: 'SELL', quantity: 10, price: 415.80, orderType: 'market' },
+      timestamp: '2026-04-27T14:22:00Z',
+      status: 'declined'
+    },
+  ]);
 
   // Live Feed States
   const [liveTrades, setLiveTrades] = useState<any[]>([]);
@@ -125,7 +186,7 @@ export default function CopyTrading() {
 
   const copyTradingTestimonials = [
     {
-      name: "Wanda Maximoff",
+      name: "Trader 1",
       role: "Marketing Executive",
       avatar: "👩‍💼",
       rating: 5,
@@ -134,7 +195,7 @@ export default function CopyTrading() {
       timeframe: "6 months"
     },
     {
-      name: "Neville Longbottom",
+      name: "Trader 2",
       role: "Software Engineer",
       avatar: "👨‍💻",
       rating: 5,
@@ -143,7 +204,7 @@ export default function CopyTrading() {
       timeframe: "8 months"
     },
     {
-      name: "Ginny Weasley",
+      name: "Trader 3",
       role: "College Student",
       avatar: "👩‍🎓",
       rating: 5,
@@ -152,7 +213,7 @@ export default function CopyTrading() {
       timeframe: "4 months"
     },
     {
-      name: "Thor Odinson",
+      name: "Trader 4",
       role: "Business Owner",
       avatar: "👨‍💼",
       rating: 5,
@@ -242,7 +303,7 @@ export default function CopyTrading() {
   // Read tab from URL query parameter
   useEffect(() => {
     const tab = searchParams.get('tab');
-    if (tab && ['dashboard', 'your-trading', 'live-feed', 'portfolio-center', 'pending-trades'].includes(tab)) {
+    if (tab && ['dashboard', 'your-trading', 'portfolio-center', 'pending-trades', 'signals'].includes(tab)) {
       setActiveTab(tab as any);
     }
   }, [searchParams]);
@@ -268,9 +329,9 @@ export default function CopyTrading() {
       const confidence = ['High', 'Medium', 'Low'];
 
       const expertsList = experts.length > 0 ? experts : [
-        { id: '1', name: 'Loki Laufeyson', avatar: '👩‍💼', riskLevel: 'Medium' },
-        { id: '2', name: 'Minerva McGonagall', avatar: '👨‍💼', riskLevel: 'Low' },
-        { id: '3', name: 'Sam Wilson', avatar: '👨‍💻', riskLevel: 'High' }
+        { id: '1', name: 'Expert 1', avatar: '👩‍💼', riskLevel: 'Medium' },
+        { id: '2', name: 'Expert 2', avatar: '👨‍💼', riskLevel: 'Low' },
+        { id: '3', name: 'Expert 3', avatar: '👨‍💻', riskLevel: 'High' }
       ];
 
       const randomExpert = expertsList[Math.floor(Math.random() * expertsList.length)];
@@ -329,7 +390,7 @@ export default function CopyTrading() {
     const mockExperts: Expert[] = [
       {
         id: '1',
-        name: 'Draco Malfoy',
+        name: 'Expert 1',
         username: '@tech_trader_pro',
         avatar: '👩‍💼',
         bio: 'Tech stock specialist with 8 years experience. Focus on growth stocks and emerging technologies.',
@@ -355,7 +416,7 @@ export default function CopyTrading() {
       },
       {
         id: '2',
-        name: 'Nick Fury',
+        name: 'Expert 2',
         username: '@dividend_king',
         avatar: '👨‍💼',
         bio: 'Conservative dividend investor. Steady returns with low volatility approach.',
@@ -380,7 +441,7 @@ export default function CopyTrading() {
       },
       {
         id: '3',
-        name: 'Severus Snape',
+        name: 'Expert 3',
         username: '@crypto_stocks',
         avatar: '👨‍💻',
         bio: 'High-growth momentum trader. Specializes in crypto-related stocks and high volatility plays.',
@@ -405,7 +466,7 @@ export default function CopyTrading() {
       },
       {
         id: '4',
-        name: 'Pepper Potts',
+        name: 'Expert 4',
         username: '@esg_investor',
         avatar: '👩‍🔬',
         bio: 'ESG and sustainable investing expert. Long-term value creation through responsible investing.',
@@ -452,7 +513,7 @@ export default function CopyTrading() {
         {
           id: 'pending-1',
           expertId: '1',
-          expertName: 'Sarah Chen',
+          expertName: 'Expert 2',
           expertAvatar: '👩‍💼',
           symbol: 'NVDA',
           action: 'buy',
@@ -464,7 +525,7 @@ export default function CopyTrading() {
         {
           id: 'pending-2',
           expertId: '3',
-          expertName: 'Alex Rodriguez',
+          expertName: 'Expert 1',
           expertAvatar: '👨‍💻',
           symbol: 'AAPL',
           action: 'sell',
@@ -476,7 +537,7 @@ export default function CopyTrading() {
         {
           id: 'pending-3',
           expertId: '1',
-          expertName: 'Sarah Chen',
+          expertName: 'Expert 2',
           expertAvatar: '👩‍💼',
           symbol: 'TSLA',
           action: 'buy',
@@ -817,6 +878,148 @@ export default function CopyTrading() {
     );
   }
 
+  const handleSignalAction = (id: string, action: 'accepted' | 'declined') => {
+    setSignals(prev => prev.map(s => s.id === id ? { ...s, status: action } : s));
+  };
+
+  const renderSignals = () => {
+    const pending = signals.filter(s => s.status === 'pending');
+    const actedOn = signals.filter(s => s.status !== 'pending');
+
+    const SignalCard = ({ signal }: { signal: Signal }) => (
+      <div className="glass-morphism rounded-2xl p-5 space-y-4">
+        {/* Expert Header */}
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-full flex items-center justify-center"
+              style={{ background: 'var(--gradient-primary)' }}>
+              <User className="w-5 h-5 text-white" />
+            </div>
+            <div>
+              <p className="font-semibold text-sm" style={{ color: 'var(--text-primary)' }}>{signal.expertName}</p>
+              <p className="text-xs" style={{ color: 'var(--text-muted)' }}>
+                {new Date(signal.timestamp).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
+              </p>
+            </div>
+          </div>
+          {signal.status !== 'pending' && (
+            <span className={`text-xs font-bold px-3 py-1 rounded-full ${
+              signal.status === 'accepted'
+                ? 'bg-green-500/20 text-green-400'
+                : 'bg-red-500/20 text-red-400'
+            }`}>
+              {signal.status === 'accepted' ? '✓ Copied' : '✗ Declined'}
+            </span>
+          )}
+        </div>
+
+        {/* Discord Message */}
+        <div className="rounded-xl p-4" style={{ background: 'rgba(88, 101, 242, 0.1)', borderLeft: '3px solid #5865F2' }}>
+          <div className="flex items-center gap-2 mb-2">
+            <div className="w-4 h-4 rounded-sm flex items-center justify-center" style={{ background: '#5865F2' }}>
+              <span className="text-white text-[8px] font-bold">#</span>
+            </div>
+            <span className="text-xs font-medium" style={{ color: '#5865F2' }}>Discord Signal</span>
+          </div>
+          <p className="text-sm leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
+            {signal.discordMessage}
+          </p>
+        </div>
+
+        {/* Parsed Trade Info */}
+        <div className="rounded-xl p-4 border" style={{ background: 'var(--glass-bg)', borderColor: 'var(--glass-border)' }}>
+          <p className="text-xs font-semibold mb-3 uppercase tracking-wider" style={{ color: 'var(--text-muted)' }}>Parsed Trade</p>
+          <div className="flex items-center gap-4 flex-wrap">
+            <div className="flex items-center gap-2">
+              <span className={`text-sm font-bold px-2 py-0.5 rounded ${
+                signal.trade.action === 'BUY' ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'
+              }`}>
+                {signal.trade.action}
+              </span>
+              <span className="text-base font-bold" style={{ color: 'var(--text-primary)' }}>{signal.trade.symbol}</span>
+            </div>
+            <div className="text-sm" style={{ color: 'var(--text-secondary)' }}>
+              <span className="font-medium">{signal.trade.quantity}</span> shares
+            </div>
+            <div className="text-sm" style={{ color: 'var(--text-secondary)' }}>
+              @ <span className="font-medium">${signal.trade.price.toFixed(2)}</span>
+            </div>
+            <div className="text-xs px-2 py-0.5 rounded glass-morphism capitalize" style={{ color: 'var(--text-muted)' }}>
+              {signal.trade.orderType}
+            </div>
+          </div>
+          <p className="text-sm font-semibold mt-2" style={{ color: 'var(--text-accent)' }}>
+            Total: ${(signal.trade.quantity * signal.trade.price).toLocaleString('en-US', { minimumFractionDigits: 2 })}
+          </p>
+        </div>
+
+        {/* Actions */}
+        {signal.status === 'pending' && (
+          <div className="flex gap-3">
+            <button
+              onClick={() => handleSignalAction(signal.id, 'accepted')}
+              className="flex-1 py-2.5 rounded-xl font-semibold text-sm text-white transition-all hover:scale-105"
+              style={{ background: 'linear-gradient(135deg, #10b981, #059669)' }}
+            >
+              ✓ Accept & Copy
+            </button>
+            <button
+              onClick={() => handleSignalAction(signal.id, 'declined')}
+              className="flex-1 py-2.5 rounded-xl font-semibold text-sm transition-all hover:scale-105 glass-morphism"
+              style={{ color: 'var(--text-secondary)' }}
+            >
+              ✗ Decline
+            </button>
+          </div>
+        )}
+      </div>
+    );
+
+    return (
+      <div className="max-w-2xl mx-auto space-y-6">
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="text-xl font-bold" style={{ color: 'var(--text-primary)' }}>Trade Signals</h2>
+            <p className="text-sm mt-1" style={{ color: 'var(--text-secondary)' }}>
+              Signals from experts you follow, sourced from their Discord channels
+            </p>
+          </div>
+          {pending.length > 0 && (
+            <span className="text-xs font-bold px-3 py-1.5 rounded-full bg-blue-500/20 text-blue-400">
+              {pending.length} pending
+            </span>
+          )}
+        </div>
+
+        {/* Pending Signals */}
+        {pending.length > 0 && (
+          <div className="space-y-4">
+            <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--text-muted)' }}>Awaiting Your Decision</p>
+            {pending.map(signal => <SignalCard key={signal.id} signal={signal} />)}
+          </div>
+        )}
+
+        {/* Acted On */}
+        {actedOn.length > 0 && (
+          <div className="space-y-4">
+            <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--text-muted)' }}>Previous Signals</p>
+            {actedOn.map(signal => <SignalCard key={signal.id} signal={signal} />)}
+          </div>
+        )}
+
+        {signals.length === 0 && (
+          <div className="text-center py-16 glass-morphism rounded-2xl">
+            <Bell className="w-12 h-12 mx-auto mb-4" style={{ color: 'var(--text-muted)' }} />
+            <p className="font-semibold" style={{ color: 'var(--text-primary)' }}>No signals yet</p>
+            <p className="text-sm mt-1" style={{ color: 'var(--text-secondary)' }}>
+              Subscribe to experts to receive their trade signals here
+            </p>
+          </div>
+        )}
+      </div>
+    );
+  };
+
   const tabs = [
     {
       id: 'dashboard',
@@ -840,12 +1043,12 @@ export default function CopyTrading() {
       badge: undefined
     },
     {
-      id: 'live-feed',
-      label: 'Live Feed',
-      icon: Activity,
-      description: 'Real-time trades',
-      badge: undefined
-    }
+      id: 'signals',
+      label: 'Signals',
+      icon: Bell,
+      description: 'Trade signals from experts',
+      badge: signals.filter(s => s.status === 'pending').length || undefined
+    },
   ];
 
   const renderDashboard = () => (
@@ -1146,7 +1349,7 @@ export default function CopyTrading() {
                     <Link href={`/expert/${expert.id}`} className="block cursor-pointer">
                       <div className="flex items-start justify-between mb-4">
                         <div className="flex items-center gap-3">
-                          <span className="text-2xl">{expert.avatar}</span>
+                          <div className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: 'var(--gradient-primary)' }}><User className="w-5 h-5 text-white" /></div>
                           <div>
                             <p className="font-bold text-base flex items-center gap-2" style={{ color: 'var(--text-primary)' }}>
                               {expert.name}
@@ -1246,12 +1449,12 @@ export default function CopyTrading() {
                   {/* Header with Avatar */}
                   <div className="flex items-start justify-between mb-4">
                     <Link href={`/expert/${expert.id}`} className="flex items-center gap-3 flex-1">
-                      <div className={`relative text-3xl p-3 rounded-xl ${
+                      <div className={`relative p-3 rounded-xl flex items-center justify-center ${
                         isTopPerformer
                           ? 'bg-gradient-to-r from-yellow-500 to-orange-500'
                           : 'bg-gradient-to-r from-blue-500 to-purple-600'
                       } shadow-lg`}>
-                        {expert.avatar}
+                        <User className="w-8 h-8 text-white" />
                         {expert.isVerified && (
                           <div className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-blue-500 flex items-center justify-center border-2 border-white">
                             <Award className="w-3 h-3 text-white" />
@@ -1508,7 +1711,7 @@ export default function CopyTrading() {
 
                         {/* Trading screen mockup */}
                         <div className="relative z-10 text-center">
-                          <div className="text-6xl mb-3">{expert.avatar}</div>
+                          <div className="w-20 h-20 rounded-full flex items-center justify-center mb-3 mx-auto" style={{ background: 'var(--gradient-primary)' }}><User className="w-10 h-10 text-white" /></div>
                           <div className="flex items-center justify-center gap-2 mb-2">
                             <div className="w-2 h-2 rounded-full bg-red-500 transition-opacity duration-1000"></div>
                             <span className="text-red-400 font-bold text-sm">LIVE</span>
@@ -1626,7 +1829,7 @@ export default function CopyTrading() {
                   <div className="flex items-start justify-between gap-5">
                     {/* Left: Expert Info */}
                     <div className="flex items-start gap-4 flex-1">
-                      <div className="text-4xl">{trade.expertAvatar}</div>
+                      <div className="w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: 'var(--gradient-primary)' }}><User className="w-6 h-6 text-white" /></div>
                       <div className="flex-1">
                         <div className="flex items-center gap-2 mb-2 flex-wrap">
                           <h4 className="text-base font-bold" style={{ color: 'var(--text-primary)' }}>{trade.expertName}</h4>
@@ -1876,7 +2079,7 @@ export default function CopyTrading() {
                   return (
                     <div key={sub.expertId} className="glass-morphism p-4 rounded-xl hover:scale-105 transition-all duration-300">
                       <div className="flex items-center gap-3 mb-3">
-                        <span className="text-2xl">{expert.avatar}</span>
+                        <div className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: 'var(--gradient-primary)' }}><User className="w-5 h-5 text-white" /></div>
                         <div className="flex-1">
                           <h4 className="font-semibold text-sm" style={{ color: 'var(--text-primary)' }}>{expert.name}</h4>
                           <p className="text-xs" style={{ color: 'var(--text-tertiary)' }}>${sub.amount.toLocaleString()} allocated</p>
@@ -1937,7 +2140,7 @@ export default function CopyTrading() {
                       {/* Header Row - Expert & Action */}
                       <div className="flex items-center justify-between mb-3">
                         <div className="flex items-center gap-3">
-                          <div className="text-3xl">{trade.expertAvatar}</div>
+                          <div className="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: 'var(--gradient-primary)' }}><User className="w-5 h-5 text-white" /></div>
                           <div>
                             <p className="text-sm font-bold" style={{ color: 'var(--text-primary)' }}>
                               {trade.expertName}
@@ -2046,12 +2249,12 @@ export default function CopyTrading() {
             </h3>
             <div className="space-y-4 max-h-[600px] overflow-y-auto custom-scrollbar">
               {[
-                { symbol: 'AAPL', action: 'BUY', shares: 15, price: 189.50, profit: +234, expert: 'Sarah Chen', time: '2h ago', status: 'win' },
-                { symbol: 'MSFT', action: 'SELL', shares: 8, price: 378.20, profit: +156, expert: 'Sarah Chen', time: '4h ago', status: 'win' },
-                { symbol: 'NVDA', action: 'BUY', shares: 5, price: 520.30, profit: -45, expert: 'Marcus Johnson', time: '6h ago', status: 'loss' },
-                { symbol: 'GOOGL', action: 'SELL', shares: 12, price: 142.10, profit: +678, expert: 'Alex Rodriguez', time: '1d ago', status: 'win' },
-                { symbol: 'TSLA', action: 'BUY', shares: 10, price: 248.42, profit: +89, expert: 'Sarah Chen', time: '1d ago', status: 'win' },
-                { symbol: 'COIN', action: 'SELL', shares: 6, price: 245.67, profit: -23, expert: 'Alex Rodriguez', time: '2d ago', status: 'loss' },
+                { symbol: 'AAPL', action: 'BUY', shares: 15, price: 189.50, profit: +234, expert: 'Expert 2', time: '2h ago', status: 'win' },
+                { symbol: 'MSFT', action: 'SELL', shares: 8, price: 378.20, profit: +156, expert: 'Expert 2', time: '4h ago', status: 'win' },
+                { symbol: 'NVDA', action: 'BUY', shares: 5, price: 520.30, profit: -45, expert: 'Expert 3', time: '6h ago', status: 'loss' },
+                { symbol: 'GOOGL', action: 'SELL', shares: 12, price: 142.10, profit: +678, expert: 'Expert 1', time: '1d ago', status: 'win' },
+                { symbol: 'TSLA', action: 'BUY', shares: 10, price: 248.42, profit: +89, expert: 'Expert 2', time: '1d ago', status: 'win' },
+                { symbol: 'COIN', action: 'SELL', shares: 6, price: 245.67, profit: -23, expert: 'Expert 1', time: '2d ago', status: 'loss' },
               ].map((trade, index) => (
                 <div key={index} className="relative pl-8 pb-4 border-l-2 border-gray-700 last:border-l-0">
                   <div className={`absolute left-0 top-0 w-4 h-4 rounded-full -translate-x-[9px] ${
@@ -2316,7 +2519,7 @@ export default function CopyTrading() {
           {activeTab === 'dashboard' && renderDashboard()}
           {activeTab === 'portfolio-center' && renderPortfolioCenter()}
           {activeTab === 'your-trading' && renderYourTrading()}
-          {activeTab === 'live-feed' && renderLiveFeed()}
+          {activeTab === 'signals' && renderSignals()}
         </div>
       </div>
 
@@ -2650,7 +2853,7 @@ export default function CopyTrading() {
               {/* Trade Summary */}
               <div className="glass-morphism p-5 rounded-xl mb-5">
                 <div className="flex items-center gap-4 mb-4">
-                  <div className="text-4xl">{selectedTrade.expertAvatar}</div>
+                  <div className="w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: 'var(--gradient-primary)' }}><User className="w-6 h-6 text-white" /></div>
                   <div className="flex-1">
                     <h3 className="text-base font-bold" style={{ color: 'var(--text-primary)' }}>{selectedTrade.expertName}</h3>
                     <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>Expert Trader</p>
@@ -2801,7 +3004,7 @@ export default function CopyTrading() {
                   <>
                     {expert && (
                       <div className="glass-morphism p-5 rounded-xl mb-6 flex items-center gap-4">
-                        <div className="text-5xl">{expert.avatar}</div>
+                        <div className="w-14 h-14 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: 'var(--gradient-primary)' }}><User className="w-7 h-7 text-white" /></div>
                         <div className="flex-1">
                           <h3 className="text-lg font-bold" style={{ color: 'var(--text-primary)' }}>{expert.name}</h3>
                         </div>
@@ -3091,7 +3294,7 @@ export default function CopyTrading() {
                   <div className="grid grid-cols-3 gap-4 h-full">
                     {/* Left: Expert */}
                     <div className="col-span-1 flex flex-col items-center justify-center">
-                      <div className="text-9xl mb-4">{selectedExpertForVideo.avatar}</div>
+                      <div className="w-28 h-28 rounded-full flex items-center justify-center mb-4 mx-auto" style={{ background: 'var(--gradient-primary)' }}><User className="w-14 h-14 text-white" /></div>
                       <h3 className="text-base font-bold text-white mb-4">{selectedExpertForVideo.name}</h3>
                       <div className="px-4 py-2 rounded-full bg-green-500/20 text-green-300 font-semibold">
                         +{selectedExpertForVideo.monthlyReturn}% This Month

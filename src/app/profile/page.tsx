@@ -268,8 +268,8 @@ export default function Profile() {
     setSharedMembers([
       {
         id: '1',
-        fullName: 'Tony Stark',
-        email: 'tony.stark@starkindustries.com',
+        fullName: 'User 1',
+        email: 'user1@example.com',
         phone: '+1 (555) 123-4567',
         relationship: 'Father',
         accessLevel: 'view-only',
@@ -279,8 +279,8 @@ export default function Profile() {
       },
       {
         id: '2',
-        fullName: 'Hermione Granger',
-        email: 'hermione.granger@hogwarts.edu',
+        fullName: 'User 2',
+        email: 'user2@example.com',
         phone: '+1 (555) 987-6543',
         relationship: 'Trading Advisor',
         accessLevel: 'full-access',
@@ -294,8 +294,8 @@ export default function Profile() {
     setSharedWithMe([
       {
         id: '3',
-        ownerName: 'Natasha Romanoff',
-        ownerEmail: 'natasha.romanoff@shield.gov',
+        ownerName: 'User 3',
+        ownerEmail: 'user3@example.com',
         relationship: 'Spouse',
         accessLevel: 'full-access',
         sharedDate: new Date(Date.now() - 60 * 24 * 60 * 60 * 1000).toISOString(),
@@ -304,8 +304,8 @@ export default function Profile() {
       },
       {
         id: '4',
-        ownerName: 'Harry Potter',
-        ownerEmail: 'harry.potter@hogwarts.edu',
+        ownerName: 'User 4',
+        ownerEmail: 'user4@example.com',
         relationship: 'Son',
         accessLevel: 'view-only',
         sharedDate: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000).toISOString(),
@@ -325,36 +325,36 @@ export default function Profile() {
     return [
       {
         id: '1',
-        name: 'Steve Rogers',
-        email: 'steve.rogers@avengers.com',
-        joinedDate: new Date(Date.now() - 45 * 24 * 60 * 60 * 1000).toISOString(),
+        name: 'Referral 1',
+        email: 'referral1@example.com',
+        joinedDate: '2025-11-03T00:00:00.000Z',
         status: 'rewarded',
-        firstTradeDate: new Date(Date.now() - 40 * 24 * 60 * 60 * 1000).toISOString(),
+        firstTradeDate: '2025-11-08T00:00:00.000Z',
         rewardAmount: 50
       },
       {
         id: '2',
-        name: 'Luna Lovegood',
-        email: 'luna.lovegood@ravenclaw.edu',
-        joinedDate: new Date(Date.now() - 20 * 24 * 60 * 60 * 1000).toISOString(),
+        name: 'Referral 2',
+        email: 'referral2@example.com',
+        joinedDate: '2025-12-19T00:00:00.000Z',
         status: 'rewarded',
-        firstTradeDate: new Date(Date.now() - 18 * 24 * 60 * 60 * 1000).toISOString(),
+        firstTradeDate: '2025-12-22T00:00:00.000Z',
         rewardAmount: 50
       },
       {
         id: '3',
-        name: 'Peter Parker',
-        email: 'peter.parker@dailybugle.com',
-        joinedDate: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
+        name: 'Referral 3',
+        email: 'referral3@example.com',
+        joinedDate: '2026-02-14T00:00:00.000Z',
         status: 'active',
-        firstTradeDate: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
+        firstTradeDate: '2026-02-17T00:00:00.000Z',
         rewardAmount: 50
       },
       {
         id: '4',
-        name: 'Ron Weasley',
-        email: 'ron.weasley@hogwarts.edu',
-        joinedDate: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
+        name: 'Referral 4',
+        email: 'referral4@example.com',
+        joinedDate: '2026-04-01T00:00:00.000Z',
         status: 'pending'
       }
     ];

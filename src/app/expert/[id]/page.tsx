@@ -5,7 +5,7 @@ import { use } from 'react';
 import { useAuth } from '@/components/auth/AuthProvider';
 import { useRouter } from 'next/navigation';
 import LineChart from '@/components/charts/LineChart';
-import { TrendingUp, TrendingDown, Award, Shield, Target, Activity, Calendar, DollarSign, Users, Star, Clock, BarChart3, MessageCircle, AlertTriangle, CheckCircle, ArrowLeft, Copy, Heart } from 'lucide-react';
+import { TrendingUp, TrendingDown, Award, Shield, Target, Activity, Calendar, DollarSign, Users, Star, Clock, BarChart3, MessageCircle, AlertTriangle, CheckCircle, ArrowLeft, Copy, Heart, User } from 'lucide-react';
 import Link from 'next/link';
 
 interface Expert {
@@ -66,7 +66,7 @@ export default function ExpertProfile({ params }: { params: Promise<{ id: string
     const mockExperts: Expert[] = [
       {
         id: '1',
-        name: 'Sarah Chen',
+        name: 'Expert 2',
         username: '@tech_trader_pro',
         avatar: '👩‍💼',
         bio: 'Tech stock specialist with 8 years experience. Focus on growth stocks and emerging technologies.',
@@ -103,7 +103,7 @@ export default function ExpertProfile({ params }: { params: Promise<{ id: string
       },
       {
         id: '2',
-        name: 'Marcus Johnson',
+        name: 'Expert 3',
         username: '@dividend_king',
         avatar: '👨‍💼',
         bio: 'Conservative dividend investor. Steady returns with low volatility approach.',
@@ -139,7 +139,7 @@ export default function ExpertProfile({ params }: { params: Promise<{ id: string
       },
       {
         id: '3',
-        name: 'Alex Rodriguez',
+        name: 'Expert 1',
         username: '@crypto_stocks',
         avatar: '👨‍💻',
         bio: 'High-growth momentum trader. Specializes in crypto-related stocks and high volatility plays.',
@@ -326,8 +326,8 @@ export default function ExpertProfile({ params }: { params: Promise<{ id: string
             {/* Left: Profile Info */}
             <div className="lg:w-1/3">
               <div className="text-center">
-                <div className="w-32 h-32 mx-auto mb-6 rounded-full">
-                  {expert.avatar}
+                <div className="w-32 h-32 mx-auto mb-6 rounded-full flex items-center justify-center" style={{ background: 'var(--gradient-primary)' }}>
+                  <User className="w-16 h-16 text-white" />
                 </div>
                 <h1 className="text-4xl font-bold text-gradient mb-2">{expert.name}</h1>
                 <div className="flex items-center justify-center gap-2 mb-4">

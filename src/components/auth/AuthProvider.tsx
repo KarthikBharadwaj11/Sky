@@ -1,6 +1,6 @@
 'use client';
 
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
 
 interface User {
   id: string;
@@ -40,6 +40,13 @@ let inMemoryUsers: Array<{ id: string; username: string; email: string; password
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
 
+  useEffect(() => {
+    const saved = localStorage.getItem('sky_session');
+    if (saved) {
+      setUser(JSON.parse(saved));
+    }
+  }, []);
+
   const login = async (username: string, password: string): Promise<boolean> => {
     // Demo mode: Accept any credentials without validation
     const userSession = {
@@ -50,6 +57,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       onboardingComplete: true // Skip onboarding on login
     };
     setUser(userSession);
+    localStorage.setItem('sky_session', JSON.stringify(userSession));
     return true;
   };
 
@@ -63,17 +71,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       onboardingComplete: false
     };
     setUser(userSession);
+    localStorage.setItem('sky_session', JSON.stringify(userSession));
     return true;
   };
 
   const logout = () => {
     setUser(null);
+    localStorage.removeItem('sky_session');
   };
 
   const updateBalance = (newBalance: number) => {
     if (user) {
       const updatedUser = { ...user, balance: newBalance };
       setUser(updatedUser);
+      localStorage.setItem('sky_session', JSON.stringify(updatedUser));
 
       // Update in-memory storage
       const userIndex = inMemoryUsers.findIndex((u) => u.id === user.id);
@@ -87,6 +98,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     if (user) {
       const updatedUser = { ...user, onboardingComplete: true };
       setUser(updatedUser);
+      localStorage.setItem('sky_session', JSON.stringify(updatedUser));
 
       // Update in-memory storage
       const userIndex = inMemoryUsers.findIndex((u) => u.id === user.id);

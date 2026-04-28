@@ -76,7 +76,7 @@ export default function LandingPage() {
 
   const testimonials = [
     {
-      name: "Sarah Chen",
+      name: "Trader 1",
       role: "Day Trader",
       content: "Sky has transformed my trading experience. The AI signals are incredibly accurate and have boosted my returns by 40%.",
       avatar: "👩‍💼",
@@ -84,7 +84,7 @@ export default function LandingPage() {
       profit: "+$25,000"
     },
     {
-      name: "Mike Rodriguez",
+      name: "Trader 2",
       role: "Portfolio Manager",
       content: "The social trading feature is game-changing. I've learned so much from following successful traders on the platform.",
       avatar: "👨‍💼",
@@ -92,7 +92,7 @@ export default function LandingPage() {
       profit: "+$18,500"
     },
     {
-      name: "Emily Johnson",
+      name: "Trader 3",
       role: "Beginner Trader",
       content: "As a complete beginner, Sky made trading accessible and educational. The platform is intuitive and supportive.",
       avatar: "👩‍🎓",
