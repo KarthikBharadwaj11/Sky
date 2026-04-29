@@ -389,10 +389,10 @@ export default function PaperTrading() {
                   background: 'linear-gradient(135deg, #10b981, #059669)',
                   color: 'white'
                 }}>
-                  TS
+                  E1
                 </div>
                 <div>
-                  <h3 className="font-bold" style={{ color: textPrimary }}>Tony Stark</h3>
+                  <h3 className="font-bold" style={{ color: textPrimary }}>Expert 1</h3>
                   <p className="text-xs" style={{ color: textSecondary }}>Tech Stocks Expert</p>
                 </div>
               </div>
@@ -424,10 +424,10 @@ export default function PaperTrading() {
                   background: 'linear-gradient(135deg, #f59e0b, #d97706)',
                   color: 'white'
                 }}>
-                  HG
+                  E2
                 </div>
                 <div>
-                  <h3 className="font-bold" style={{ color: textPrimary }}>Hermione Granger</h3>
+                  <h3 className="font-bold" style={{ color: textPrimary }}>Expert 2</h3>
                   <p className="text-xs" style={{ color: textSecondary }}>Growth Investor</p>
                 </div>
               </div>
