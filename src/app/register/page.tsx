@@ -82,21 +82,6 @@ export default function Register() {
               </div>
             </div>
 
-            {/* Stats Preview */}
-            <div className="grid grid-cols-3 gap-4 mt-8">
-              <div className="text-center">
-                <div className="text-3xl font-bold text-gradient">X</div>
-                <div className="text-sm" style={{ color: 'var(--text-muted)' }}>Active Users</div>
-              </div>
-              <div className="text-center">
-                <div className="text-3xl font-bold text-gradient">X</div>
-                <div className="text-sm" style={{ color: 'var(--text-muted)' }}>Volume</div>
-              </div>
-              <div className="text-center">
-                <div className="text-3xl font-bold text-gradient">X</div>
-                <div className="text-sm" style={{ color: 'var(--text-muted)' }}>Uptime</div>
-              </div>
-            </div>
           </div>
 
           {/* Right Side - Register Form */}

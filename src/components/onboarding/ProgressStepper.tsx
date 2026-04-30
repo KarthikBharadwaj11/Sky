@@ -18,17 +18,15 @@ export default function ProgressStepper({ steps, currentStep }: ProgressStepperP
     <div className="w-full py-6">
       <div className="max-w-6xl mx-auto px-4">
         {/* Desktop View - All steps in one line */}
-        <div className="hidden md:flex items-center justify-between">
+        <div className="hidden md:flex items-start justify-center">
           {steps.map((step, index) => {
             const isCompleted = step.id < currentStep;
             const isCurrent = step.id === currentStep;
-            const isUpcoming = step.id > currentStep;
 
             return (
-              <div key={step.id} className="flex items-center flex-1">
+              <div key={step.id} className="flex items-start">
                 {/* Step Circle and Label */}
-                <div className="flex flex-col items-center relative">
-                  {/* Circle */}
+                <div className="flex flex-col items-center" style={{ minWidth: '90px' }}>
                   <div
                     className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm transition-all duration-300 ${
                       isCompleted
@@ -38,41 +36,24 @@ export default function ProgressStepper({ steps, currentStep }: ProgressStepperP
                         : 'bg-gray-700 text-gray-400 border-2 border-gray-600'
                     }`}
                   >
-                    {isCompleted ? (
-                      <Check className="w-5 h-5" />
-                    ) : (
-                      step.id
-                    )}
+                    {isCompleted ? <Check className="w-5 h-5" /> : step.id}
                   </div>
-
-                  {/* Step Name */}
-                  <div className="mt-2 text-center">
-                    <p
-                      className={`text-xs font-semibold transition-all duration-300 ${
-                        isCurrent
-                          ? 'text-blue-400'
-                          : isCompleted
-                          ? 'text-green-400'
-                          : 'text-gray-500'
-                      }`}
-                      style={{ maxWidth: '100px' }}
-                    >
-                      {step.name}
-                    </p>
-                  </div>
+                  <p
+                    className={`mt-2 text-xs font-semibold text-center transition-all duration-300 ${
+                      isCurrent ? 'text-blue-400' : isCompleted ? 'text-green-400' : 'text-gray-500'
+                    }`}
+                  >
+                    {step.name}
+                  </p>
                 </div>
 
                 {/* Connector Line */}
                 {index < steps.length - 1 && (
-                  <div className="flex-1 h-0.5 mx-2 mb-6 relative">
+                  <div className="flex-1 h-0.5 mt-5 mx-2 relative" style={{ minWidth: '60px' }}>
                     <div className="absolute inset-0 bg-gray-700"></div>
                     <div
-                      className={`absolute inset-0 transition-all duration-500 ${
-                        step.id < currentStep ? 'bg-green-500' : 'bg-gray-700'
-                      }`}
-                      style={{
-                        width: step.id < currentStep ? '100%' : '0%',
-                      }}
+                      className={`absolute inset-0 transition-all duration-500 bg-green-500`}
+                      style={{ width: isCompleted ? '100%' : '0%' }}
                     ></div>
                   </div>
                 )}

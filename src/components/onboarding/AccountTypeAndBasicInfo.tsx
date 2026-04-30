@@ -37,103 +37,13 @@ export default function AccountTypeAndBasicInfo({ data, onComplete, previewMode 
     <div className="card">
       <div className="card-body">
         <div className="mb-8">
-          <h2 className="text-3xl font-bold text-gradient mb-2">Choose Your Account Type</h2>
+          <h2 className="text-3xl font-bold text-gradient mb-2">Personal Details</h2>
           <p className="text-lg" style={{ color: 'var(--text-secondary)' }}>
-            Select how you want to use Sky
+            Tell us a bit about yourself
           </p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-8">
-          {/* Account Type Selection */}
-          <div>
-            <label className="block text-lg font-semibold mb-4" style={{ color: 'var(--text-primary)' }}>
-              I want to register as:
-            </label>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-              {/* Regular User Card */}
-              <button
-                type="button"
-                onClick={() => setAccountType('user')}
-                className={`p-4 rounded-lg border-2 transition-all duration-300 text-left relative ${
-                  accountType === 'user'
-                    ? 'border-blue-500 bg-blue-500/10 shadow-lg shadow-blue-500/20'
-                    : 'border-gray-600 hover:border-gray-500'
-                }`}
-              >
-                {accountType === 'user' && (
-                  <div className="absolute top-3 right-3">
-                    <div className="w-5 h-5 rounded-full bg-blue-500 flex items-center justify-center">
-                      <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                      </svg>
-                    </div>
-                  </div>
-                )}
-                <h3 className="text-base font-bold mb-2" style={{ color: 'var(--text-primary)' }}>
-                  User
-                </h3>
-                <p className="text-xs mb-3" style={{ color: 'var(--text-secondary)' }}>
-                  Trade stocks, invest long-term, copy strategies from expert traders, and build your portfolio
-                </p>
-                <div className="space-y-1">
-                  <div className="text-xs" style={{ color: 'var(--text-tertiary)' }}>
-                    • Buy & sell stocks
-                  </div>
-                  <div className="text-xs" style={{ color: 'var(--text-tertiary)' }}>
-                    • Copy expert traders
-                  </div>
-                  <div className="text-xs" style={{ color: 'var(--text-tertiary)' }}>
-                    • Portfolio analytics
-                  </div>
-                </div>
-              </button>
-
-              {/* Copy Trader Card */}
-              <button
-                type="button"
-                onClick={() => setAccountType('copyTrader')}
-                className={`p-4 rounded-lg border-2 transition-all duration-300 text-left relative ${
-                  accountType === 'copyTrader'
-                    ? 'border-purple-500 bg-purple-500/10 shadow-lg shadow-purple-500/20'
-                    : 'border-gray-600 hover:border-gray-500'
-                }`}
-              >
-                {accountType === 'copyTrader' && (
-                  <div className="absolute top-3 right-3">
-                    <div className="w-5 h-5 rounded-full bg-purple-500 flex items-center justify-center">
-                      <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                      </svg>
-                    </div>
-                  </div>
-                )}
-                <h3 className="text-base font-bold mb-2" style={{ color: 'var(--text-primary)' }}>
-                  Copy Trader (Expert)
-                </h3>
-                <p className="text-xs mb-3" style={{ color: 'var(--text-secondary)' }}>
-                  Share your trading strategies as an expert. Users can copy your trades and you earn from your expertise
-                </p>
-                <div className="space-y-1">
-                  <div className="text-xs" style={{ color: 'var(--text-tertiary)' }}>
-                    • Share your strategies
-                  </div>
-                  <div className="text-xs" style={{ color: 'var(--text-tertiary)' }}>
-                    • Earn from followers
-                  </div>
-                  <div className="text-xs" style={{ color: 'var(--text-tertiary)' }}>
-                    • Build your reputation
-                  </div>
-                </div>
-              </button>
-            </div>
-            {errors.accountType && (
-              <p className="text-red-400 text-sm mt-2">{errors.accountType}</p>
-            )}
-          </div>
-
-          {/* Divider */}
-          <div className="border-t" style={{ borderColor: 'var(--glass-border)' }}></div>
-
           {/* Personal Information */}
           <div>
             <h3 className="text-2xl font-bold mb-6" style={{ color: 'var(--text-primary)' }}>
