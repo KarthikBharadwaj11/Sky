@@ -459,10 +459,10 @@ export default function PaperTrading() {
                   background: 'linear-gradient(135deg, #8b5cf6, #7c3aed)',
                   color: 'white'
                 }}>
-                  DS
+                  E3
                 </div>
                 <div>
-                  <h3 className="font-bold" style={{ color: textPrimary }}>Doctor Strange</h3>
+                  <h3 className="font-bold" style={{ color: textPrimary }}>Expert 3</h3>
                   <p className="text-xs" style={{ color: textSecondary }}>Day Trader</p>
                 </div>
               </div>
