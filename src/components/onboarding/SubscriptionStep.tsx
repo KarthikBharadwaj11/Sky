@@ -240,11 +240,6 @@ export default function SubscriptionStep({ onComplete, onSkip }: SubscriptionSte
     <>
       <div className="space-y-8">
         <div className="text-center">
-          <div className="flex justify-center mb-4">
-            <div className="w-16 h-16 rounded-2xl flex items-center justify-center" style={{ background: 'var(--gradient-primary)' }}>
-              <Crown className="w-8 h-8" style={{ color: 'var(--text-primary)' }} />
-            </div>
-          </div>
           <h2 className="text-3xl font-bold mb-3" style={{ color: 'var(--text-primary)' }}>
             Choose Your Plan
           </h2>

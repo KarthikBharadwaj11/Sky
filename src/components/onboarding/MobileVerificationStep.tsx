@@ -63,7 +63,6 @@ export default function MobileVerificationStep({ data, onComplete, previewMode =
         {currentView === 'mobile' && (
           <>
             <div className="text-center mb-8">
-              <Smartphone className="w-12 h-12 mx-auto mb-4" style={{ color: 'var(--text-accent)' }} />
               <h2 className="text-2xl font-bold mb-2" style={{ color: 'var(--text-primary)' }}>
                 Verify Your Mobile Number
               </h2>
@@ -106,7 +105,6 @@ export default function MobileVerificationStep({ data, onComplete, previewMode =
         {currentView === 'otp' && (
           <>
             <div className="text-center mb-8">
-              <Shield className="w-12 h-12 mx-auto mb-4" style={{ color: 'var(--text-accent)' }} />
               <h2 className="text-2xl font-bold mb-2" style={{ color: 'var(--text-primary)' }}>
                 Enter Verification Code
               </h2>
