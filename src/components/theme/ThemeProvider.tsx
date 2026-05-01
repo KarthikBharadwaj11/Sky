@@ -114,8 +114,8 @@ export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
         root.style.setProperty('--text-accent', '#60a5fa');
 
         root.style.setProperty('--primary-blue', '#3b82f6');
-        root.style.setProperty('--primary-purple', '#8b5cf6');
-        root.style.setProperty('--accent-violet', '#a855f7');
+        root.style.setProperty('--primary-purple', '#6435b8');
+        root.style.setProperty('--accent-violet', '#5b2da3');
         root.style.setProperty('--success', '#22c55e');
         root.style.setProperty('--error', '#ef4444');
         root.style.setProperty('--warning', '#f59e0b');
@@ -124,9 +124,9 @@ export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
         root.style.setProperty('--border-secondary', '#475569');
         root.style.setProperty('--glass-border', '#334155');
 
-        root.style.setProperty('--gradient-primary', 'linear-gradient(135deg, #3b82f6, #8b5cf6)');
-        root.style.setProperty('--gradient-secondary', 'linear-gradient(135deg, #8b5cf6, #a855f7)');
-        root.style.setProperty('--gradient-accent', 'linear-gradient(135deg, #6366f1, #8b5cf6)');
+        root.style.setProperty('--gradient-primary', 'linear-gradient(135deg, #3b82f6, #6435b8)');
+        root.style.setProperty('--gradient-secondary', 'linear-gradient(135deg, #6435b8, #5b2da3)');
+        root.style.setProperty('--gradient-accent', 'linear-gradient(135deg, #5b6dd6, #6435b8)');
 
         root.style.setProperty('--shadow-sm', '0 1px 2px 0 rgba(0, 0, 0, 0.3)');
         root.style.setProperty('--shadow-md', '0 4px 6px -1px rgba(0, 0, 0, 0.4)');
@@ -134,8 +134,8 @@ export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
         root.style.setProperty('--shadow-xl', '0 20px 25px -5px rgba(0, 0, 0, 0.6)');
 
         // Glass morphism for dark mode - more opaque for better contrast
-        root.style.setProperty('--glass-bg', 'rgba(15, 23, 42, 0.9)');
-        root.style.setProperty('--glass-border-color', 'rgba(148, 163, 184, 0.2)');
+        root.style.setProperty('--glass-bg', 'rgba(6, 9, 22, 0.94)');
+        root.style.setProperty('--glass-border-color', 'rgba(148, 163, 184, 0.15)');
 
         // Chart colors for dark mode
         root.style.setProperty('--chart-grid', '#475569');

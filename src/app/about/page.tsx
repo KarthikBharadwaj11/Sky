@@ -42,7 +42,7 @@ export default function AboutPage() {
 
 
   return (
-    <div className="min-h-screen trading-background">
+    <div className="min-h-screen">
       
       {/* Hero Section */}
       <section className="pt-48 pb-16">
@@ -58,6 +58,8 @@ export default function AboutPage() {
           </div>
         </div>
       </section>
+
+      <div className="max-w-4xl mx-auto px-4"><div className="h-px" style={{ background: 'linear-gradient(90deg, transparent, rgba(99,102,241,0.4), rgba(124,58,237,0.4), transparent)' }} /></div>
 
       {/* Mission Section */}
       <section className="py-16">
@@ -99,8 +101,7 @@ export default function AboutPage() {
               <div className="card">
                 <div className="card-body p-8">
                   <div className="text-center mb-6">
-                    <Eye className="w-16 h-16 mx-auto mb-4" style={{ color: 'var(--text-accent)' }} />
-                    <h3 className="text-2xl font-bold text-gradient mb-2">Our Vision</h3>
+                    <h3 className="text-4xl font-bold text-gradient mb-2">Our Vision</h3>
                   </div>
                   <p className="text-lg text-center" style={{ color: 'var(--text-secondary)' }}>
                     To become the world's most trusted and innovative trading platform, 
@@ -113,6 +114,8 @@ export default function AboutPage() {
           </div>
         </div>
       </section>
+
+      <div className="max-w-4xl mx-auto px-4"><div className="h-px" style={{ background: 'linear-gradient(90deg, transparent, rgba(99,102,241,0.4), rgba(124,58,237,0.4), transparent)' }} /></div>
 
       {/* Values Section */}
       <section className="py-16">
@@ -129,9 +132,6 @@ export default function AboutPage() {
               {values.map((value, index) => (
                 <div key={index} className="card hover:scale-105 transition-all duration-300">
                   <div className="card-body text-center p-6">
-                    <div className="flex justify-center mb-4" style={{ color: 'var(--text-accent)' }}>
-                      {value.icon}
-                    </div>
                     <h3 className="text-xl font-bold mb-3" style={{ color: 'var(--text-primary)' }}>
                       {value.title}
                     </h3>
@@ -145,6 +145,8 @@ export default function AboutPage() {
           </div>
         </div>
       </section>
+
+      <div className="max-w-4xl mx-auto px-4"><div className="h-px" style={{ background: 'linear-gradient(90deg, transparent, rgba(99,102,241,0.4), rgba(124,58,237,0.4), transparent)' }} /></div>
 
       {/* Team Section */}
       <section className="py-16">
@@ -181,6 +183,8 @@ export default function AboutPage() {
       </section>
 
 
+      <div className="max-w-4xl mx-auto px-4"><div className="h-px" style={{ background: 'linear-gradient(90deg, transparent, rgba(99,102,241,0.4), rgba(124,58,237,0.4), transparent)' }} /></div>
+
       {/* Contact Section */}
       <section className="py-16">
         <div className="container mx-auto px-4">
@@ -196,10 +200,7 @@ export default function AboutPage() {
                 
                 <div className="flex flex-col sm:flex-row gap-4 justify-center mb-8">
                   <button className="btn-primary px-8 py-3 text-lg hover:scale-105 transition-all duration-300">
-                    <span className="flex items-center justify-center gap-2">
-                      <Star className="w-5 h-5" />
-                      Start Trading Free
-                    </span>
+                    Start Trading
                   </button>
                   <button className="btn-secondary px-8 py-3 text-lg hover:scale-105 transition-all duration-300">
                     <span className="flex items-center justify-center gap-2">

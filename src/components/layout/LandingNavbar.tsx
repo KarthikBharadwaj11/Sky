@@ -18,7 +18,7 @@ export default function LandingNavbar() {
   }, []);
 
   return (
-    <div className="fixed top-8 left-1/2 transform -translate-x-1/2 z-50 px-4 w-full max-w-5xl">
+    <div className="fixed top-14 left-1/2 transform -translate-x-1/2 z-50 px-4 w-full max-w-5xl">
       <div className="navbar-gradient-border rounded-2xl">
         <nav className={`navbar-glass rounded-2xl ${isScrolled ? 'scrolled' : ''}`}>
           <div className="px-6 py-3">
@@ -28,8 +28,8 @@ export default function LandingNavbar() {
                 <Image
                   src="/logo.png"
                   alt="Sky Logo"
-                  width={100}
-                  height={35}
+                  width={70}
+                  height={25}
                   className="object-contain"
                   priority
                 />
@@ -45,8 +45,8 @@ export default function LandingNavbar() {
 
                 <div className="h-6 w-px bg-white/20"></div>
 
-                <Link href="/login" className="btn-primary px-6 py-2 text-sm whitespace-nowrap">Sign In</Link>
-                <Link href="/register" className="btn-primary px-6 py-2 text-sm whitespace-nowrap">Get Started</Link>
+                <Link href="/login" className="px-5 py-2 rounded-xl text-sm font-semibold transition-all duration-200 hover:scale-105 whitespace-nowrap" style={{ background: 'linear-gradient(135deg, rgba(59,130,246,0.15), rgba(124,58,237,0.15))', border: '1px solid rgba(124,58,237,0.35)', color: 'var(--text-primary)' }}>Sign In</Link>
+                <Link href="/register" className="px-5 py-2 rounded-xl text-sm font-bold whitespace-nowrap transition-all duration-200 hover:scale-105 shadow-lg" style={{ background: '#ffffff', color: '#0f0e1a' }}>Get Started</Link>
               </div>
 
               {/* Mobile menu button */}
@@ -75,8 +75,8 @@ export default function LandingNavbar() {
                     <Link href="/about" className={`nav-link px-4 py-3 ${pathname === '/about' ? 'active' : ''}`} onClick={() => setIsMenuOpen(false)}>About</Link>
                     <Link href="/support" className={`nav-link px-4 py-3 ${pathname === '/support' ? 'active' : ''}`} onClick={() => setIsMenuOpen(false)}>Support</Link>
                     <div className="h-px bg-white/10 my-2"></div>
-                    <Link href="/login" className="btn-primary px-6 py-3 text-center font-semibold" onClick={() => setIsMenuOpen(false)}>Sign In</Link>
-                    <Link href="/register" className="btn-primary px-6 py-3 text-center font-semibold" onClick={() => setIsMenuOpen(false)}>Get Started</Link>
+                    <Link href="/login" className="px-6 py-3 rounded-xl text-sm font-semibold text-center transition-all duration-200" style={{ background: 'linear-gradient(135deg, rgba(59,130,246,0.15), rgba(124,58,237,0.15))', border: '1px solid rgba(124,58,237,0.35)', color: 'var(--text-primary)' }} onClick={() => setIsMenuOpen(false)}>Sign In</Link>
+                    <Link href="/register" className="px-6 py-3 rounded-xl text-sm font-bold text-center transition-all duration-200 shadow-lg" style={{ background: '#ffffff', color: '#0f0e1a' }} onClick={() => setIsMenuOpen(false)}>Get Started</Link>
                   </div>
                 </div>
               </div>

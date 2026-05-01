@@ -227,7 +227,7 @@ export default function StockPage({ params }: { params: Promise<{ symbol: string
   };
 
   return (
-    <div className="min-h-screen trading-background">
+    <div className="min-h-screen">
       <div className="max-w-[95%] mx-auto px-6 py-6 pt-24">
         {/* Header - Back Arrow and Title */}
         <div className="absolute top-24 left-6">
@@ -368,48 +368,27 @@ export default function StockPage({ params }: { params: Promise<{ symbol: string
             <div className="grid grid-cols-3 gap-4 mt-6">
               <div className="card">
                 <div className="card-body p-4">
-                  <div className="flex items-center gap-3 mb-3">
-                    <div className="w-10 h-10 rounded-full bg-gradient-to-r from-blue-500 to-cyan-600 flex items-center justify-center">
-                      <BarChart3 className="w-5 h-5 text-white" />
-                    </div>
-                    <div>
-                      <div className="text-xs" style={{ color: 'var(--text-tertiary)' }}>52W Range</div>
-                      <div className="text-sm font-bold" style={{ color: 'var(--text-primary)' }}>
-                        ${stockData.yearLow} - ${stockData.yearHigh}
-                      </div>
-                    </div>
+                  <div className="text-xs mb-1" style={{ color: 'var(--text-tertiary)' }}>52W Range</div>
+                  <div className="text-sm font-bold" style={{ color: 'var(--text-primary)' }}>
+                    ${stockData.yearLow} - ${stockData.yearHigh}
                   </div>
                 </div>
               </div>
 
               <div className="card">
                 <div className="card-body p-4">
-                  <div className="flex items-center gap-3 mb-3">
-                    <div className="w-10 h-10 rounded-full bg-gradient-to-r from-purple-500 to-pink-600 flex items-center justify-center">
-                      <TrendingUpIcon className="w-5 h-5 text-white" />
-                    </div>
-                    <div>
-                      <div className="text-xs" style={{ color: 'var(--text-tertiary)' }}>Avg Volume</div>
-                      <div className="text-sm font-bold" style={{ color: 'var(--text-primary)' }}>
-                        {(stockData.avgVolume / 1000000).toFixed(1)}M
-                      </div>
-                    </div>
+                  <div className="text-xs mb-1" style={{ color: 'var(--text-tertiary)' }}>Avg Volume</div>
+                  <div className="text-sm font-bold" style={{ color: 'var(--text-primary)' }}>
+                    {(stockData.avgVolume / 1000000).toFixed(1)}M
                   </div>
                 </div>
               </div>
 
               <div className="card">
                 <div className="card-body p-4">
-                  <div className="flex items-center gap-3 mb-3">
-                    <div className="w-10 h-10 rounded-full bg-gradient-to-r from-orange-500 to-red-600 flex items-center justify-center">
-                      <Activity className="w-5 h-5 text-white" />
-                    </div>
-                    <div>
-                      <div className="text-xs" style={{ color: 'var(--text-tertiary)' }}>Beta</div>
-                      <div className="text-sm font-bold" style={{ color: 'var(--text-primary)' }}>
-                        {stockData.beta.toFixed(2)}
-                      </div>
-                    </div>
+                  <div className="text-xs mb-1" style={{ color: 'var(--text-tertiary)' }}>Beta</div>
+                  <div className="text-sm font-bold" style={{ color: 'var(--text-primary)' }}>
+                    {stockData.beta.toFixed(2)}
                   </div>
                 </div>
               </div>

@@ -158,7 +158,7 @@ export default function PaperTrading() {
   // Preview for non-logged-in users
   if (!user) {
     return (
-      <div className="min-h-screen trading-background">
+      <div className="min-h-screen">
         <section className="pt-48 pb-16">
           <div className="container mx-auto px-4">
             <div className="max-w-6xl mx-auto text-center mb-16">
@@ -181,23 +181,22 @@ export default function PaperTrading() {
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   <div className="glass-morphism p-6 rounded-xl hover:scale-105 transition-all duration-300">
-                    <BookOpen className="w-10 h-10 mb-4" style={{ color: 'var(--text-accent)' }} />
                     <h3 className="text-lg font-bold mb-2" style={{ color: 'var(--text-primary)' }}>Learn Trading</h3>
                     <p style={{ color: 'var(--text-secondary)' }}>Practice buying and selling stocks without any financial risk</p>
                   </div>
                   <div className="glass-morphism p-6 rounded-xl hover:scale-105 transition-all duration-300">
-                    <BarChart3 className="w-10 h-10 mb-4" style={{ color: 'var(--text-accent)' }} />
                     <h3 className="text-lg font-bold mb-2" style={{ color: 'var(--text-primary)' }}>Test Strategies</h3>
                     <p style={{ color: 'var(--text-secondary)' }}>Experiment with different trading strategies and see what works</p>
                   </div>
                   <div className="glass-morphism p-6 rounded-xl hover:scale-105 transition-all duration-300">
-                    <Award className="w-10 h-10 mb-4" style={{ color: 'var(--text-accent)' }} />
                     <h3 className="text-lg font-bold mb-2" style={{ color: 'var(--text-primary)' }}>Build Confidence</h3>
                     <p style={{ color: 'var(--text-secondary)' }}>Gain experience and confidence before using real money</p>
                   </div>
                 </div>
               </div>
             </div>
+
+            <div className="max-w-4xl mx-auto px-4 mb-8"><div className="h-px" style={{ background: 'linear-gradient(90deg, transparent, rgba(99,102,241,0.4), rgba(124,58,237,0.4), transparent)' }} /></div>
 
             {/* Why Paper Trade */}
             <div className="max-w-6xl mx-auto mb-16">
@@ -215,17 +214,21 @@ export default function PaperTrading() {
                   { icon: <Zap className="w-8 h-8" />, title: "Instant Execution", description: "Execute trades instantly and see immediate results in your virtual portfolio." },
                 ].map((benefit, index) => (
                   <div key={index} className="card hover:scale-105 transition-all duration-300">
-                    <div className="card-body text-center p-6">
-                      <div className="flex justify-center mb-4" style={{ color: 'var(--text-accent)' }}>
-                        {benefit.icon}
+                    <div className="card-body p-6">
+                      <div className="flex items-start gap-3">
+                        <div className="w-2 h-2 rounded-full mt-2.5 flex-shrink-0" style={{ background: 'var(--gradient-primary)' }} />
+                        <div>
+                          <h3 className="text-lg font-bold mb-2" style={{ color: 'var(--text-primary)' }}>{benefit.title}</h3>
+                          <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>{benefit.description}</p>
+                        </div>
                       </div>
-                      <h3 className="text-lg font-bold mb-2" style={{ color: 'var(--text-primary)' }}>{benefit.title}</h3>
-                      <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>{benefit.description}</p>
                     </div>
                   </div>
                 ))}
               </div>
             </div>
+
+            <div className="max-w-4xl mx-auto px-4 mb-8"><div className="h-px" style={{ background: 'linear-gradient(90deg, transparent, rgba(99,102,241,0.4), rgba(124,58,237,0.4), transparent)' }} /></div>
 
             {/* How It Works */}
             <div className="max-w-4xl mx-auto mb-16">
@@ -254,6 +257,8 @@ export default function PaperTrading() {
               </div>
             </div>
 
+            <div className="max-w-4xl mx-auto px-4 mb-8"><div className="h-px" style={{ background: 'linear-gradient(90deg, transparent, rgba(99,102,241,0.4), rgba(124,58,237,0.4), transparent)' }} /></div>
+
             {/* Call-to-action */}
             <div className="text-center max-w-4xl mx-auto">
               <div className="card p-8">
@@ -279,7 +284,7 @@ export default function PaperTrading() {
 
   // Full paper trading interface for logged-in users
   return (
-    <div className="min-h-screen" style={{ background: isDark ? `linear-gradient(135deg, ${bgPrimary} 0%, ${bgSecondary} 50%, ${bgPrimary} 100%)` : `linear-gradient(135deg, ${bgSecondary} 0%, ${bgPrimary} 50%, ${bgSecondary} 100%)` }}>
+    <div className="min-h-screen" style={{ background: '#000000' }}>
       <div className="pt-20 container mx-auto px-4 py-8">
         {/* Header */}
         <div className="mb-8">

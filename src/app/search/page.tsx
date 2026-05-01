@@ -112,8 +112,8 @@ export default function SearchStocks() {
   }
 
   return (
-    <div className="min-h-screen trading-background">
-      <div className="container mx-auto p-6 pt-28">
+    <div className="min-h-screen">
+      <div className="container mx-auto p-6 pt-12">
         {/* Header */}
         <div className="text-center mb-8">
           <h1 className="text-4xl font-bold text-gradient gradient-shift mb-2">

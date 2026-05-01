@@ -43,7 +43,7 @@ export default function SupportPage() {
 
 
   return (
-    <div className="min-h-screen trading-background">
+    <div className="min-h-screen">
       
       {/* Hero Section */}
       <section className="pt-48 pb-8">
@@ -72,6 +72,8 @@ export default function SupportPage() {
           </div>
         </div>
       </section>
+
+      <div className="max-w-4xl mx-auto px-4"><div className="h-px" style={{ background: 'linear-gradient(90deg, transparent, rgba(99,102,241,0.4), rgba(124,58,237,0.4), transparent)' }} /></div>
 
       {/* Support Options */}
       <section className="py-16">
@@ -108,6 +110,8 @@ export default function SupportPage() {
         </div>
       </section>
 
+      <div className="max-w-4xl mx-auto px-4"><div className="h-px" style={{ background: 'linear-gradient(90deg, transparent, rgba(99,102,241,0.4), rgba(124,58,237,0.4), transparent)' }} /></div>
+
       {/* FAQ Section */}
       <section className="py-16">
         <div className="container mx-auto px-4">
@@ -119,23 +123,6 @@ export default function SupportPage() {
               </p>
             </div>
 
-            {/* Category Filter */}
-            <div className="flex flex-wrap justify-center gap-3 mb-8">
-              {categories.map((category) => (
-                <button
-                  key={category.id}
-                  onClick={() => setSelectedCategory(category.id)}
-                  className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all duration-300 ${
-                    selectedCategory === category.id 
-                      ? 'btn-primary' 
-                      : 'glass-morphism hover:bg-white/5'
-                  }`}
-                >
-                  {category.icon}
-                  {category.name}
-                </button>
-              ))}
-            </div>
 
             {/* FAQ Items */}
             <div className="max-w-4xl mx-auto">
@@ -149,8 +136,10 @@ export default function SupportPage() {
       </section>
 
 
+      <div className="max-w-4xl mx-auto px-4"><div className="h-px" style={{ background: 'linear-gradient(90deg, transparent, rgba(99,102,241,0.4), rgba(124,58,237,0.4), transparent)' }} /></div>
+
       {/* Resources Section */}
-      <section className="py-16 border-t" style={{ borderColor: 'var(--glass-border)' }}>
+      <section className="py-16">
         <div className="container mx-auto px-4">
           <div className="max-w-6xl mx-auto">
             <div className="text-center mb-12">

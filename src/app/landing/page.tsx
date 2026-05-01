@@ -129,21 +129,21 @@ export default function LandingPage() {
   ];
 
   return (
-    <div className="min-h-screen trading-background">
+    <div className="min-h-screen">
       
       {/* Hero Section */}
       <section className="relative overflow-hidden">
-        <div className="container mx-auto px-4 pt-48 pb-12">
+        <div className="container mx-auto px-4 pt-32 pb-12">
           <div className="max-w-6xl mx-auto text-center">
             
-            <h1 className="text-6xl md:text-8xl font-bold gradient-shift leading-tight mb-8 flex items-center justify-center gap-1 flex-wrap">
+            <h1 className="text-6xl md:text-8xl font-bold gradient-shift leading-tight mb-8 flex items-center justify-center flex-wrap">
               Trade Smarter with
               <Image
-                src="/logo.png"
+                src="/logo2.png"
                 alt="Sky Logo"
                 width={200}
                 height={80}
-                className="inline-block -ml-10"
+                className="object-contain -ml-10"
                 priority
               />
             </h1>
@@ -158,8 +158,7 @@ export default function LandingPage() {
                 className="group btn-primary text-xl px-12 py-6 glow-effect hover:scale-110 transition-all duration-300"
               >
                 <span className="flex items-center justify-center gap-3">
-                  <Star className="w-6 h-6" />
-                  Start Trading Free
+                  Start Trading
                   <ChevronRight className="w-6 h-6 group-hover:translate-x-1 transition-transform" />
                 </span>
               </Link>
@@ -178,6 +177,8 @@ export default function LandingPage() {
         </div>
       </section>
 
+      <div className="max-w-4xl mx-auto px-4"><div className="h-px" style={{ background: 'linear-gradient(90deg, transparent, rgba(99,102,241,0.4), rgba(124,58,237,0.4), transparent)' }} /></div>
+
       {/* Features Section */}
       <section className="py-20">
         <div className="container mx-auto px-4">
@@ -191,17 +192,17 @@ export default function LandingPage() {
             
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {features.map((feature, index) => (
-                <div key={index} className="card hover:scale-105 transition-all duration-300">
-                  <div className="card-body text-center">
-                    <div className="flex justify-center mb-4" style={{ color: 'var(--text-accent)' }}>
-                      {feature.icon}
+                <div key={index} className="card hover:scale-105 transition-all duration-300 overflow-hidden">
+                  <div className="card-body flex gap-4 p-6">
+                    <div className="w-1 rounded-full flex-shrink-0" style={{ background: 'var(--gradient-primary)' }} />
+                    <div>
+                      <h3 className="text-xl font-bold mb-3" style={{ color: 'var(--text-primary)' }}>
+                        {feature.title}
+                      </h3>
+                      <p style={{ color: 'var(--text-secondary)' }}>
+                        {feature.description}
+                      </p>
                     </div>
-                    <h3 className="text-xl font-bold mb-3" style={{ color: 'var(--text-primary)' }}>
-                      {feature.title}
-                    </h3>
-                    <p style={{ color: 'var(--text-secondary)' }}>
-                      {feature.description}
-                    </p>
                   </div>
                 </div>
               ))}
@@ -209,6 +210,8 @@ export default function LandingPage() {
           </div>
         </div>
       </section>
+
+      <div className="max-w-4xl mx-auto px-4"><div className="h-px" style={{ background: 'linear-gradient(90deg, transparent, rgba(99,102,241,0.4), rgba(124,58,237,0.4), transparent)' }} /></div>
 
       {/* How It Works Section */}
       <section className="py-20">
@@ -272,6 +275,8 @@ export default function LandingPage() {
         </div>
       </section>
 
+      <div className="max-w-4xl mx-auto px-4"><div className="h-px" style={{ background: 'linear-gradient(90deg, transparent, rgba(99,102,241,0.4), rgba(124,58,237,0.4), transparent)' }} /></div>
+
       {/* FAQ Section */}
       <section className="py-20">
         <div className="container mx-auto px-4">
@@ -289,6 +294,8 @@ export default function LandingPage() {
           </div>
         </div>
       </section>
+
+      <div className="max-w-4xl mx-auto px-4"><div className="h-px" style={{ background: 'linear-gradient(90deg, transparent, rgba(99,102,241,0.4), rgba(124,58,237,0.4), transparent)' }} /></div>
 
       {/* Final CTA Section */}
       <section className="py-20">
@@ -309,8 +316,7 @@ export default function LandingPage() {
                     className="group btn-primary text-xl px-12 py-6 glow-effect hover:scale-110 transition-all duration-300"
                   >
                     <span className="flex items-center justify-center gap-3">
-                      <Star className="w-6 h-6" />
-                      Get Started Free
+                      Get Started
                       <ArrowRight className="w-6 h-6 group-hover:translate-x-1 transition-transform" />
                     </span>
                   </Link>
@@ -335,8 +341,10 @@ export default function LandingPage() {
         </div>
       </section>
 
+      <div className="max-w-4xl mx-auto px-4"><div className="h-px" style={{ background: 'linear-gradient(90deg, transparent, rgba(99,102,241,0.4), rgba(124,58,237,0.4), transparent)' }} /></div>
+
       {/* Footer */}
-      <footer className="py-12 border-t" style={{ borderColor: 'var(--glass-border)' }}>
+      <footer className="py-12">
         <div className="container mx-auto px-4">
           <div className="max-w-6xl mx-auto">
             <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
@@ -357,7 +365,6 @@ export default function LandingPage() {
                 <ul className="space-y-2 text-sm" style={{ color: 'var(--text-secondary)' }}>
                   <li><a href="#" className="hover:text-blue-400 transition-colors">About Us</a></li>
                   <li><a href="#" className="hover:text-blue-400 transition-colors">Careers</a></li>
-                  <li><a href="#" className="hover:text-blue-400 transition-colors">Press</a></li>
                   <li><a href="#" className="hover:text-blue-400 transition-colors">Contact</a></li>
                 </ul>
               </div>

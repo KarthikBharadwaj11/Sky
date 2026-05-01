@@ -117,58 +117,21 @@ export default function OptionsPage() {
           </div>
         </div>
 
-        {/* Portfolio Summary Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {/* Total Value */}
-          <div className="card">
-            <div className="card-body">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-sm font-medium" style={{ color: 'var(--text-secondary)' }}>
-                  Total Options Buying Power
-                </span>
-                <Activity className="w-4 h-4" style={{ color: 'var(--text-tertiary)' }} />
-              </div>
-              <div className="text-2xl font-bold" style={{ color: 'var(--text-primary)' }}>
-                ${totalValue.toLocaleString()}
-              </div>
-            </div>
+        {/* Portfolio Summary Bar */}
+        <div className="grid grid-cols-3 gap-0 p-2 rounded-xl" style={{ background: 'var(--glass-bg)', border: '1px solid var(--glass-border-color)' }}>
+          <div className="px-4 py-2">
+            <p className="text-sm font-medium mb-1" style={{ color: 'var(--text-muted)' }}>Buying Power</p>
+            <p className="text-2xl font-bold" style={{ color: 'var(--text-primary)' }}>${totalValue.toLocaleString()}</p>
           </div>
-
-          {/* P/L */}
-          <div className="card">
-            <div className="card-body">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-sm font-medium" style={{ color: 'var(--text-secondary)' }}>
-                  Total P/L
-                </span>
-                {totalPL >= 0 ? (
-                  <TrendingUp className="w-4 h-4 text-green-400" />
-                ) : (
-                  <TrendingDown className="w-4 h-4 text-red-400" />
-                )}
-              </div>
-              <div className={`text-2xl font-bold ${totalPL >= 0 ? 'text-green-400' : 'text-red-400'}`}>
-                {totalPL >= 0 ? '+' : ''}${totalPL.toFixed(0)}
-                <span className="text-sm ml-2">
-                  ({totalPL >= 0 ? '+' : ''}{totalPLPercent.toFixed(2)}%)
-                </span>
-              </div>
-            </div>
+          <div className="px-4 py-2 border-l" style={{ borderColor: 'var(--glass-border-color)' }}>
+            <p className="text-sm font-medium mb-1" style={{ color: 'var(--text-muted)' }}>Total P/L</p>
+            <p className={`text-2xl font-bold ${totalPL >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+              {totalPL >= 0 ? '+' : ''}${totalPL.toFixed(0)} <span className="text-base">({totalPL >= 0 ? '+' : ''}{totalPLPercent.toFixed(2)}%)</span>
+            </p>
           </div>
-
-          {/* Active Positions */}
-          <div className="card">
-            <div className="card-body">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-sm font-medium" style={{ color: 'var(--text-secondary)' }}>
-                  Active Positions
-                </span>
-                <Calendar className="w-4 h-4" style={{ color: 'var(--text-tertiary)' }} />
-              </div>
-              <div className="text-2xl font-bold" style={{ color: 'var(--text-primary)' }}>
-                {activePositions.length}
-              </div>
-            </div>
+          <div className="px-4 py-2 border-l" style={{ borderColor: 'var(--glass-border-color)' }}>
+            <p className="text-sm font-medium mb-1" style={{ color: 'var(--text-muted)' }}>Active Positions</p>
+            <p className="text-2xl font-bold" style={{ color: 'var(--text-primary)' }}>{activePositions.length}</p>
           </div>
         </div>
 

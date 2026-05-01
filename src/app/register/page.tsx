@@ -43,13 +43,10 @@ export default function Register() {
     setLoading(false);
   };
 
-  const handleSocialRegister = (provider: string) => {
-    // Mock social registration - in production, integrate with actual OAuth providers
-    alert(`${provider} registration would be integrated here with actual OAuth flow`);
-  };
+  const handleSocialRegister = (_provider: string) => {};
 
   return (
-    <div className="min-h-screen flex items-center justify-center pt-48 pb-32 px-4 sm:px-6 lg:px-8 trading-background">
+    <div className="min-h-screen flex items-center justify-center pt-48 pb-32 px-4 sm:px-6 lg:px-8">
       <div className="max-w-6xl w-full">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
           {/* Left Side - App Branding */}

@@ -20,7 +20,9 @@ import {
   ChevronRight,
   BookOpen,
   PieChart,
-  LineChart
+  LineChart,
+  ArrowLeftRight,
+  Copy
 } from 'lucide-react';
 
 export default function LearnPage() {
@@ -169,9 +171,8 @@ export default function LearnPage() {
           <h1 className="text-5xl md:text-7xl font-bold gradient-shift leading-tight mb-6">
             Learn Trading the Fun Way!
           </h1>
-
-          <p className="text-xl md:text-2xl mb-12" style={{ color: 'var(--text-secondary)' }}>
-            Interactive flashcards, fun facts, and bite-sized lessons to make you a trading pro!
+          <p className="text-xl mb-12" style={{ color: 'var(--text-secondary)' }}>
+            Everything you need to become a confident trader.
           </p>
         </div>
 
@@ -194,9 +195,6 @@ export default function LearnPage() {
                 {flippedCard !== card.id ? (
                   /* Front of card */
                   <div className={`w-full h-full bg-gradient-to-br ${card.front.color} rounded-2xl flex flex-col justify-center items-center p-6 transition-opacity duration-300`}>
-                    <div className="text-white mb-4">
-                      {card.front.icon}
-                    </div>
                     <h3 className="text-xl font-bold text-white mb-4">{card.front.title}</h3>
                     <div className="mt-auto flex items-center gap-2 text-white/80 text-sm">
                       <RotateCcw className="w-4 h-4" />
@@ -227,23 +225,8 @@ export default function LearnPage() {
           </div>
         </section>
 
-        {/* Fun Facts Ticker */}
-        <section className="mb-20">
-          <div className="text-center mb-8">
-            <h2 className="text-4xl font-bold text-gradient mb-4">Fun Trading Facts</h2>
-          </div>
-          
-          <div className="glass-morphism rounded-2xl p-8 max-w-6xl mx-auto">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {funFacts.map((fact, index) => (
-                <div key={index} className="text-center p-6 rounded-xl hover:bg-white/5 transition-all duration-300">
-                  <div className="text-4xl mb-4">{fact.icon}</div>
-                  <p style={{ color: 'var(--text-secondary)' }}>{fact.fact}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
+
+        <div className="max-w-4xl mx-auto px-4 mb-20"><div className="h-px" style={{ background: 'linear-gradient(90deg, transparent, rgba(99,102,241,0.4), rgba(124,58,237,0.4), transparent)' }} /></div>
 
         {/* Risk Levels Visual */}
         <section className="mb-20">
@@ -258,9 +241,6 @@ export default function LearnPage() {
             {riskLevels.map((risk, index) => (
               <div key={index} className="card hover:scale-105 transition-all duration-300">
                 <div className="card-body p-8 text-center">
-                  <div className="text-4xl mb-4">
-                    {index === 0 ? '🛡️' : index === 1 ? '⚖️' : '🚀'}
-                  </div>
                   <h3 className="text-2xl font-bold mb-2" style={{ color: 'var(--text-primary)' }}>
                     {risk.level}
                   </h3>
@@ -281,6 +261,8 @@ export default function LearnPage() {
           </div>
         </section>
 
+        <div className="max-w-4xl mx-auto px-4 mb-20"><div className="h-px" style={{ background: 'linear-gradient(90deg, transparent, rgba(99,102,241,0.4), rgba(124,58,237,0.4), transparent)' }} /></div>
+
         {/* Quick Tips Grid */}
         <section className="mb-20">
           <div className="text-center mb-12">
@@ -291,26 +273,21 @@ export default function LearnPage() {
             {quickTips.map((tip, index) => (
               <div key={index} className="card hover:scale-105 transition-all duration-300 group">
                 <div className="card-body p-6">
-                  <div className="flex items-start gap-4">
-                    <div className="p-3 rounded-lg glow-effect group-hover:scale-110 transition-transform" style={{ background: 'var(--gradient-primary)' }}>
-                      <div style={{ color: 'var(--text-primary)' }}>
-                        {tip.icon}
-                      </div>
-                    </div>
-                    <div>
-                      <h3 className="text-xl font-bold mb-2" style={{ color: 'var(--text-primary)' }}>
-                        {tip.title}
-                      </h3>
-                      <p style={{ color: 'var(--text-secondary)' }}>
-                        {tip.description}
-                      </p>
-                    </div>
+                  <div>
+                    <h3 className="text-xl font-bold mb-2" style={{ color: 'var(--text-primary)' }}>
+                      {tip.title}
+                    </h3>
+                    <p style={{ color: 'var(--text-secondary)' }}>
+                      {tip.description}
+                    </p>
                   </div>
                 </div>
               </div>
             ))}
           </div>
         </section>
+
+        <div className="max-w-4xl mx-auto px-4 mb-20"><div className="h-px" style={{ background: 'linear-gradient(90deg, transparent, rgba(99,102,241,0.4), rgba(124,58,237,0.4), transparent)' }} /></div>
 
         {/* Video Learning Hub */}
         <section className="mb-20">
@@ -355,7 +332,7 @@ export default function LearnPage() {
                   </div>
                 </div>
                 <h3 className="text-xl font-bold mb-2" style={{ color: 'var(--text-primary)' }}>
-                  🎤 Warren Buffett's Wisdom
+                  Warren Buffett's Wisdom
                 </h3>
                 <p className="mb-4" style={{ color: 'var(--text-secondary)' }}>
                   Key insights from the legendary investor's best advice
@@ -376,7 +353,7 @@ export default function LearnPage() {
                   </div>
                 </div>
                 <h3 className="text-xl font-bold mb-2" style={{ color: 'var(--text-primary)' }}>
-                  📈 Reading Chart Patterns
+                  Reading Chart Patterns
                 </h3>
                 <p className="mb-4" style={{ color: 'var(--text-secondary)' }}>
                   Learn to identify support, resistance, and trend patterns
@@ -389,6 +366,8 @@ export default function LearnPage() {
             </div>
           </div>
         </section>
+
+        <div className="max-w-4xl mx-auto px-4 mb-20"><div className="h-px" style={{ background: 'linear-gradient(90deg, transparent, rgba(99,102,241,0.4), rgba(124,58,237,0.4), transparent)' }} /></div>
 
         {/* Interactive Learning Games */}
         <section className="mb-20">
@@ -405,7 +384,7 @@ export default function LearnPage() {
               <div className="card-body p-8">
                 <div className="text-center">
                   <div className="w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6" style={{ background: 'var(--gradient-primary)' }}>
-                    <Zap className="w-10 h-10" style={{ color: 'var(--text-primary)' }} />
+                    <TrendingUp className="w-10 h-10" style={{ color: 'var(--text-primary)' }} />
                   </div>
                   <h3 className="text-2xl font-bold mb-4" style={{ color: 'var(--text-primary)' }}>
                     Trading Simulator
@@ -423,10 +402,10 @@ export default function LearnPage() {
               <div className="card-body p-8">
                 <div className="text-center">
                   <div className="w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6" style={{ background: 'linear-gradient(135deg, #06b6d4, #0891b2)' }}>
-                    <Users className="w-10 h-10" style={{ color: 'var(--text-primary)' }} />
+                    <Copy className="w-10 h-10" style={{ color: 'var(--text-primary)' }} />
                   </div>
                   <h3 className="text-2xl font-bold mb-4" style={{ color: 'var(--text-primary)' }}>
-                    👥 Copy Trade Simulator
+                    Copy Trade Simulator
                   </h3>
                   <p className="mb-8" style={{ color: 'var(--text-secondary)' }}>
                     Watch an interactive visual guide showing exactly how copy trading works

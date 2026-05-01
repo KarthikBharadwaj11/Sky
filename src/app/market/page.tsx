@@ -112,7 +112,7 @@ export default function MarketPage() {
   ];
 
   return (
-    <div className="min-h-screen pt-12 pb-8 px-6 trading-background">
+    <div className="min-h-screen pt-12 pb-8 px-6">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="mb-6">
@@ -390,7 +390,6 @@ export default function MarketPage() {
           <div className="card">
             <div className="card-body p-5">
               <div className="flex items-center gap-2 mb-4">
-                <Calendar className="w-5 h-5" style={{ color: 'var(--primary-blue)' }} />
                 <h3 className="text-lg font-bold" style={{ color: 'var(--text-primary)' }}>
                   Economic Calendar
                 </h3>
@@ -424,7 +423,6 @@ export default function MarketPage() {
             <div className="card-body p-5">
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-2">
-                  <Activity className="w-5 h-5" style={{ color: 'var(--primary-purple)' }} />
                   <h3 className="text-lg font-bold" style={{ color: 'var(--text-primary)' }}>
                     Trending Themes
                   </h3>
@@ -467,7 +465,6 @@ export default function MarketPage() {
         {/* Global Markets */}
         <div className="mb-6">
           <div className="flex items-center gap-2 mb-3">
-            <Globe className="w-5 h-5" style={{ color: 'var(--primary-blue)' }} />
             <h2 className="text-xl font-bold" style={{ color: 'var(--text-primary)' }}>
               Global Markets
             </h2>

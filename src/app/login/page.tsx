@@ -29,13 +29,10 @@ export default function Login() {
     setLoading(false);
   };
 
-  const handleSocialLogin = (provider: string) => {
-    // Mock social login - in production, integrate with actual OAuth providers
-    alert(`${provider} login would be integrated here with actual OAuth flow`);
-  };
+  const handleSocialLogin = (_provider: string) => {};
 
   return (
-    <div className="min-h-screen flex items-center justify-center pt-48 pb-32 px-4 sm:px-6 lg:px-8 trading-background">
+    <div className="min-h-screen flex items-center justify-center pt-48 pb-32 px-4 sm:px-6 lg:px-8">
       <div className="max-w-4xl w-full">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           {/* Left Side - App Branding */}

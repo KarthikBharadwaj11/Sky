@@ -57,94 +57,78 @@ export default function OrdersPage() {
 
   // Generate mock orders for demo
   const generateMockOrders = (): Order[] => {
-    const stocks = [
-      { symbol: 'AAPL', name: 'Apple Inc.' },
-      { symbol: 'GOOGL', name: 'Alphabet Inc.' },
-      { symbol: 'MSFT', name: 'Microsoft Corporation' },
-      { symbol: 'AMZN', name: 'Amazon.com Inc.' },
-      { symbol: 'TSLA', name: 'Tesla Inc.' },
-      { symbol: 'NVDA', name: 'NVIDIA Corporation' },
-    ];
-
-    const etfs = [
-      { symbol: 'SPY', name: 'SPDR S&P 500 ETF' },
-      { symbol: 'QQQ', name: 'Invesco QQQ Trust' },
-      { symbol: 'VOO', name: 'Vanguard S&P 500 ETF' },
-    ];
-
-    const options = [
-      { symbol: 'AAPL 250C', name: 'Apple Call $250' },
-      { symbol: 'TSLA 800P', name: 'Tesla Put $800' },
-    ];
-
-    const orderTypes: Order['orderType'][] = ['market', 'limit', 'stop-loss', 'stop-limit'];
-    const statuses: Order['status'][] = ['pending', 'executed', 'cancelled', 'partially-filled', 'rejected'];
-    const sides: Order['side'][] = ['buy', 'sell'];
-
-    const mockOrders: Order[] = [];
-    let idCounter = 1;
-
-    // Generate stock orders
-    stocks.forEach((stock, idx) => {
-      const orderPrice = 100 + Math.random() * 400;
-      const priceChange = (Math.random() - 0.5) * 50;
-      mockOrders.push({
-        id: `order_${idCounter++}`,
-        orderId: `ORD${String(idCounter + 1000).padStart(6, '0')}`,
+    return [
+      {
+        id: 'order_1',
+        orderId: 'ORD001002',
         assetType: 'stock',
-        symbol: stock.symbol,
-        name: stock.name,
-        quantity: Math.floor(Math.random() * 100) + 1,
-        orderType: orderTypes[idx % orderTypes.length],
-        orderPrice,
-        currentPrice: orderPrice + priceChange,
-        status: statuses[idx % statuses.length],
-        date: new Date(Date.now() - Math.random() * 7 * 24 * 60 * 60 * 1000).toISOString(),
-        side: sides[idx % sides.length],
-      });
-    });
-
-    // Generate ETF orders
-    etfs.forEach((etf, idx) => {
-      const orderPrice = 300 + Math.random() * 200;
-      const priceChange = (Math.random() - 0.5) * 20;
-      mockOrders.push({
-        id: `order_${idCounter++}`,
-        orderId: `ORD${String(idCounter + 1000).padStart(6, '0')}`,
-        assetType: 'etf',
-        symbol: etf.symbol,
-        name: etf.name,
-        quantity: Math.floor(Math.random() * 50) + 1,
-        orderType: orderTypes[idx % orderTypes.length],
-        orderPrice,
-        currentPrice: orderPrice + priceChange,
-        status: statuses[idx % statuses.length],
-        date: new Date(Date.now() - Math.random() * 7 * 24 * 60 * 60 * 1000).toISOString(),
-        side: sides[idx % sides.length],
-      });
-    });
-
-    // Generate option orders
-    options.forEach((option, idx) => {
-      const orderPrice = 5 + Math.random() * 20;
-      const priceChange = (Math.random() - 0.5) * 5;
-      mockOrders.push({
-        id: `order_${idCounter++}`,
-        orderId: `ORD${String(idCounter + 1000).padStart(6, '0')}`,
+        symbol: 'NVDA',
+        name: 'NVIDIA Corporation',
+        quantity: 10,
+        orderType: 'limit',
+        orderPrice: 842.50,
+        currentPrice: 855.20,
+        status: 'executed',
+        date: new Date('2026-04-28T10:32:00').toISOString(),
+        side: 'buy',
+      },
+      {
+        id: 'order_2',
+        orderId: 'ORD001003',
+        assetType: 'stock',
+        symbol: 'AAPL',
+        name: 'Apple Inc.',
+        quantity: 25,
+        orderType: 'market',
+        orderPrice: 175.43,
+        currentPrice: 178.10,
+        status: 'executed',
+        date: new Date('2026-04-27T14:15:00').toISOString(),
+        side: 'buy',
+      },
+      {
+        id: 'order_3',
+        orderId: 'ORD001004',
         assetType: 'option',
-        symbol: option.symbol,
-        name: option.name,
-        quantity: Math.floor(Math.random() * 10) + 1,
-        orderType: orderTypes[idx % orderTypes.length],
-        orderPrice,
-        currentPrice: orderPrice + priceChange,
-        status: statuses[idx % statuses.length],
-        date: new Date(Date.now() - Math.random() * 7 * 24 * 60 * 60 * 1000).toISOString(),
-        side: sides[idx % sides.length],
-      });
-    });
-
-    return mockOrders.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+        symbol: 'TSLA 180P',
+        name: 'Tesla Put $180',
+        quantity: 10,
+        orderType: 'limit',
+        orderPrice: 3.50,
+        currentPrice: 3.80,
+        status: 'pending',
+        date: new Date('2026-04-29T09:45:00').toISOString(),
+        side: 'buy',
+      },
+      {
+        id: 'order_4',
+        orderId: 'ORD001005',
+        assetType: 'etf',
+        symbol: 'SPY',
+        name: 'SPDR S&P 500 ETF',
+        quantity: 5,
+        orderType: 'stop-loss',
+        orderPrice: 510.00,
+        currentPrice: 523.18,
+        status: 'cancelled',
+        date: new Date('2026-04-26T11:20:00').toISOString(),
+        side: 'sell',
+      },
+      {
+        id: 'order_5',
+        orderId: 'ORD001006',
+        assetType: 'stock',
+        symbol: 'AMD',
+        name: 'Advanced Micro Devices',
+        quantity: 20,
+        orderType: 'market',
+        orderPrice: 182.00,
+        currentPrice: 179.50,
+        status: 'executed',
+        date: new Date('2026-04-25T15:55:00').toISOString(),
+        side: 'sell',
+      },
+    ];
   };
 
   // Filter and sort orders
@@ -259,60 +243,52 @@ export default function OrdersPage() {
     <div className="container mx-auto px-4 py-8">
       <div className="mb-12">
         {/* Header */}
-        <div className="flex items-center justify-between mb-8">
+        <div className="mb-8">
           <h1 className="text-5xl font-bold text-gradient gradient-shift">Orders</h1>
-          <Link href="/overview">
-            <button className="btn-secondary px-6 py-3">
-              ← Back to Overview
-            </button>
-          </Link>
         </div>
 
-        {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <div className="card pulse-glow">
-            <div className="card-body text-center">
-              <div className="w-12 h-12 mx-auto mb-4 rounded-full flex items-center justify-center" style={{ background: 'var(--gradient-primary)' }}>
-                <svg className="w-6 h-6" style={{ color: 'var(--text-primary)' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-                </svg>
-              </div>
-              <h3 className="text-lg font-semibold mb-2" style={{ color: 'var(--text-secondary)' }}>Total Orders</h3>
-              <p className="text-3xl font-bold" style={{ color: 'var(--primary-blue)' }}>{totalOrders}</p>
+        {/* Stats Bar */}
+        <div className="grid grid-cols-4 gap-4 mb-8 p-4 rounded-2xl" style={{ background: 'var(--glass-bg)', border: '1px solid var(--glass-border-color)' }}>
+          <div className="flex items-center gap-3 px-4 py-2">
+            <div className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: 'var(--gradient-primary)' }}>
+              <svg className="w-4 h-4" style={{ color: 'var(--text-primary)' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+              </svg>
+            </div>
+            <div>
+              <p className="text-xs" style={{ color: 'var(--text-muted)' }}>Total Orders</p>
+              <p className="text-xl font-bold" style={{ color: 'var(--primary-blue)' }}>{totalOrders}</p>
             </div>
           </div>
-
-          <div className="card pulse-glow">
-            <div className="card-body text-center">
-              <div className="w-12 h-12 mx-auto mb-4 rounded-full flex items-center justify-center" style={{ background: 'var(--gradient-accent)' }}>
-                <Check className="w-6 h-6" style={{ color: 'var(--text-primary)' }} />
-              </div>
-              <h3 className="text-lg font-semibold mb-2" style={{ color: 'var(--text-secondary)' }}>Executed</h3>
-              <p className="text-3xl font-bold text-green-400">{executedOrders}</p>
+          <div className="flex items-center gap-3 px-4 py-2 border-l" style={{ borderColor: 'var(--glass-border-color)' }}>
+            <div className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: 'var(--gradient-accent)' }}>
+              <Check className="w-4 h-4" style={{ color: 'var(--text-primary)' }} />
+            </div>
+            <div>
+              <p className="text-xs" style={{ color: 'var(--text-muted)' }}>Executed</p>
+              <p className="text-xl font-bold text-green-400">{executedOrders}</p>
             </div>
           </div>
-
-          <div className="card pulse-glow">
-            <div className="card-body text-center">
-              <div className="w-12 h-12 mx-auto mb-4 rounded-full flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #FBBF24 0%, #F59E0B 100%)' }}>
-                <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-              </div>
-              <h3 className="text-lg font-semibold mb-2" style={{ color: 'var(--text-secondary)' }}>Pending</h3>
-              <p className="text-3xl font-bold text-yellow-400">{pendingOrders}</p>
+          <div className="flex items-center gap-3 px-4 py-2 border-l" style={{ borderColor: 'var(--glass-border-color)' }}>
+            <div className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: 'linear-gradient(135deg, #FBBF24, #F59E0B)' }}>
+              <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+            <div>
+              <p className="text-xs" style={{ color: 'var(--text-muted)' }}>Pending</p>
+              <p className="text-xl font-bold text-yellow-400">{pendingOrders}</p>
             </div>
           </div>
-
-          <div className="card pulse-glow">
-            <div className="card-body text-center">
-              <div className="w-12 h-12 mx-auto mb-4 rounded-full flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%)' }}>
-                <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-              </div>
-              <h3 className="text-lg font-semibold mb-2" style={{ color: 'var(--text-secondary)' }}>Total Value</h3>
-              <p className="text-3xl font-bold" style={{ color: 'var(--primary-purple)' }}>${totalValue.toFixed(2)}</p>
+          <div className="flex items-center gap-3 px-4 py-2 border-l" style={{ borderColor: 'var(--glass-border-color)' }}>
+            <div className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: 'var(--gradient-secondary)' }}>
+              <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+            <div>
+              <p className="text-xs" style={{ color: 'var(--text-muted)' }}>Total Value</p>
+              <p className="text-xl font-bold" style={{ color: 'var(--primary-purple)' }}>${totalValue.toFixed(2)}</p>
             </div>
           </div>
         </div>
@@ -474,11 +450,10 @@ export default function OrdersPage() {
                     <th className="text-left">Order ID</th>
                     <th className="text-left">Asset / Stock</th>
                     <th className="text-left">Type</th>
-                    <th className="text-right">Quantity</th>
+                    <th className="text-right">Qty</th>
                     <th className="text-left">Order Type</th>
                     <th className="text-right">Order Price</th>
                     <th className="text-right">Current Price</th>
-                    <th className="text-right">Price Change</th>
                     <th className="text-left">Status</th>
                     <th className="text-left">Date</th>
                     <th className="text-center">Actions</th>
@@ -540,25 +515,11 @@ export default function OrdersPage() {
                           </span>
                         </td>
                         <td className="text-right">
-                          <span className="text-base font-bold" style={{ color: 'var(--text-accent)' }}>
+                          <div className="text-base font-bold" style={{ color: 'var(--text-accent)' }}>
                             ${order.currentPrice.toFixed(2)}
-                          </span>
-                        </td>
-                        <td className="text-right">
-                          <div className="flex items-center justify-end gap-1">
-                            {isPositive ? (
-                              <TrendingUp className="w-4 h-4 text-green-400" />
-                            ) : (
-                              <TrendingDown className="w-4 h-4 text-red-400" />
-                            )}
-                            <div>
-                              <div className={`text-sm font-bold ${isPositive ? 'text-green-400' : 'text-red-400'}`}>
-                                {isPositive ? '+' : ''}${change.toFixed(2)}
-                              </div>
-                              <div className={`text-xs ${isPositive ? 'text-green-400' : 'text-red-400'}`}>
-                                ({isPositive ? '+' : ''}{changePercent.toFixed(2)}%)
-                              </div>
-                            </div>
+                          </div>
+                          <div className={`text-xs font-medium ${isPositive ? 'text-green-400' : 'text-red-400'}`}>
+                            {isPositive ? '+' : ''}{changePercent.toFixed(2)}%
                           </div>
                         </td>
                         <td>

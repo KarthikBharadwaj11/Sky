@@ -64,7 +64,7 @@ export default function AccountSwitcher({ className = '' }: AccountSwitcherProps
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-64 glass-morphism rounded-xl border border-white/10 shadow-xl z-50 overflow-hidden">
+        <div className="absolute right-0 mt-2 w-64 glass-morphism rounded-xl border border-white/10 shadow-xl z-[100] overflow-hidden">
           <div className="py-2">
             {accounts.map((account) => (
               <button

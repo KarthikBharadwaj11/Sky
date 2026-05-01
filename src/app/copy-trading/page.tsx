@@ -172,6 +172,7 @@ export default function CopyTrading() {
   const [showCopyTradeModal, setShowCopyTradeModal] = useState(false);
   const [copyAmount, setCopyAmount] = useState(500);
   const [liveFilter, setLiveFilter] = useState<'all' | 'following' | 'high-risk' | 'low-risk'>('all');
+  const [followedExperts, setFollowedExperts] = useState<Set<string>>(new Set());
   const [showVideoModal, setShowVideoModal] = useState(false);
   const [selectedExpertForVideo, setSelectedExpertForVideo] = useState<any | null>(null);
   const [liveStreamingExperts, setLiveStreamingExperts] = useState<string[]>([]);
@@ -639,24 +640,11 @@ export default function CopyTrading() {
 
   const handleApproveTrade = (tradeId: string) => {
     const trade = pendingTrades.find(t => t.id === tradeId);
-    if (!trade || !user) return;
-
-    // Execute the trade
-    alert(`Trade approved! ${trade.action.toUpperCase()} ${trade.quantity} shares of ${trade.symbol} at $${trade.price}`);
-
-    // Remove from pending
-    setPendingTrades(prev => prev.filter(t => t.id !== tradeId));
-    localStorage.setItem(`pendingTrades_${user.id}`, JSON.stringify(pendingTrades.filter(t => t.id !== tradeId)));
+    if (!trade) return;
+    alert(`Trade executed! ${trade.action.toUpperCase()} ${trade.quantity} shares of ${trade.symbol} at $${trade.price}`);
   };
 
-  const handleRejectTrade = (tradeId: string) => {
-    if (!user) return;
-
-    const updatedPending = pendingTrades.filter(t => t.id !== tradeId);
-    setPendingTrades(updatedPending);
-    localStorage.setItem(`pendingTrades_${user.id}`, JSON.stringify(updatedPending));
-    alert('Trade rejected');
-  };
+  const handleRejectTrade = (_tradeId: string) => {};
 
   const handleUpdateSettings = (expertId: string) => {
     const subscription = subscriptions.find(sub => sub.expertId === expertId);
@@ -720,7 +708,7 @@ export default function CopyTrading() {
   // Show preview/info page when user is not logged in
   if (!user) {
     return (
-      <div className="min-h-screen trading-background">
+      <div className="min-h-screen">
         <section className="pt-48 pb-16">
           <div className="container mx-auto px-4">
             <div className="max-w-6xl mx-auto text-center mb-16">
@@ -751,17 +739,21 @@ export default function CopyTrading() {
                   { icon: <Clock className="w-8 h-8" />, title: "24/7 Trading", description: "Your investments work around the clock, even while you sleep or focus on other priorities." },
                 ].map((feature, index) => (
                   <div key={index} className="card hover:scale-105 transition-all duration-300">
-                    <div className="card-body text-center p-6">
-                      <div className="flex justify-center mb-4" style={{ color: 'var(--text-accent)' }}>
-                        {feature.icon}
+                    <div className="card-body p-6">
+                      <div className="flex items-start gap-3">
+                        <div className="w-2 h-2 rounded-full mt-2.5 flex-shrink-0" style={{ background: 'var(--gradient-primary)' }} />
+                        <div>
+                          <h3 className="text-xl font-bold mb-2" style={{ color: 'var(--text-primary)' }}>{feature.title}</h3>
+                          <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>{feature.description}</p>
+                        </div>
                       </div>
-                      <h3 className="text-xl font-bold mb-3" style={{ color: 'var(--text-primary)' }}>{feature.title}</h3>
-                      <p style={{ color: 'var(--text-secondary)' }}>{feature.description}</p>
                     </div>
                   </div>
                 ))}
               </div>
             </div>
+
+            <div className="max-w-4xl mx-auto px-4 mb-8"><div className="h-px" style={{ background: 'linear-gradient(90deg, transparent, rgba(99,102,241,0.4), rgba(124,58,237,0.4), transparent)' }} /></div>
 
             {/* How It Works */}
             <div className="max-w-4xl mx-auto mb-16">
@@ -815,6 +807,8 @@ export default function CopyTrading() {
               </div>
             </div>
 
+            <div className="max-w-4xl mx-auto px-4 mb-8"><div className="h-px" style={{ background: 'linear-gradient(90deg, transparent, rgba(99,102,241,0.4), rgba(124,58,237,0.4), transparent)' }} /></div>
+
             {/* Copy Trading Modes */}
             <div className="max-w-4xl mx-auto mb-16">
               <h2 className="text-3xl font-bold mb-4 text-center" style={{ color: 'var(--text-primary)' }}>Choose Your Copy Trading Mode</h2>
@@ -866,6 +860,8 @@ export default function CopyTrading() {
                 </div>
               </div>
             </div>
+
+            <div className="max-w-4xl mx-auto px-4 mb-8"><div className="h-px" style={{ background: 'linear-gradient(90deg, transparent, rgba(99,102,241,0.4), rgba(124,58,237,0.4), transparent)' }} /></div>
 
             {/* Call-to-action */}
             <div className="text-center max-w-4xl mx-auto">
@@ -1064,23 +1060,14 @@ export default function CopyTrading() {
   const renderDashboard = () => (
     <div className="space-y-8">
       {/* Hero Section */}
-      <div className="relative overflow-hidden bg-gradient-to-br from-blue-600/20 via-purple-600/20 to-pink-600/20 rounded-3xl p-5 border border-blue-500/30">
-        {/* Floating elements */}
-        <div className="absolute top-10 left-10 w-10 h-10 rounded-full opacity-20  bg-gradient-to-r from-blue-500 to-cyan-500" style={{ animationDelay: '0s' }}></div>
-        <div className="absolute top-20 right-20 w-10 h-10 rounded-full opacity-20  bg-gradient-to-r from-purple-500 to-pink-500" style={{ animationDelay: '1s' }}></div>
-        <div className="absolute bottom-20 left-20 w-20 h-20 rounded-full opacity-20  bg-gradient-to-r from-green-500 to-emerald-500" style={{ animationDelay: '2s' }}></div>
+      <div className="relative overflow-hidden rounded-3xl p-5" style={{ background: 'var(--glass-bg)', border: '1px solid var(--glass-border-color)' }}>
 
         <div className="relative text-center mb-5">
-          <div className="flex justify-center mb-5">
-            <div className="w-20 h-20 rounded-3xl flex items-center justify-center transition-opacity duration-1000" style={{ background: 'var(--gradient-primary)' }}>
-              <Copy className="w-10 h-10" style={{ color: 'var(--text-primary)' }} />
-            </div>
-          </div>
-          <h1 className="text-4xl md:text-7xl font-black text-gradient mb-5 gradient-shift">
-            Copy Trading<br />
-            <span className="text-gradient">Made Simple</span>
+          <h1 className="text-4xl md:text-7xl font-black text-gradient mb-5 gradient-shift flex items-center justify-center gap-4">
+            <Copy className="w-10 h-10 md:w-16 md:h-16 inline-block" />
+            Copy Trading Made Simple
           </h1>
-          <p className="text-2xl md:text-3xl max-w-4xl mx-auto leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
+          <p className="text-base md:text-lg max-w-3xl mx-auto leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
             Automatically copy trades from <span className="text-gradient font-bold">expert traders</span> and earn while you learn.
             No experience needed, just choose your strategy and watch your money grow!
           </p>
@@ -1092,18 +1079,10 @@ export default function CopyTrading() {
             onClick={() => setActiveTab('your-trading')}
             className="btn-primary px-10 py-5 text-base font-bold hover:scale-110 transition-all duration-300 group"
           >
-            <span className="flex items-center gap-3">
-              <PlayCircle className="w-6 h-6 group-hover:rotate-12 transition-transform" />
-              Start Copy Trading
-              <ArrowRight className="w-6 h-6 group-hover:translate-x-2 transition-transform" />
-            </span>
+            Start Copy Trading
           </button>
           <button className="btn-secondary px-10 py-5 text-base font-bold hover:scale-110 transition-all duration-300 group">
-            <span className="flex items-center gap-3">
-              <PlayCircle className="w-6 h-6" />
-              Watch Demo
-              <Sparkles className="w-6 h-6 group-hover:rotate-180 transition-transform" />
-            </span>
+            Watch Demo
           </button>
         </div>
       </div>
@@ -1221,15 +1200,17 @@ export default function CopyTrading() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {copyTradingFeatures.map((feature, index) => (
               <div key={index} className="glass-morphism p-5 rounded-xl hover:scale-105 transition-all duration-500 group">
-                <div className={`w-20 h-20 rounded-2xl flex items-center justify-center mx-auto mb-5 bg-gradient-to-r ${feature.color} group-hover:rotate-12 transition-transform duration-300`}>
-                  <div className="text-white">{feature.icon}</div>
+                <div className="flex items-start gap-3">
+                  <div className={`w-2 h-2 rounded-full mt-1.5 flex-shrink-0 bg-gradient-to-r ${feature.color}`} />
+                  <div>
+                    <h3 className="text-base font-bold mb-2" style={{ color: 'var(--text-primary)' }}>
+                      {feature.title}
+                    </h3>
+                    <p className="leading-relaxed text-sm" style={{ color: 'var(--text-secondary)' }}>
+                      {feature.description}
+                    </p>
+                  </div>
                 </div>
-                <h3 className="text-base font-bold mb-4 text-center" style={{ color: 'var(--text-primary)' }}>
-                  {feature.title}
-                </h3>
-                <p className="leading-relaxed text-center" style={{ color: 'var(--text-secondary)' }}>
-                  {feature.description}
-                </p>
               </div>
             ))}
           </div>
@@ -1356,7 +1337,7 @@ export default function CopyTrading() {
 
                 return (
                   <div key={sub.expertId} className="glass-morphism p-5 rounded-xl border-2 hover:scale-105 transition-all duration-300" style={{ borderColor: 'var(--success)' }}>
-                    <Link href={`/expert/${expert.id}`} className="block cursor-pointer">
+                    <div className="block">
                       <div className="flex items-start justify-between mb-4">
                         <div className="flex items-center gap-3">
                           <div className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: 'var(--gradient-primary)' }}><User className="w-5 h-5 text-white" /></div>
@@ -1371,7 +1352,7 @@ export default function CopyTrading() {
                           Active
                         </span>
                       </div>
-                    </Link>
+                    </div>
 
                     <div className="space-y-2 mb-4">
                       <div className="flex justify-between text-sm">
@@ -1458,7 +1439,7 @@ export default function CopyTrading() {
 
                   {/* Header with Avatar */}
                   <div className="flex items-start justify-between mb-4">
-                    <Link href={`/expert/${expert.id}`} className="flex items-center gap-3 flex-1">
+                    <div className="flex items-center gap-3 flex-1">
                       <div className={`relative p-3 rounded-xl flex items-center justify-center ${
                         isTopPerformer
                           ? 'bg-gradient-to-r from-yellow-500 to-orange-500'
@@ -1472,25 +1453,17 @@ export default function CopyTrading() {
                         )}
                       </div>
                       <div className="flex-1">
-                        <h3 className="text-base font-bold group-hover:text-blue-400 transition-colors" style={{ color: 'var(--text-primary)' }}>
+                        <h3 className="text-base font-bold" style={{ color: 'var(--text-primary)' }}>
                           {expert.name}
                         </h3>
                         <p className="text-xs px-2 py-0.5 rounded bg-blue-500/20 text-blue-300 inline-block mt-1">
                           {expert.tradingStyle}
                         </p>
                       </div>
-                    </Link>
-                    <Link
-                      href={`/expert/${expert.id}`}
-                      className="px-3 py-2 rounded-lg glass-morphism hover:bg-white/10 transition-all text-xs font-semibold flex items-center gap-1.5"
-                      style={{ color: 'var(--text-secondary)' }}
-                    >
-                      Visit Profile
-                      <ExternalLink className="w-3.5 h-3.5" />
-                    </Link>
+                    </div>
                   </div>
 
-                  <Link href={`/expert/${expert.id}`} className="block cursor-pointer">
+                  <div className="block">
 
                     {/* Specialty Tags */}
                     <div className="flex flex-wrap gap-1.5 mb-4">
@@ -1553,19 +1526,24 @@ export default function CopyTrading() {
                         <p className="text-xs" style={{ color: 'var(--text-tertiary)' }}>per month</p>
                       </div>
                     </div>
-                  </Link>
+                  </div>
 
                   {/* Action Buttons */}
                   <div className="flex gap-3">
                     <button
-                      onClick={() => {
-                        // Follow trader logic
-                        alert('Follow trader functionality');
-                      }}
-                      className="flex-1 py-3 px-4 rounded-lg font-semibold transition-all duration-300 hover:scale-105 flex items-center justify-center gap-2 glass-morphism border-2 border-blue-500 text-blue-400 hover:bg-blue-500/10"
+                      onClick={() => setFollowedExperts(prev => {
+                        const next = new Set(prev);
+                        next.has(expert.id) ? next.delete(expert.id) : next.add(expert.id);
+                        return next;
+                      })}
+                      className={`flex-1 py-3 px-4 rounded-lg font-semibold transition-all duration-300 hover:scale-105 flex items-center justify-center gap-2 glass-morphism border-2 ${
+                        followedExperts.has(expert.id)
+                          ? 'border-green-500 text-green-400 hover:bg-green-500/10'
+                          : 'border-blue-500 text-blue-400 hover:bg-blue-500/10'
+                      }`}
                     >
                       <UserCheck className="w-4 h-4" />
-                      Follow
+                      {followedExperts.has(expert.id) ? 'Followed' : 'Follow'}
                     </button>
                     {isSubscribed(expert.id) ? (
                       <button
@@ -1937,12 +1915,6 @@ export default function CopyTrading() {
                         <Copy className="w-5 h-5" />
                         Copy Trade
                       </button>
-                      <Link href={`/expert/${trade.expertId}`}>
-                        <button className="btn-secondary px-8 py-3 rounded-xl font-semibold text-sm flex items-center gap-2 hover:scale-105 transition-all duration-300 w-full">
-                          <User className="w-4 h-4" />
-                          View Profile
-                        </button>
-                      </Link>
                     </div>
                   </div>
                 </div>
@@ -1957,10 +1929,7 @@ export default function CopyTrading() {
   const renderPortfolioCenter = () => (
     <div className="space-y-8">
       {/* Hero Section */}
-      <div className="relative overflow-hidden bg-gradient-to-br from-purple-600/20 via-blue-600/20 to-cyan-600/20 rounded-3xl p-5 border border-purple-500/30">
-        <div className="absolute top-10 right-10 w-20 h-20 rounded-full opacity-10 transition-opacity duration-1000 bg-gradient-to-r from-purple-500 to-pink-500"></div>
-        <div className="absolute bottom-10 left-10 w-10 h-10 rounded-full opacity-10 transition-opacity duration-1000 bg-gradient-to-r from-blue-500 to-cyan-500" style={{ animationDelay: '1s' }}></div>
-
+      <div className="relative overflow-hidden rounded-3xl p-5" style={{ background: 'var(--glass-bg)', border: '1px solid var(--glass-border-color)' }}>
         <div className="relative">
           <div className="flex items-center justify-between mb-5">
             <div>
@@ -1984,12 +1953,8 @@ export default function CopyTrading() {
       {/* Performance Overview - Enhanced */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
         <div className="relative overflow-hidden bg-gradient-to-br from-green-600/20 to-emerald-600/20 rounded-2xl p-5 border border-green-500/30 hover:scale-105 transition-all duration-300 group">
-          <div className="absolute top-0 right-0 w-20 h-20 rounded-full opacity-10 bg-gradient-to-r from-green-400 to-emerald-400 translate-x-8 -translate-y-8 group-hover:scale-150 transition-transform"></div>
           <div className="relative">
             <div className="flex items-center justify-between mb-4">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-r from-green-500 to-emerald-500 flex items-center justify-center">
-                <TrendingUp className="w-6 h-6 text-white" />
-              </div>
               <span className="text-xs px-3 py-1 rounded-full bg-green-500/20 text-green-300 font-semibold">+12.4% MTD</span>
             </div>
             <h3 className="text-sm font-medium mb-2" style={{ color: 'var(--text-secondary)' }}>Total Return</h3>
@@ -1999,12 +1964,8 @@ export default function CopyTrading() {
         </div>
 
         <div className="relative overflow-hidden bg-gradient-to-br from-blue-600/20 to-cyan-600/20 rounded-2xl p-5 border border-blue-500/30 hover:scale-105 transition-all duration-300 group">
-          <div className="absolute top-0 right-0 w-20 h-20 rounded-full opacity-10 bg-gradient-to-r from-blue-400 to-cyan-400 translate-x-8 -translate-y-8 group-hover:scale-150 transition-transform"></div>
           <div className="relative">
             <div className="flex items-center justify-between mb-4">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-r from-blue-500 to-cyan-500 flex items-center justify-center">
-                <Target className="w-6 h-6 text-white" />
-              </div>
               <span className="text-xs px-3 py-1 rounded-full bg-blue-500/20 text-blue-300 font-semibold">Top 15%</span>
             </div>
             <h3 className="text-sm font-medium mb-2" style={{ color: 'var(--text-secondary)' }}>Win Rate</h3>
@@ -2014,12 +1975,8 @@ export default function CopyTrading() {
         </div>
 
         <div className="relative overflow-hidden bg-gradient-to-br from-purple-600/20 to-pink-600/20 rounded-2xl p-5 border border-purple-500/30 hover:scale-105 transition-all duration-300 group">
-          <div className="absolute top-0 right-0 w-20 h-20 rounded-full opacity-10 bg-gradient-to-r from-purple-400 to-pink-400 translate-x-8 -translate-y-8 group-hover:scale-150 transition-transform"></div>
           <div className="relative">
             <div className="flex items-center justify-between mb-4">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-r from-purple-500 to-pink-500 flex items-center justify-center">
-                <Activity className="w-6 h-6 text-white" />
-              </div>
               <span className="text-xs px-3 py-1 rounded-full bg-purple-500/20 text-purple-300 font-semibold">Excellent</span>
             </div>
             <h3 className="text-sm font-medium mb-2" style={{ color: 'var(--text-secondary)' }}>Sharpe Ratio</h3>
@@ -2029,12 +1986,8 @@ export default function CopyTrading() {
         </div>
 
         <div className="relative overflow-hidden bg-gradient-to-br from-orange-600/20 to-red-600/20 rounded-2xl p-5 border border-orange-500/30 hover:scale-105 transition-all duration-300 group">
-          <div className="absolute top-0 right-0 w-20 h-20 rounded-full opacity-10 bg-gradient-to-r from-orange-400 to-red-400 translate-x-8 -translate-y-8 group-hover:scale-150 transition-transform"></div>
           <div className="relative">
             <div className="flex items-center justify-between mb-4">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-r from-orange-500 to-red-500 flex items-center justify-center">
-                <Shield className="w-6 h-6 text-white" />
-              </div>
               <span className="text-xs px-3 py-1 rounded-full bg-orange-500/20 text-orange-300 font-semibold">Moderate</span>
             </div>
             <h3 className="text-sm font-medium mb-2" style={{ color: 'var(--text-secondary)' }}>Max Drawdown</h3>
@@ -2051,8 +2004,7 @@ export default function CopyTrading() {
           <div className="card-body">
             <div className="flex items-center justify-between mb-5">
               <div>
-                <h3 className="text-base font-bold flex items-center gap-2" style={{ color: 'var(--text-primary)' }}>
-                  <LineChartIcon className="w-6 h-6" style={{ color: 'var(--primary-blue)' }} />
+                <h3 className="text-base font-bold" style={{ color: 'var(--text-primary)' }}>
                   Portfolio Performance
                 </h3>
                 <p className="text-sm mt-1" style={{ color: 'var(--text-secondary)' }}>Your combined expert trading performance</p>
@@ -2075,8 +2027,7 @@ export default function CopyTrading() {
         {/* Expert Performance Breakdown */}
         <div className="card">
           <div className="card-body">
-            <h3 className="text-base font-bold mb-4 flex items-center gap-2" style={{ color: 'var(--text-primary)' }}>
-              <Users className="w-5 h-5" />
+            <h3 className="text-base font-bold mb-4" style={{ color: 'var(--text-primary)' }}>
               Expert Breakdown
             </h3>
             <div className="space-y-4">
@@ -2123,7 +2074,6 @@ export default function CopyTrading() {
           <div className="space-y-5">
             {/* Header Section */}
             <div className="relative overflow-hidden bg-gradient-to-br from-orange-600/20 via-yellow-600/20 to-amber-600/20 rounded-2xl p-4 border border-orange-500/30">
-              <div className="absolute top-0 right-0 w-32 h-32 rounded-full opacity-5 bg-gradient-to-r from-orange-400 to-yellow-400 translate-x-16 -translate-y-16"></div>
               <div className="relative flex items-center justify-between">
                 <div>
                   <h2 className="text-base font-bold text-gradient mb-1">Pending Trade Approvals</h2>
@@ -2303,8 +2253,7 @@ export default function CopyTrading() {
         {/* Smart Risk Controls - Simplified */}
         <div className="card">
           <div className="card-body">
-            <h3 className="text-base font-bold mb-5 flex items-center gap-2" style={{ color: 'var(--text-primary)' }}>
-              <Shield className="w-6 h-6" style={{ color: 'var(--primary-blue)' }} />
+            <h3 className="text-base font-bold mb-5" style={{ color: 'var(--text-primary)' }}>
               Smart Risk Controls
             </h3>
 
@@ -2398,8 +2347,7 @@ export default function CopyTrading() {
         {/* Market Insights */}
         <div className="card">
           <div className="card-body">
-            <h3 className="text-base font-bold mb-5 flex items-center gap-2" style={{ color: 'var(--text-primary)' }}>
-              <Globe className="w-6 h-6" style={{ color: 'var(--primary-blue)' }} />
+            <h3 className="text-base font-bold mb-5" style={{ color: 'var(--text-primary)' }}>
               Market Insights
             </h3>
             <div className="space-y-3 max-h-[400px] overflow-y-auto custom-scrollbar">
@@ -2442,7 +2390,7 @@ export default function CopyTrading() {
   return (
     <div className="flex min-h-screen">
       {/* Left Sidebar - Fixed */}
-      <div className="w-80 glass-morphism border-r border-white/10 p-5 fixed left-0 top-20 overflow-y-auto" style={{ height: 'calc(100vh - 5rem)' }}>
+      <div className="w-80 glass-morphism border-r border-white/10 p-5 fixed left-0 top-[95px] overflow-y-auto" style={{ height: 'calc(100vh - 95px)' }}>
         <div className="mb-8">
           <h1 className="text-base font-bold text-gradient mb-2">Copy Trading</h1>
           <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>
@@ -3410,12 +3358,6 @@ export default function CopyTrading() {
                       </div>
                     )}
 
-                    <Link href={`/expert/${selectedExpertForVideo.id}`}>
-                      <button className="btn-secondary px-6 py-3 flex items-center gap-2 hover:scale-105 transition-all">
-                        <User className="w-5 h-5" />
-                        View Profile
-                      </button>
-                    </Link>
                   </div>
                 </div>
 

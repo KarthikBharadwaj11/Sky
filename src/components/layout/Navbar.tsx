@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import { useState } from 'react';
 import { ChevronDown } from 'lucide-react';
 import { useAuth } from '../auth/AuthProvider';
@@ -11,6 +11,7 @@ export default function Navbar() {
   const { user, logout } = useAuth();
   const router = useRouter();
   const [resourcesOpen, setResourcesOpen] = useState(false);
+  const pathname = usePathname();
 
   const handleLogout = () => {
     logout();
@@ -18,14 +19,14 @@ export default function Navbar() {
   };
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 border-b-2 navbar-bg" style={{ 
+    <nav className="fixed top-0 left-0 right-0 z-50 border-b-2 navbar-bg" style={{
       backdropFilter: 'blur(25px)', 
       boxShadow: 'var(--shadow-xl), 0 0 30px color-mix(in srgb, var(--primary-blue) 15%, transparent)', 
       borderBottomColor: 'var(--primary-blue)',
       borderImage: 'linear-gradient(90deg, var(--primary-blue), var(--primary-purple)) 1'
     }}>
-      <div className="max-w-8xl mx-auto px-6">
-        <div className="flex justify-between items-center h-20 gap-6">
+      <div className="max-w-8xl mx-auto px-6 h-[95px] flex items-center">
+        <div className="flex justify-between items-center w-full gap-6">
           {/* Logo Section - Left */}
           <div className="flex items-center flex-shrink-0">
             <Link
@@ -35,9 +36,10 @@ export default function Navbar() {
               <Image
                 src="/logo.png"
                 alt="Logo"
-                width={120}
-                height={40}
+                width={70}
+                height={25}
                 className="object-contain"
+                style={{ width: '90px', height: 'auto' }}
                 priority
               />
             </Link>
@@ -85,30 +87,14 @@ export default function Navbar() {
 
               {/* User Controls - Right */}
               <div className="hidden lg:flex items-center space-x-1 flex-shrink-0 text-sm">
-                <Link href="/overview" className="nav-link px-2.5 py-1.5">
-                  Overview
-                </Link>
-                <Link href="/search" className="nav-link px-2.5 py-1.5">
-                  Search
-                </Link>
-                <Link href="/market" className="nav-link px-2.5 py-1.5">
-                  Market
-                </Link>
-                <Link href="/options" className="nav-link px-2.5 py-1.5">
-                  Options
-                </Link>
-                <Link href="/copy-trading" className="nav-link px-2.5 py-1.5">
-                  Copy Trading
-                </Link>
-                <Link href="/paper-trading" className="nav-link px-2.5 py-1.5">
-                  Paper Trading
-                </Link>
-                <Link href="/orders" className="nav-link px-2.5 py-1.5">
-                  Orders
-                </Link>
-                <Link href="/profile" className="nav-link px-2.5 py-1.5">
-                  Profile
-                </Link>
+                <Link href="/overview" className={`nav-link px-2.5 py-1.5 ${pathname === '/overview' ? 'active' : ''}`}>Overview</Link>
+                <Link href="/search" className={`nav-link px-2.5 py-1.5 ${pathname === '/search' ? 'active' : ''}`}>Search</Link>
+                <Link href="/market" className={`nav-link px-2.5 py-1.5 ${pathname === '/market' ? 'active' : ''}`}>Market</Link>
+                <Link href="/options" className={`nav-link px-2.5 py-1.5 ${pathname === '/options' ? 'active' : ''}`}>Options</Link>
+                <Link href="/copy-trading" className={`nav-link px-2.5 py-1.5 ${pathname === '/copy-trading' ? 'active' : ''}`}>Copy Trading</Link>
+                <Link href="/paper-trading" className={`nav-link px-2.5 py-1.5 ${pathname === '/paper-trading' ? 'active' : ''}`}>Paper Trading</Link>
+                <Link href="/orders" className={`nav-link px-2.5 py-1.5 ${pathname === '/orders' ? 'active' : ''}`}>Orders</Link>
+                <Link href="/profile" className={`nav-link px-2.5 py-1.5 ${pathname === '/profile' ? 'active' : ''}`}>Profile</Link>
 
                 {/* Resources Dropdown */}
                 <div className="relative" onMouseEnter={() => setResourcesOpen(true)} onMouseLeave={() => setResourcesOpen(false)}>
@@ -155,12 +141,20 @@ export default function Navbar() {
                 <Link href="/landing" className="nav-link px-4 py-2 font-medium">
                   Home
                 </Link>
-                <Link href="/login" className="nav-link px-4 py-2 font-medium">
-                  Login
+                <Link
+                  href="/login"
+                  className="px-4 py-2 rounded-xl text-sm font-semibold transition-all duration-200 border border-white/20 hover:border-white/50 hover:bg-white/10"
+                  style={{ color: 'var(--text-secondary)' }}
+                >
+                  Sign In
                 </Link>
               </div>
 
-              <Link href="/register" className="btn-primary px-6 py-3 font-semibold whitespace-nowrap">
+              <Link
+                href="/register"
+                className="px-6 py-2.5 rounded-xl text-sm font-bold whitespace-nowrap transition-all duration-200 hover:scale-105 shadow-lg"
+                style={{ background: '#ffffff', color: '#0f0e1a' }}
+              >
                 Get Started
               </Link>
             </div>
