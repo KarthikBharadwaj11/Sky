@@ -7,6 +7,7 @@ import Link from 'next/link';
 
 export default function Register() {
   const [email, setEmail] = useState('');
+  const [mobile, setMobile] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
@@ -20,14 +21,8 @@ export default function Register() {
     setLoading(true);
     setError('');
 
-    if (password !== confirmPassword) {
+    if (password && password !== confirmPassword) {
       setError('Passwords do not match');
-      setLoading(false);
-      return;
-    }
-
-    if (!acceptTerms) {
-      setError('Please accept the Terms of Service and Privacy Policy');
       setLoading(false);
       return;
     }
@@ -153,11 +148,24 @@ export default function Register() {
                     id="email"
                     name="email"
                     type="email"
-                    required
                     className="form-input"
                     placeholder="Enter your email address"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
+                  />
+                </div>
+                <div>
+                  <label htmlFor="mobile" className="block text-base font-semibold mb-2" style={{ color: 'var(--text-secondary)' }}>
+                    Mobile Number
+                  </label>
+                  <input
+                    id="mobile"
+                    name="mobile"
+                    type="tel"
+                    className="form-input"
+                    placeholder="+1 (555) 000-0000"
+                    value={mobile}
+                    onChange={(e) => setMobile(e.target.value)}
                   />
                 </div>
                 <div>
@@ -168,7 +176,6 @@ export default function Register() {
                     id="password"
                     name="password"
                     type="password"
-                    required
                     className="form-input"
                     placeholder="Create a strong password"
                     value={password}
@@ -183,7 +190,6 @@ export default function Register() {
                     id="confirmPassword"
                     name="confirmPassword"
                     type="password"
-                    required
                     className="form-input"
                     placeholder="Confirm your password"
                     value={confirmPassword}
@@ -199,7 +205,6 @@ export default function Register() {
                     id="acceptTerms"
                     name="acceptTerms"
                     type="checkbox"
-                    required
                     className="h-4 w-4 mt-1 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                     checked={acceptTerms}
                     onChange={(e) => setAcceptTerms(e.target.checked)}

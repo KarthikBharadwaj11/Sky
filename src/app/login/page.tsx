@@ -138,7 +138,6 @@ export default function Login() {
                     id="username"
                     name="username"
                     type="text"
-                    required
                     className="form-input"
                     placeholder="Enter your email"
                     value={username}
@@ -153,7 +152,6 @@ export default function Login() {
                     id="password"
                     name="password"
                     type="password"
-                    required
                     className="form-input"
                     placeholder="Enter your password"
                     value={password}

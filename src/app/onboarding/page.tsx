@@ -4,7 +4,6 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '@/components/auth/AuthProvider';
 import { useRouter } from 'next/navigation';
 import AccountTypeAndBasicInfo from '@/components/onboarding/AccountTypeAndBasicInfo';
-import MobileVerificationStep from '@/components/onboarding/MobileVerificationStep';
 import ResidencyVerificationStep from '@/components/onboarding/ResidencyVerificationStep';
 import ProfessionalDetails from '@/components/onboarding/ProfessionalDetails';
 import SourceOfFunds from '@/components/onboarding/SourceOfFunds';
@@ -76,9 +75,8 @@ export default function OnboardingPage() {
 
   const steps = [
     { id: 1, name: 'Personal Details', shortName: 'Details' },
-    { id: 2, name: 'Verification', shortName: 'Verification' },
-    { id: 3, name: 'Risk Assessment', shortName: 'Risk' },
-    { id: 4, name: 'Choose Plan', shortName: 'Subscription' },
+    { id: 2, name: 'Risk Assessment', shortName: 'Risk' },
+    { id: 3, name: 'Choose Plan', shortName: 'Subscription' },
   ];
 
   const handleStepComplete = (stepData: any) => {
@@ -112,7 +110,7 @@ export default function OnboardingPage() {
 
   if (!selectedRole) {
     return (
-      <div className="min-h-screen trading-background flex flex-col">
+      <div className="min-h-screen flex flex-col">
         {/* Header */}
         <div className="border-b" style={{ borderColor: 'var(--glass-border)' }}>
           <div className="container mx-auto px-4 py-4 flex items-center justify-between">
@@ -198,7 +196,7 @@ export default function OnboardingPage() {
   }
 
   return (
-    <div className="min-h-screen trading-background">
+    <div className="min-h-screen">
       {/* Header */}
       <div className="border-b" style={{ borderColor: 'var(--glass-border)' }}>
         <div className="container mx-auto px-4 py-4">
@@ -227,7 +225,7 @@ export default function OnboardingPage() {
 
       {/* Content */}
       <div className="container mx-auto px-4 pb-12">
-        <div className="max-w-2xl mx-auto">
+        <div className={`${currentStep === 3 ? 'max-w-5xl' : 'max-w-2xl'} mx-auto`}>
           {/* Back Button */}
           {currentStep === 1 ? (
             <button
@@ -257,18 +255,12 @@ export default function OnboardingPage() {
             />
           )}
           {currentStep === 2 && (
-            <MobileVerificationStep
-              data={onboardingData}
-              onComplete={handleStepComplete}
-            />
-          )}
-          {currentStep === 3 && (
             <ComplianceRiskAssessment
               data={onboardingData}
               onComplete={handleStepComplete}
             />
           )}
-          {currentStep === 4 && (
+          {currentStep === 3 && (
             <SubscriptionStep
               onComplete={handleStepComplete}
               onSkip={() => handleComplete()}

@@ -890,104 +890,61 @@ export default function CopyTrading() {
 
   const renderSignals = () => {
     const pending = signals.filter(s => s.status === 'pending');
-    const actedOn = signals.filter(s => s.status !== 'pending');
+    const executed = signals.filter(s => s.status === 'accepted');
+    const declined = signals.filter(s => s.status === 'declined');
+    const actedOn = [...executed, ...declined];
 
-    const SignalCard = ({ signal }: { signal: Signal }) => (
-      <div className="glass-morphism rounded-2xl p-5 space-y-4">
-        {/* Expert Header */}
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full flex items-center justify-center"
-              style={{ background: 'var(--gradient-primary)' }}>
-              <User className="w-5 h-5 text-white" />
-            </div>
-            <div>
-              <p className="font-semibold text-sm" style={{ color: 'var(--text-primary)' }}>{signal.expertName}</p>
-              <p className="text-xs" style={{ color: 'var(--text-muted)' }}>
-                {new Date(signal.timestamp).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
-              </p>
-            </div>
-          </div>
-          {signal.status !== 'pending' && (
-            <span className={`text-xs font-bold px-3 py-1 rounded-full ${
-              signal.status === 'accepted'
-                ? 'bg-green-500/20 text-green-400'
-                : 'bg-red-500/20 text-red-400'
-            }`}>
-              {signal.status === 'accepted' ? '✓ Copied' : '✗ Declined'}
-            </span>
-          )}
+    const TradeDetails = ({ signal }: { signal: Signal }) => (
+      <div className="rounded-xl p-3 border" style={{ background: 'var(--glass-bg)', borderColor: 'var(--glass-border)' }}>
+        <div className="flex items-center gap-3 flex-wrap">
+          <span className={`text-sm font-bold px-2 py-0.5 rounded ${
+            signal.trade.action === 'BUY' ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'
+          }`}>
+            {signal.trade.action}
+          </span>
+          <span className="text-base font-bold" style={{ color: 'var(--text-primary)' }}>{signal.trade.symbol}</span>
+          <span className="text-sm" style={{ color: 'var(--text-secondary)' }}>
+            <span className="font-medium">{signal.trade.quantity}</span> shares
+          </span>
+          <span className="text-sm" style={{ color: 'var(--text-secondary)' }}>
+            @ <span className="font-medium">${signal.trade.price.toFixed(2)}</span>
+          </span>
+          <span className="text-xs px-2 py-0.5 rounded glass-morphism capitalize" style={{ color: 'var(--text-muted)' }}>
+            {signal.trade.orderType}
+          </span>
         </div>
+        <p className="text-xs font-semibold mt-2" style={{ color: 'var(--text-accent)' }}>
+          Total: ${(signal.trade.quantity * signal.trade.price).toLocaleString('en-US', { minimumFractionDigits: 2 })}
+        </p>
+      </div>
+    );
 
-        {/* Discord Message */}
-        <div className="rounded-xl p-4" style={{ background: 'rgba(88, 101, 242, 0.1)', borderLeft: '3px solid #5865F2' }}>
-          <div className="flex items-center gap-2 mb-2">
-            <div className="w-4 h-4 rounded-sm flex items-center justify-center" style={{ background: '#5865F2' }}>
-              <span className="text-white text-[8px] font-bold">#</span>
-            </div>
-            <span className="text-xs font-medium" style={{ color: '#5865F2' }}>Discord Signal</span>
+    const ExpertHeader = ({ signal, badge }: { signal: Signal; badge?: React.ReactNode }) => (
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0"
+            style={{ background: 'var(--gradient-primary)' }}>
+            <User className="w-4 h-4 text-white" />
           </div>
-          <p className="text-sm leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
-            {signal.discordMessage}
-          </p>
+          <div>
+            <p className="font-semibold text-sm" style={{ color: 'var(--text-primary)' }}>{signal.expertName}</p>
+            <p className="text-xs" style={{ color: 'var(--text-muted)' }}>
+              {new Date(signal.timestamp).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
+            </p>
+          </div>
         </div>
-
-        {/* Parsed Trade Info */}
-        <div className="rounded-xl p-4 border" style={{ background: 'var(--glass-bg)', borderColor: 'var(--glass-border)' }}>
-          <p className="text-xs font-semibold mb-3 uppercase tracking-wider" style={{ color: 'var(--text-muted)' }}>Parsed Trade</p>
-          <div className="flex items-center gap-4 flex-wrap">
-            <div className="flex items-center gap-2">
-              <span className={`text-sm font-bold px-2 py-0.5 rounded ${
-                signal.trade.action === 'BUY' ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'
-              }`}>
-                {signal.trade.action}
-              </span>
-              <span className="text-base font-bold" style={{ color: 'var(--text-primary)' }}>{signal.trade.symbol}</span>
-            </div>
-            <div className="text-sm" style={{ color: 'var(--text-secondary)' }}>
-              <span className="font-medium">{signal.trade.quantity}</span> shares
-            </div>
-            <div className="text-sm" style={{ color: 'var(--text-secondary)' }}>
-              @ <span className="font-medium">${signal.trade.price.toFixed(2)}</span>
-            </div>
-            <div className="text-xs px-2 py-0.5 rounded glass-morphism capitalize" style={{ color: 'var(--text-muted)' }}>
-              {signal.trade.orderType}
-            </div>
-          </div>
-          <p className="text-sm font-semibold mt-2" style={{ color: 'var(--text-accent)' }}>
-            Total: ${(signal.trade.quantity * signal.trade.price).toLocaleString('en-US', { minimumFractionDigits: 2 })}
-          </p>
-        </div>
-
-        {/* Actions */}
-        {signal.status === 'pending' && (
-          <div className="flex gap-3">
-            <button
-              onClick={() => handleSignalAction(signal.id, 'accepted')}
-              className="flex-1 py-2.5 rounded-xl font-semibold text-sm text-white transition-all hover:scale-105"
-              style={{ background: 'linear-gradient(135deg, #10b981, #059669)' }}
-            >
-              ✓ Accept & Copy
-            </button>
-            <button
-              onClick={() => handleSignalAction(signal.id, 'declined')}
-              className="flex-1 py-2.5 rounded-xl font-semibold text-sm transition-all hover:scale-105 glass-morphism"
-              style={{ color: 'var(--text-secondary)' }}
-            >
-              ✗ Decline
-            </button>
-          </div>
-        )}
+        {badge}
       </div>
     );
 
     return (
-      <div className="max-w-2xl mx-auto space-y-6">
+      <div className="space-y-6">
+        {/* Header */}
         <div className="flex items-center justify-between">
           <div>
             <h2 className="text-xl font-bold" style={{ color: 'var(--text-primary)' }}>Trade Signals</h2>
             <p className="text-sm mt-1" style={{ color: 'var(--text-secondary)' }}>
-              Signals from experts you follow, sourced from their Discord channels
+              Incoming signals from Discord and your trade idea history
             </p>
           </div>
           {pending.length > 0 && (
@@ -997,21 +954,121 @@ export default function CopyTrading() {
           )}
         </div>
 
-        {/* Pending Signals */}
-        {pending.length > 0 && (
-          <div className="space-y-4">
-            <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--text-muted)' }}>Awaiting Your Decision</p>
-            {pending.map(signal => <SignalCard key={signal.id} signal={signal} />)}
-          </div>
-        )}
+        {/* Two-column layout */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
 
-        {/* Acted On */}
-        {actedOn.length > 0 && (
+          {/* Left: Incoming Discord Signals */}
           <div className="space-y-4">
-            <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--text-muted)' }}>Previous Signals</p>
-            {actedOn.map(signal => <SignalCard key={signal.id} signal={signal} />)}
+            <div className="flex items-center gap-2">
+              <div className="w-5 h-5 rounded-sm flex items-center justify-center flex-shrink-0" style={{ background: '#5865F2' }}>
+                <span className="text-white text-[9px] font-bold">#</span>
+              </div>
+              <p className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>Discord Signals</p>
+              <span className="text-xs ml-auto" style={{ color: 'var(--text-muted)' }}>Awaiting your decision</span>
+            </div>
+
+            {pending.length === 0 ? (
+              <div className="text-center py-12 glass-morphism rounded-2xl">
+                <Bell className="w-10 h-10 mx-auto mb-3" style={{ color: 'var(--text-muted)' }} />
+                <p className="font-semibold text-sm" style={{ color: 'var(--text-primary)' }}>No pending signals</p>
+                <p className="text-xs mt-1" style={{ color: 'var(--text-secondary)' }}>New signals from your experts will appear here</p>
+              </div>
+            ) : (
+              pending.map(signal => (
+                <div key={signal.id} className="glass-morphism rounded-2xl p-5 space-y-4">
+                  <ExpertHeader signal={signal} />
+
+                  {/* Discord message */}
+                  <div className="rounded-xl p-4" style={{ background: 'rgba(88, 101, 242, 0.1)', borderLeft: '3px solid #5865F2' }}>
+                    <div className="flex items-center gap-2 mb-2">
+                      <div className="w-4 h-4 rounded-sm flex items-center justify-center" style={{ background: '#5865F2' }}>
+                        <span className="text-white text-[8px] font-bold">#</span>
+                      </div>
+                      <span className="text-xs font-medium" style={{ color: '#5865F2' }}>Discord Signal</span>
+                    </div>
+                    <p className="text-sm leading-relaxed whitespace-pre-line" style={{ color: 'var(--text-secondary)' }}>
+                      {signal.discordMessage}
+                    </p>
+                  </div>
+
+                  <TradeDetails signal={signal} />
+
+                  <div className="flex gap-3">
+                    <button
+                      onClick={() => handleSignalAction(signal.id, 'accepted')}
+                      className="flex-1 py-2.5 rounded-xl font-semibold text-sm text-white transition-all hover:scale-105"
+                      style={{ background: 'linear-gradient(135deg, #10b981, #059669)' }}
+                    >
+                      ✓ Accept & Copy
+                    </button>
+                    <button
+                      onClick={() => handleSignalAction(signal.id, 'declined')}
+                      className="flex-1 py-2.5 rounded-xl font-semibold text-sm transition-all hover:scale-105 glass-morphism"
+                      style={{ color: 'var(--text-secondary)' }}
+                    >
+                      ✗ Decline
+                    </button>
+                  </div>
+                </div>
+              ))
+            )}
           </div>
-        )}
+
+          {/* Right: Trade Ideas (executed + declined) */}
+          <div className="space-y-4">
+            <div className="flex items-center gap-2">
+              <p className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>Trade Ideas</p>
+              <span className="text-xs ml-auto" style={{ color: 'var(--text-muted)' }}>
+                {executed.length} executed · {declined.length} declined
+              </span>
+            </div>
+
+            {actedOn.length === 0 ? (
+              <div className="text-center py-12 glass-morphism rounded-2xl">
+                <TrendingUp className="w-10 h-10 mx-auto mb-3" style={{ color: 'var(--text-muted)' }} />
+                <p className="font-semibold text-sm" style={{ color: 'var(--text-primary)' }}>No trade ideas yet</p>
+                <p className="text-xs mt-1" style={{ color: 'var(--text-secondary)' }}>Accepted and declined signals will appear here</p>
+              </div>
+            ) : (
+              actedOn.map(signal => (
+                <div key={signal.id} className="glass-morphism rounded-2xl p-5 space-y-4">
+                  <ExpertHeader
+                    signal={signal}
+                    badge={
+                      <span className={`text-xs font-bold px-3 py-1 rounded-full ${
+                        signal.status === 'accepted'
+                          ? 'bg-green-500/20 text-green-400'
+                          : 'bg-red-500/20 text-red-400'
+                      }`}>
+                        {signal.status === 'accepted' ? '✓ Executed' : '✗ Declined'}
+                      </span>
+                    }
+                  />
+
+                  {/* Discord message (collapsed for acted-on signals) */}
+                  <div className="rounded-xl px-4 py-3" style={{ background: 'rgba(88, 101, 242, 0.07)', borderLeft: '3px solid #5865F250' }}>
+                    <p className="text-xs leading-relaxed line-clamp-2" style={{ color: 'var(--text-muted)' }}>
+                      {signal.discordMessage}
+                    </p>
+                  </div>
+
+                  <TradeDetails signal={signal} />
+
+                  {signal.status === 'declined' && (
+                    <button
+                      onClick={() => handleSignalAction(signal.id, 'accepted')}
+                      className="w-full py-2.5 rounded-xl font-semibold text-sm text-white transition-all hover:scale-105"
+                      style={{ background: 'linear-gradient(135deg, #10b981, #059669)' }}
+                    >
+                      ↩ Re-execute Trade
+                    </button>
+                  )}
+                </div>
+              ))
+            )}
+          </div>
+
+        </div>
 
         {signals.length === 0 && (
           <div className="text-center py-16 glass-morphism rounded-2xl">

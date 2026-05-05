@@ -48,7 +48,7 @@ function PaymentModal({ isOpen, onClose, planType, onConfirm }: PaymentModalProp
           </p>
           <div className="mb-6 p-3 rounded-lg bg-blue-500/10 border border-blue-500/20">
             <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>
-              You'll receive a 7-day free trial. Your card will be charged ${amount.toFixed(2)} after the trial period ends.
+              You'll receive a 3-day free trial. Your card will be charged ${amount.toFixed(2)} after the trial period ends.
             </p>
           </div>
 
@@ -221,10 +221,8 @@ export default function SubscriptionStep({ onComplete, onSkip }: SubscriptionSte
     setSelectedPlan(plan);
 
     if (plan === 'free') {
-      // Skip payment for free plan
       onComplete({ subscription: 'free', promoCode: '' });
     } else {
-      // Show payment modal for paid plans
       setShowPaymentModal(true);
     }
   };
@@ -248,20 +246,20 @@ export default function SubscriptionStep({ onComplete, onSkip }: SubscriptionSte
           </p>
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-500/20 border border-blue-500/30">
             <p className="text-sm font-semibold text-blue-400">
-              7-day free trial on all premium plans
+              3-day free trial on all premium plans
             </p>
           </div>
         </div>
 
         {/* Pricing Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {/* Free Plan */}
           <div className="card hover:scale-105 transition-all duration-300 border-2 border-transparent">
-            <div className="card-body p-6">
+            <div className="card-body p-8">
               <h3 className="text-xl font-bold mb-2" style={{ color: 'var(--text-primary)' }}>
                 Free
               </h3>
-              <div className="mb-4">
+              <div className="mb-2">
                 <span className="text-4xl font-bold" style={{ color: 'var(--text-primary)' }}>$0</span>
                 <span className="text-sm" style={{ color: 'var(--text-secondary)' }}>/month</span>
               </div>
@@ -269,7 +267,7 @@ export default function SubscriptionStep({ onComplete, onSkip }: SubscriptionSte
                 Perfect for getting started
               </p>
 
-              <ul className="space-y-3 mb-6">
+              <ul className="space-y-3 mb-8">
                 <li className="flex items-center gap-2 text-sm" style={{ color: 'var(--text-secondary)' }}>
                   <Check className="w-4 h-4 text-green-400 flex-shrink-0" />
                   <span>Basic trading features</span>
@@ -299,7 +297,7 @@ export default function SubscriptionStep({ onComplete, onSkip }: SubscriptionSte
 
           {/* Monthly Plan */}
           <div className="card hover:scale-105 transition-all duration-300 border-2 border-blue-500">
-            <div className="card-body p-6">
+            <div className="card-body p-8">
               <div className="flex items-center justify-between mb-2">
                 <h3 className="text-xl font-bold" style={{ color: 'var(--text-primary)' }}>
                   Monthly
@@ -308,15 +306,18 @@ export default function SubscriptionStep({ onComplete, onSkip }: SubscriptionSte
                   Popular
                 </span>
               </div>
-              <div className="mb-4">
+              <div className="mb-2">
                 <span className="text-4xl font-bold" style={{ color: 'var(--text-primary)' }}>$5.99</span>
                 <span className="text-sm" style={{ color: 'var(--text-secondary)' }}>/month</span>
               </div>
+              <div className="inline-flex items-center px-2.5 py-1 rounded-full bg-green-500/15 border border-green-500/30 mb-4">
+                <span className="text-xs font-semibold text-green-400">3-day free trial</span>
+              </div>
               <p className="text-sm mb-6" style={{ color: 'var(--text-secondary)' }}>
-                Billed monthly, cancel anytime
+                Billed monthly after trial, cancel anytime
               </p>
 
-              <ul className="space-y-3 mb-6">
+              <ul className="space-y-3 mb-8">
                 <li className="flex items-center gap-2 text-sm" style={{ color: 'var(--text-secondary)' }}>
                   <Check className="w-4 h-4 text-green-400 flex-shrink-0" />
                   <span>All free features</span>
@@ -339,7 +340,7 @@ export default function SubscriptionStep({ onComplete, onSkip }: SubscriptionSte
                 onClick={() => handlePlanSelect('monthly')}
                 className="w-full btn-primary py-3"
               >
-                Subscribe Monthly
+                Start Free Trial
               </button>
             </div>
           </div>
@@ -349,22 +350,25 @@ export default function SubscriptionStep({ onComplete, onSkip }: SubscriptionSte
             <div className="absolute top-0 right-0 bg-purple-500 text-white text-xs font-bold px-3 py-1 rounded-bl-lg">
               20% OFF
             </div>
-            <div className="card-body p-6">
+            <div className="card-body p-8">
               <h3 className="text-xl font-bold mb-2" style={{ color: 'var(--text-primary)' }}>
                 Annual
               </h3>
-              <div className="mb-4">
+              <div className="mb-2">
                 <span className="text-4xl font-bold" style={{ color: 'var(--text-primary)' }}>$58</span>
                 <span className="text-sm" style={{ color: 'var(--text-secondary)' }}>/year</span>
                 <div className="text-xs mt-1" style={{ color: 'var(--text-tertiary)' }}>
                   <span className="line-through">$72</span> · Save $14/year
                 </div>
               </div>
+              <div className="inline-flex items-center px-2.5 py-1 rounded-full bg-green-500/15 border border-green-500/30 mb-4">
+                <span className="text-xs font-semibold text-green-400">3-day free trial</span>
+              </div>
               <p className="text-sm mb-6" style={{ color: 'var(--text-secondary)' }}>
                 Best value for serious traders
               </p>
 
-              <ul className="space-y-3 mb-6">
+              <ul className="space-y-3 mb-8">
                 <li className="flex items-center gap-2 text-sm" style={{ color: 'var(--text-secondary)' }}>
                   <Check className="w-4 h-4 text-green-400 flex-shrink-0" />
                   <span>All free features</span>
@@ -387,7 +391,7 @@ export default function SubscriptionStep({ onComplete, onSkip }: SubscriptionSte
                 onClick={() => handlePlanSelect('annual')}
                 className="w-full py-3 rounded-xl font-semibold transition-all duration-300 bg-gradient-to-r from-purple-500 to-pink-600 hover:from-purple-600 hover:to-pink-700 text-white"
               >
-                Subscribe Annually
+                Start Free Trial
               </button>
             </div>
           </div>
