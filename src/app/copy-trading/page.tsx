@@ -109,6 +109,17 @@ export default function CopyTrading() {
     'expert-3': 25
   });
 
+  // Invite external expert state
+  const [showInviteModal, setShowInviteModal] = useState(false);
+  const [showInviteConfirmModal, setShowInviteConfirmModal] = useState(false);
+  const [inviteUserId, setInviteUserId] = useState('');
+  const [inviteChannelId, setInviteChannelId] = useState('');
+
+  // Disclaimer state
+  const [disclaimerAccepted, setDisclaimerAccepted] = useState(false);
+  const [showDisclaimerModal, setShowDisclaimerModal] = useState(false);
+  const [pendingAction, setPendingAction] = useState<(() => void) | null>(null);
+
   // Pending Trades State
   const [pendingTrades, setPendingTrades] = useState<PendingTrade[]>([]);
 
@@ -582,6 +593,24 @@ export default function CopyTrading() {
     return data;
   }
 
+  const requireDisclaimer = (action: () => void) => {
+    if (disclaimerAccepted) {
+      action();
+    } else {
+      setPendingAction(() => action);
+      setShowDisclaimerModal(true);
+    }
+  };
+
+  const handleDisclaimerAccept = () => {
+    setDisclaimerAccepted(true);
+    setShowDisclaimerModal(false);
+    if (pendingAction) {
+      pendingAction();
+      setPendingAction(null);
+    }
+  };
+
   const handleSubscribe = async (expert: Expert) => {
     if (!user) return;
 
@@ -938,32 +967,114 @@ export default function CopyTrading() {
     );
 
     return (
-      <div className="space-y-6">
+      <div className="space-y-8">
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
             <h2 className="text-xl font-bold" style={{ color: 'var(--text-primary)' }}>Trade Signals</h2>
             <p className="text-sm mt-1" style={{ color: 'var(--text-secondary)' }}>
-              Incoming signals from Discord and your trade idea history
+              In-app expert approvals, incoming Discord signals, and your trade history
             </p>
           </div>
-          {pending.length > 0 && (
+          {(pending.length + pendingTrades.length) > 0 && (
             <span className="text-xs font-bold px-3 py-1.5 rounded-full bg-blue-500/20 text-blue-400">
-              {pending.length} pending
+              {pending.length + pendingTrades.length} pending
             </span>
           )}
         </div>
 
+        {/* In-App Expert Signals */}
+        {pendingTrades.length > 0 && (
+          <div className="glass-morphism rounded-2xl p-6 space-y-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <p className="text-xl font-bold" style={{ color: 'var(--text-primary)' }}>In-App Expert Signals</p>
+                <span className="text-xs px-2 py-0.5 rounded-full bg-orange-500/20 text-orange-400 font-semibold">{pendingTrades.length} pending</span>
+              </div>
+              <button
+                onClick={() => {
+                  setPendingTrades([]);
+                  if (user) localStorage.setItem(`pendingTrades_${user.id}`, JSON.stringify([]));
+                }}
+                className="text-xs px-3 py-1 rounded-lg border border-red-500/30 bg-red-500/10 text-red-400 hover:bg-red-500/20 transition-colors"
+              >
+                Reject All
+              </button>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">
+              {pendingTrades.map((trade) => (
+                <div key={trade.id} className="glass-morphism rounded-2xl p-4 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <div className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: 'var(--gradient-primary)' }}>
+                        <User className="w-4 h-4 text-white" />
+                      </div>
+                      <div>
+                        <p className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>{trade.expertName}</p>
+                        <p className="text-xs" style={{ color: 'var(--text-muted)' }}>
+                          {new Date(trade.timestamp).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                        </p>
+                      </div>
+                    </div>
+                    <span className={`px-2.5 py-1 rounded-lg font-bold text-xs ${
+                      trade.action === 'buy'
+                        ? 'bg-green-500/20 text-green-400 border border-green-500/30'
+                        : 'bg-red-500/20 text-red-400 border border-red-500/30'
+                    }`}>
+                      {trade.action.toUpperCase()}
+                    </span>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-2 rounded-xl p-3" style={{ background: 'var(--glass-bg)', border: '1px solid var(--glass-border)' }}>
+                    <div>
+                      <p className="text-xs mb-0.5" style={{ color: 'var(--text-muted)' }}>Symbol</p>
+                      <p className="text-base font-bold" style={{ color: 'var(--text-primary)' }}>{trade.symbol}</p>
+                    </div>
+                    <div>
+                      <p className="text-xs mb-0.5" style={{ color: 'var(--text-muted)' }}>Qty</p>
+                      <p className="text-base font-bold" style={{ color: 'var(--text-primary)' }}>{trade.quantity} shares</p>
+                    </div>
+                    <div>
+                      <p className="text-xs mb-0.5" style={{ color: 'var(--text-muted)' }}>Price</p>
+                      <p className="font-bold" style={{ color: 'var(--text-primary)' }}>${trade.price.toFixed(2)}</p>
+                    </div>
+                    <div>
+                      <p className="text-xs mb-0.5" style={{ color: 'var(--text-muted)' }}>Total</p>
+                      <p className="font-bold" style={{ color: 'var(--primary-blue)' }}>${(trade.price * trade.quantity).toFixed(2)}</p>
+                    </div>
+                  </div>
+
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => handleRejectTrade(trade.id)}
+                      className="flex-1 py-2 rounded-xl text-xs font-semibold border border-red-500/30 bg-red-500/10 text-red-400 hover:bg-red-500/20 transition-all hover:scale-105"
+                    >
+                      ✗ Reject
+                    </button>
+                    <button
+                      onClick={() => requireDisclaimer(() => handleApproveTrade(trade.id))}
+                      className="flex-1 py-2 rounded-xl text-xs font-semibold text-white transition-all hover:scale-105"
+                      style={{ background: 'linear-gradient(135deg, #10b981, #059669)' }}
+                    >
+                      ✓ Approve
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+          </div>
+        )}
+
         {/* Two-column layout */}
+        <div className="glass-morphism rounded-2xl p-6">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
 
           {/* Left: Incoming Discord Signals */}
           <div className="space-y-4">
             <div className="flex items-center gap-2">
-              <div className="w-5 h-5 rounded-sm flex items-center justify-center flex-shrink-0" style={{ background: '#5865F2' }}>
-                <span className="text-white text-[9px] font-bold">#</span>
-              </div>
-              <p className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>Discord Signals</p>
+              <p className="text-xl font-bold" style={{ color: 'var(--text-primary)' }}>Discord Signals</p>
               <span className="text-xs ml-auto" style={{ color: 'var(--text-muted)' }}>Awaiting your decision</span>
             </div>
 
@@ -995,7 +1106,7 @@ export default function CopyTrading() {
 
                   <div className="flex gap-3">
                     <button
-                      onClick={() => handleSignalAction(signal.id, 'accepted')}
+                      onClick={() => requireDisclaimer(() => handleSignalAction(signal.id, 'accepted'))}
                       className="flex-1 py-2.5 rounded-xl font-semibold text-sm text-white transition-all hover:scale-105"
                       style={{ background: 'linear-gradient(135deg, #10b981, #059669)' }}
                     >
@@ -1056,7 +1167,7 @@ export default function CopyTrading() {
 
                   {signal.status === 'declined' && (
                     <button
-                      onClick={() => handleSignalAction(signal.id, 'accepted')}
+                      onClick={() => requireDisclaimer(() => handleSignalAction(signal.id, 'accepted'))}
                       className="w-full py-2.5 rounded-xl font-semibold text-sm text-white transition-all hover:scale-105"
                       style={{ background: 'linear-gradient(135deg, #10b981, #059669)' }}
                     >
@@ -1068,6 +1179,7 @@ export default function CopyTrading() {
             )}
           </div>
 
+        </div>
         </div>
 
         {signals.length === 0 && (
@@ -1096,7 +1208,7 @@ export default function CopyTrading() {
       label: 'Portfolio Center',
       icon: Shield,
       description: 'Manage & track portfolio',
-      badge: pendingTrades.length > 0 ? pendingTrades.length : undefined // Show pending count
+      badge: undefined
     },
     {
       id: 'your-trading',
@@ -1110,7 +1222,7 @@ export default function CopyTrading() {
       label: 'Signals',
       icon: Bell,
       description: 'Trade signals from experts',
-      badge: signals.filter(s => s.status === 'pending').length || undefined
+      badge: (signals.filter(s => s.status === 'pending').length + pendingTrades.length) || undefined
     },
   ];
 
@@ -1306,13 +1418,9 @@ export default function CopyTrading() {
             <div className="text-center mt-12">
               <button
                 onClick={() => setActiveTab('your-trading')}
-                className="btn-primary px-10 py-5 text-base font-bold hover:scale-110 transition-all duration-300 group"
+                className="btn-primary px-10 py-5 text-base font-bold hover:scale-110 transition-all duration-300"
               >
-                <span className="flex items-center gap-3">
-                  <Zap className="w-6 h-6 group-hover:rotate-12 transition-transform" />
-                  Start Your Copy Trading Journey
-                  <ArrowRight className="w-6 h-6 group-hover:translate-x-2 transition-transform" />
-                </span>
+                Start Your Copy Trading Journey
               </button>
             </div>
           </div>
@@ -1332,21 +1440,13 @@ export default function CopyTrading() {
         <div className="flex flex-col sm:flex-row gap-5 justify-center mb-5">
           <button
             onClick={() => setActiveTab('your-trading')}
-            className="btn-primary px-10 py-5 text-base font-bold hover:scale-110 transition-all duration-300 group"
+            className="btn-primary px-10 py-5 text-base font-bold hover:scale-110 transition-all duration-300"
           >
-            <span className="flex items-center justify-center gap-3">
-              <Copy className="w-6 h-6 group-hover:rotate-12 transition-transform" />
-              Browse Expert Traders
-              <ArrowRight className="w-6 h-6 group-hover:translate-x-2 transition-transform" />
-            </span>
+            Browse Expert Traders
           </button>
 
-          <button className="btn-secondary px-10 py-5 text-base font-bold hover:scale-110 transition-all duration-300 group">
-            <span className="flex items-center justify-center gap-3">
-              <Brain className="w-6 h-6" />
-              Learn More First
-              <Sparkles className="w-6 h-6 group-hover:rotate-180 transition-transform" />
-            </span>
+          <button className="btn-secondary px-10 py-5 text-base font-bold hover:scale-110 transition-all duration-300">
+            Learn More First
           </button>
         </div>
 
@@ -1464,10 +1564,10 @@ export default function CopyTrading() {
         </div>
       )}
 
-      {/* Expert Traders Grid - Enhanced */}
+      {/* Sky Trades Experts */}
       <div className="card">
         <div className="card-body">
-          <h2 className="text-base font-bold mb-5" style={{ color: 'var(--text-primary)' }}>Available Expert Traders</h2>
+          <h2 className="text-base font-bold mb-5" style={{ color: 'var(--text-primary)' }}>Sky Trades Experts</h2>
           <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-5">
             {experts.map((expert, index) => {
               const isTopPerformer = expert.totalReturn > 50;
@@ -1476,149 +1576,67 @@ export default function CopyTrading() {
               return (
                 <div
                   key={expert.id}
-                  className={`relative glass-morphism rounded-2xl p-5 hover:scale-105 transition-all duration-300 group ${
-                    isTopPerformer ? 'border-2 border-yellow-500/50' : 'border border-white/10'
-                  }`}
+                  className="relative glass-morphism rounded-xl p-4 hover:scale-105 transition-all duration-300 border border-white/10"
                 >
-                  {/* Top Badge */}
-                  {isTopPerformer && (
-                    <div className="absolute -top-3 -right-3 bg-gradient-to-r from-yellow-500 to-orange-500 text-white text-xs font-bold px-3 py-1 rounded-full flex items-center gap-1 shadow-lg z-10">
-                      <Star className="w-3 h-3 fill-current" />
-                      TOP TRADER
+                  {/* Header */}
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0 bg-gradient-to-r from-blue-500 to-purple-600">
+                      <User className="w-4 h-4 text-white" />
                     </div>
-                  )}
-                  {isTrending && !isTopPerformer && (
-                    <div className="absolute -top-3 -right-3 bg-gradient-to-r from-blue-500 to-purple-500 text-white text-xs font-bold px-3 py-1 rounded-full flex items-center gap-1 shadow-lg z-10">
-                      <TrendingUp className="w-3 h-3" />
-                      TRENDING
+                    <div className="flex-1 min-w-0">
+                      <h3 className="text-sm font-bold truncate" style={{ color: 'var(--text-primary)' }}>{expert.name}</h3>
+                      <p className="text-xs" style={{ color: 'var(--text-muted)' }}>{expert.copiers.toLocaleString()} copiers</p>
                     </div>
-                  )}
-
-                  {/* Header with Avatar */}
-                  <div className="flex items-start justify-between mb-4">
-                    <div className="flex items-center gap-3 flex-1">
-                      <div className={`relative p-3 rounded-xl flex items-center justify-center ${
-                        isTopPerformer
-                          ? 'bg-gradient-to-r from-yellow-500 to-orange-500'
-                          : 'bg-gradient-to-r from-blue-500 to-purple-600'
-                      } shadow-lg`}>
-                        <User className="w-8 h-8 text-white" />
-                        {expert.isVerified && (
-                          <div className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-blue-500 flex items-center justify-center border-2 border-white">
-                            <Award className="w-3 h-3 text-white" />
-                          </div>
-                        )}
-                      </div>
-                      <div className="flex-1">
-                        <h3 className="text-base font-bold" style={{ color: 'var(--text-primary)' }}>
-                          {expert.name}
-                        </h3>
-                        <p className="text-xs px-2 py-0.5 rounded bg-blue-500/20 text-blue-300 inline-block mt-1">
-                          {expert.tradingStyle}
-                        </p>
-                      </div>
+                    <div className="text-right flex-shrink-0">
+                      <p className="text-sm font-bold" style={{ color: 'var(--success)' }}>${expert.monthlyFee}<span className="text-xs font-normal" style={{ color: 'var(--text-muted)' }}>/mo</span></p>
                     </div>
                   </div>
 
-                  <div className="block">
-
-                    {/* Specialty Tags */}
-                    <div className="flex flex-wrap gap-1.5 mb-4">
-                      {expert.specialties.slice(0, 2).map((specialty, idx) => (
-                        <span
-                          key={idx}
-                          className="text-xs px-2 py-1 rounded-lg font-medium"
-                          style={{
-                            background: 'var(--glass-bg)',
-                            color: 'var(--text-secondary)',
-                            border: '1px solid var(--glass-border-color)'
-                          }}
-                        >
-                          {specialty}
-                        </span>
-                      ))}
+                  {/* Stats */}
+                  <div className="grid grid-cols-3 gap-2 mb-4">
+                    <div className="text-center">
+                      <p className="text-sm font-bold text-green-400">+{expert.totalReturn}%</p>
+                      <p className="text-xs" style={{ color: 'var(--text-muted)' }}>Total</p>
                     </div>
-
-                    {/* Performance Stats - Highlighted */}
-                    <div className="grid grid-cols-3 gap-2 mb-4">
-                      <div className="glass-morphism p-3 rounded-lg text-center">
-                        <p className="text-lg font-black text-green-400">+{expert.totalReturn}%</p>
-                        <p className="text-xs mt-0.5" style={{ color: 'var(--text-tertiary)' }}>Total</p>
-                      </div>
-                      <div className="glass-morphism p-3 rounded-lg text-center">
-                        <p className="text-lg font-black text-blue-400">+{expert.monthlyReturn}%</p>
-                        <p className="text-xs mt-0.5" style={{ color: 'var(--text-tertiary)' }}>Monthly</p>
-                      </div>
-                      <div className="glass-morphism p-3 rounded-lg text-center">
-                        <p className="text-lg font-black text-purple-400">{expert.winRate}%</p>
-                        <p className="text-xs mt-0.5" style={{ color: 'var(--text-tertiary)' }}>Win Rate</p>
-                      </div>
+                    <div className="text-center">
+                      <p className="text-sm font-bold text-blue-400">+{expert.monthlyReturn}%</p>
+                      <p className="text-xs" style={{ color: 'var(--text-muted)' }}>Monthly</p>
                     </div>
-
-                    {/* Social Proof & Risk */}
-                    <div className="flex items-center justify-between mb-4 p-3 rounded-lg glass-morphism">
-                      <div className="flex items-center gap-4">
-                        <div className="flex items-center gap-1">
-                          <Users className="w-4 h-4" style={{ color: 'var(--text-tertiary)' }} />
-                          <span className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>
-                            {expert.copiers.toLocaleString()}
-                          </span>
-                        </div>
-                        <div className="h-4 w-px bg-white/20"></div>
-                        <div className="flex items-center gap-1.5">
-                          {getRiskIcon(expert.riskLevel)}
-                          <span
-                            className="text-xs font-bold px-2 py-0.5 rounded"
-                            style={{
-                              color: getRiskColor(expert.riskLevel),
-                              background: `${getRiskColor(expert.riskLevel)}15`
-                            }}
-                          >
-                            {expert.riskLevel}
-                          </span>
-                        </div>
-                      </div>
-                      <div className="text-right">
-                        <p className="text-base font-bold" style={{ color: 'var(--success)' }}>${expert.monthlyFee}</p>
-                        <p className="text-xs" style={{ color: 'var(--text-tertiary)' }}>per month</p>
-                      </div>
+                    <div className="text-center">
+                      <p className="text-sm font-bold text-purple-400">{expert.winRate}%</p>
+                      <p className="text-xs" style={{ color: 'var(--text-muted)' }}>Win Rate</p>
                     </div>
                   </div>
 
                   {/* Action Buttons */}
-                  <div className="flex gap-3">
+                  <div className="flex gap-2">
                     <button
                       onClick={() => setFollowedExperts(prev => {
                         const next = new Set(prev);
                         next.has(expert.id) ? next.delete(expert.id) : next.add(expert.id);
                         return next;
                       })}
-                      className={`flex-1 py-3 px-4 rounded-lg font-semibold transition-all duration-300 hover:scale-105 flex items-center justify-center gap-2 glass-morphism border-2 ${
+                      className={`flex-1 py-2 rounded-lg text-xs font-semibold transition-all duration-300 hover:scale-105 glass-morphism border ${
                         followedExperts.has(expert.id)
-                          ? 'border-green-500 text-green-400 hover:bg-green-500/10'
-                          : 'border-blue-500 text-blue-400 hover:bg-blue-500/10'
+                          ? 'border-green-500 text-green-400'
+                          : 'border-blue-500 text-blue-400'
                       }`}
                     >
-                      <UserCheck className="w-4 h-4" />
                       {followedExperts.has(expert.id) ? 'Followed' : 'Follow'}
                     </button>
                     {isSubscribed(expert.id) ? (
-                      <button
-                        className="flex-1 py-3 px-4 rounded-lg font-semibold glass-morphism cursor-default border-2 border-green-500 text-green-400 flex items-center justify-center gap-2"
-                      >
-                        <CheckCircle className="w-4 h-4" />
+                      <button className="flex-1 py-2 rounded-lg text-xs font-semibold glass-morphism cursor-default border border-green-500 text-green-400">
                         Copying
                       </button>
                     ) : (
                       <button
-                        onClick={() => {
+                        onClick={() => requireDisclaimer(() => {
                           setSelectedExpert(expert);
                           setShowSubscribeModal(true);
                           setAgreedToTerms(false);
-                        }}
-                        className="flex-1 btn-primary py-3 px-4 rounded-lg font-semibold transition-all duration-300 hover:scale-105 flex items-center justify-center gap-2"
+                        })}
+                        className="flex-1 btn-primary py-2 rounded-lg text-xs font-semibold transition-all duration-300 hover:scale-105"
                       >
-                        <Copy className="w-4 h-4" />
                         Copy
                       </button>
                     )}
@@ -1629,6 +1647,55 @@ export default function CopyTrading() {
           </div>
         </div>
       </div>
+
+      {/* External Experts */}
+      <div className="card">
+        <div className="card-body">
+          <div className="flex items-start justify-between mb-2">
+            <div>
+              <h2 className="text-base font-bold" style={{ color: 'var(--text-primary)' }}>External Experts</h2>
+              <p className="text-sm mt-1" style={{ color: 'var(--text-secondary)' }}>
+                Experts from other platforms like Discord whose signals you can bring into Sky Trades.
+              </p>
+            </div>
+          </div>
+
+          <div className="mt-6 glass-morphism rounded-2xl p-8 space-y-6">
+            <div className="text-center">
+              <p className="text-base font-semibold mb-2" style={{ color: 'var(--text-primary)' }}>
+                Know an expert you'd like to follow here?
+              </p>
+              <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>
+                If there's a trader you trust from Discord, Telegram, or another platform, you can invite them to Sky Trades. We'll handle getting them set up so their signals flow directly into your feed.
+              </p>
+            </div>
+
+            <div className="flex flex-col items-center gap-2 w-full max-w-sm mx-auto">
+              {/* Discord */}
+              <div className="w-full flex items-center justify-between px-5 py-3 rounded-xl border-l-4 border-[#5865F2]" style={{ background: 'rgba(88,101,242,0.08)', border: '1px solid rgba(88,101,242,0.25)', borderLeftWidth: '4px', borderLeftColor: '#5865F2' }}>
+                <p className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>Discord</p>
+                <button
+                  onClick={() => { setInviteUserId(''); setInviteChannelId(''); setShowInviteModal(true); }}
+                  className="btn-primary px-4 py-1.5 text-xs"
+                >
+                  Invite Expert
+                </button>
+              </div>
+
+              {/* Telegram */}
+              <div className="w-full flex items-center px-5 py-3 rounded-xl" style={{ background: 'rgba(34,158,217,0.08)', border: '1px solid rgba(34,158,217,0.25)', borderLeftWidth: '4px', borderLeftColor: '#229ED9' }}>
+                <p className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>Telegram</p>
+              </div>
+
+              {/* Others */}
+              <div className="w-full flex items-center px-5 py-3 rounded-xl" style={{ background: 'var(--glass-bg)', border: '1px solid var(--glass-border)', borderLeftWidth: '4px', borderLeftColor: 'var(--text-muted)' }}>
+                <p className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>Others</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
     </div>
   );
 
@@ -1963,10 +2030,10 @@ export default function CopyTrading() {
                     {/* Right: Copy Button */}
                     <div className="flex flex-col gap-3">
                       <button
-                        onClick={() => {
+                        onClick={() => requireDisclaimer(() => {
                           setSelectedTrade(trade);
                           setShowCopyTradeModal(true);
-                        }}
+                        })}
                         className="btn-primary px-8 py-4 rounded-xl font-bold text-base flex items-center gap-2 hover:scale-110 transition-all duration-300 whitespace-nowrap"
                       >
                         <Copy className="w-5 h-5" />
@@ -1990,9 +2057,9 @@ export default function CopyTrading() {
         <div className="relative">
           <div className="flex items-center justify-between mb-5">
             <div>
-              <h2 className="text-base font-bold text-gradient mb-2">Portfolio Analytics</h2>
+              <h2 className="text-base font-bold text-gradient mb-2">Copy Trading Portfolio</h2>
               <p className="text-lg" style={{ color: 'var(--text-secondary)' }}>
-                Comprehensive insights into your copy trading performance
+                Performance insights for your copy trading activity only
               </p>
             </div>
             <button
@@ -2124,144 +2191,12 @@ export default function CopyTrading() {
         </div>
       </div>
 
-      {/* Pending Trades & Recent Activity */}
+      {/* Recent Activity + Market Insights */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        {/* Pending Trades Section */}
-        {pendingTrades.length > 0 ? (
-          <div className="space-y-5">
-            {/* Header Section */}
-            <div className="relative overflow-hidden bg-gradient-to-br from-orange-600/20 via-yellow-600/20 to-amber-600/20 rounded-2xl p-4 border border-orange-500/30">
-              <div className="relative flex items-center justify-between">
-                <div>
-                  <h2 className="text-base font-bold text-gradient mb-1">Pending Trade Approvals</h2>
-                  <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>
-                    Review and approve trades from experts you follow
-                  </p>
-                </div>
-                <div className="px-4 py-2 rounded-lg bg-gradient-to-r from-orange-500/20 to-yellow-500/20 border border-orange-500/30">
-                  <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>Pending</p>
-                  <p className="text-xl font-black text-gradient">{pendingTrades.length}</p>
-                </div>
-              </div>
-            </div>
-
-            {/* Pending Trades List */}
-            <div className="space-y-3 max-h-[600px] overflow-y-auto custom-scrollbar">
-              {pendingTrades.map((trade) => {
-                const expert = experts.find(e => e.id === trade.expertId);
-                const subscription = subscriptions.find(s => s.expertId === trade.expertId);
-
-                return (
-                  <div key={trade.id} className="card hover:shadow-lg transition-shadow duration-200">
-                    <div className="p-4">
-                      {/* Header Row - Expert & Action */}
-                      <div className="flex items-center justify-between mb-3">
-                        <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: 'var(--gradient-primary)' }}><User className="w-5 h-5 text-white" /></div>
-                          <div>
-                            <p className="text-sm font-bold" style={{ color: 'var(--text-primary)' }}>
-                              {trade.expertName}
-                            </p>
-                            <p className="text-xs" style={{ color: 'var(--text-tertiary)' }}>
-                              {new Date(trade.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} • {new Date(trade.timestamp).toLocaleDateString([], { month: 'short', day: 'numeric' })}
-                            </p>
-                          </div>
-                        </div>
-                        <span className={`px-3 py-1.5 rounded-lg font-bold text-sm ${
-                          trade.action === 'buy'
-                            ? 'bg-green-500/20 text-green-400 border-2 border-green-500/40'
-                            : 'bg-red-500/20 text-red-400 border-2 border-red-500/40'
-                        }`}>
-                          {trade.action.toUpperCase()}
-                        </span>
-                      </div>
-
-                      {/* Trade Details Grid */}
-                      <div className="grid grid-cols-4 gap-4 mb-3 p-3 glass-morphism rounded-lg">
-                        <div>
-                          <p className="text-xs mb-0.5" style={{ color: 'var(--text-tertiary)' }}>Symbol</p>
-                          <p className="text-base font-bold" style={{ color: 'var(--text-primary)' }}>{trade.symbol}</p>
-                        </div>
-                        <div>
-                          <p className="text-xs mb-0.5" style={{ color: 'var(--text-tertiary)' }}>Quantity</p>
-                          <p className="text-base font-bold" style={{ color: 'var(--text-primary)' }}>{trade.quantity} shares</p>
-                        </div>
-                        <div>
-                          <p className="text-xs mb-0.5" style={{ color: 'var(--text-tertiary)' }}>Price</p>
-                          <p className="text-base font-bold" style={{ color: 'var(--text-primary)' }}>${trade.price.toFixed(2)}</p>
-                        </div>
-                        <div>
-                          <p className="text-xs mb-0.5" style={{ color: 'var(--text-tertiary)' }}>Total Cost</p>
-                          <p className="text-base font-bold" style={{ color: 'var(--primary-blue)' }}>
-                            ${(trade.price * trade.quantity).toFixed(2)}
-                          </p>
-                        </div>
-                      </div>
-
-                      {/* Action Buttons */}
-                      <div className="flex gap-3">
-                        <button
-                          onClick={() => handleRejectTrade(trade.id)}
-                          className="flex-1 px-4 py-2.5 rounded-lg text-sm font-semibold transition-all duration-300 border-2 border-red-500/30 hover:border-red-500 bg-red-500/10 hover:bg-red-500/20 text-red-400 hover:scale-[1.02]"
-                        >
-                          Reject Trade
-                        </button>
-                        <button
-                          onClick={() => handleApproveTrade(trade.id)}
-                          className="flex-1 px-4 py-2.5 rounded-lg text-sm font-semibold transition-all duration-300 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white shadow-md hover:shadow-lg hover:scale-[1.02]"
-                        >
-                          Approve & Execute
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-
-            {/* Quick Actions */}
-            <div className="card p-3">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h3 className="text-xs font-bold" style={{ color: 'var(--text-primary)' }}>Quick Actions</h3>
-                  <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>
-                    Manage all pending trades
-                  </p>
-                </div>
-                <button
-                  onClick={() => {
-                    if (window.confirm(`Are you sure you want to reject all ${pendingTrades.length} pending trades?`)) {
-                      setPendingTrades([]);
-                      if (user) localStorage.setItem(`pendingTrades_${user.id}`, JSON.stringify([]));
-                      alert('All pending trades rejected');
-                    }
-                  }}
-                  className="px-4 py-2 rounded-lg text-xs font-semibold transition-all duration-300 border border-red-500/30 hover:border-red-500 bg-red-500/10 hover:bg-red-500/20 text-red-400"
-                >
-                  Reject All
-                </button>
-              </div>
-            </div>
-          </div>
-        ) : (
-          <div className="card">
-            <div className="card-body text-center py-12">
-              <div className="w-16 h-16 rounded-full bg-gradient-to-r from-blue-500/20 to-purple-500/20 flex items-center justify-center mx-auto mb-4">
-                <CheckCircle className="w-8 h-8 text-blue-400" />
-              </div>
-              <h3 className="text-lg font-bold mb-2" style={{ color: 'var(--text-primary)' }}>All Caught Up!</h3>
-              <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>
-                No pending trades to review at the moment.
-              </p>
-            </div>
-          </div>
-        )}
-
         {/* Recent Activity Timeline */}
         <div className="card">
           <div className="card-body">
-            <h3 className="text-base font-bold mb-5 flex items-center gap-2" style={{ color: 'var(--text-primary)' }}>
-              <Clock className="w-6 h-6" style={{ color: 'var(--primary-blue)' }} />
+            <h3 className="text-base font-bold mb-5" style={{ color: 'var(--text-primary)' }}>
               Recent Activity
             </h3>
             <div className="space-y-4 max-h-[600px] overflow-y-auto custom-scrollbar">
@@ -2304,102 +2239,6 @@ export default function CopyTrading() {
             </div>
           </div>
         </div>
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        {/* Smart Risk Controls - Simplified */}
-        <div className="card">
-          <div className="card-body">
-            <h3 className="text-base font-bold mb-5" style={{ color: 'var(--text-primary)' }}>
-              Smart Risk Controls
-            </h3>
-
-            {/* Risk Profile - Simplified */}
-            <div className="mb-5">
-              <label className="text-sm font-semibold mb-3 block" style={{ color: 'var(--text-secondary)' }}>
-                Risk Profile
-              </label>
-              <div className="flex gap-2">
-                {(['conservative', 'moderate', 'aggressive'] as const).map((level) => (
-                  <button
-                    key={level}
-                    onClick={() => setRiskLevel(level)}
-                    className={`flex-1 px-4 py-3 rounded-lg border-2 transition-all duration-300 ${
-                      riskLevel === level
-                        ? 'border-blue-500 bg-blue-500/20 text-white'
-                        : 'border-gray-700 glass-morphism'
-                    }`}
-                    style={riskLevel !== level ? { color: 'var(--text-secondary)' } : {}}
-                  >
-                    <div className="text-sm font-bold capitalize">{level}</div>
-                    <div className="text-xs mt-1">
-                      {level === 'conservative' ? '5-10%' : level === 'moderate' ? '10-20%' : '20%+'}
-                    </div>
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Stop Loss - Simplified */}
-            <div className="mb-5">
-              <div className="flex items-center justify-between mb-3">
-                <label className="text-sm font-semibold" style={{ color: 'var(--text-secondary)' }}>
-                  Stop Loss Protection
-                </label>
-                <button
-                  onClick={() => setStopLossEnabled(!stopLossEnabled)}
-                  className={`w-12 h-6 rounded-full transition-all duration-300 ${
-                    stopLossEnabled ? 'bg-green-500' : 'bg-gray-600'
-                  }`}
-                >
-                  <div className={`w-5 h-5 bg-white rounded-full transition-all duration-300 shadow-lg ${
-                    stopLossEnabled ? 'translate-x-6' : 'translate-x-0.5'
-                  }`} />
-                </button>
-              </div>
-
-              {stopLossEnabled && (
-                <div className="glass-morphism p-4 rounded-lg space-y-4">
-                  <div>
-                    <div className="flex justify-between items-center mb-2">
-                      <span className="text-xs font-medium" style={{ color: 'var(--text-secondary)' }}>Per-Trade Stop Loss</span>
-                      <span className="text-sm font-bold text-red-400">{stopLossPercentage}%</span>
-                    </div>
-                    <input
-                      type="range"
-                      min="1"
-                      max="20"
-                      value={stopLossPercentage}
-                      onChange={(e) => setStopLossPercentage(Number(e.target.value))}
-                      className="w-full h-2 rounded-lg appearance-none cursor-pointer"
-                      style={{
-                        background: `linear-gradient(to right, #ef4444 0%, #ef4444 ${(stopLossPercentage / 20) * 100}%, #374151 ${(stopLossPercentage / 20) * 100}%, #374151 100%)`
-                      }}
-                    />
-                  </div>
-                  <div>
-                    <div className="flex justify-between items-center mb-2">
-                      <span className="text-xs font-medium" style={{ color: 'var(--text-secondary)' }}>Daily Loss Limit</span>
-                      <span className="text-sm font-bold text-orange-400">{maxDailyLoss}%</span>
-                    </div>
-                    <input
-                      type="range"
-                      min="0.5"
-                      max="10"
-                      step="0.5"
-                      value={maxDailyLoss}
-                      onChange={(e) => setMaxDailyLoss(Number(e.target.value))}
-                      className="w-full h-2 rounded-lg appearance-none cursor-pointer"
-                      style={{
-                        background: `linear-gradient(to right, #f97316 0%, #f97316 ${(maxDailyLoss / 10) * 100}%, #374151 ${(maxDailyLoss / 10) * 100}%, #374151 100%)`
-                      }}
-                    />
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
 
         {/* Market Insights */}
         <div className="card">
@@ -2407,40 +2246,63 @@ export default function CopyTrading() {
             <h3 className="text-base font-bold mb-5" style={{ color: 'var(--text-primary)' }}>
               Market Insights
             </h3>
-            <div className="space-y-3 max-h-[400px] overflow-y-auto custom-scrollbar">
-              {[
-                { title: 'Fed Interest Rate Decision Impact', tag: 'Economics', readTime: '8 min', trend: 'hot' },
-                { title: 'Tech Sector Q4 Earnings Preview', tag: 'Earnings', readTime: '12 min', trend: 'trending' },
-                { title: 'Risk-On vs Risk-Off Strategies', tag: 'Strategy', readTime: '6 min', trend: 'new' },
-                { title: 'Volatility Surge: What to Do', tag: 'Risk', readTime: '10 min', trend: 'hot' },
-                { title: 'Dividend Stocks for 2025', tag: 'Income', readTime: '15 min', trend: 'trending' },
-              ].map((article, index) => (
-                <div key={index} className="glass-morphism p-4 rounded-lg hover:bg-white/5 transition-all duration-300 cursor-pointer group">
-                  <div className="flex items-center gap-2 mb-2">
-                    <span className={`text-xs px-2 py-0.5 rounded font-semibold ${
-                      article.trend === 'hot' ? 'bg-red-500/20 text-red-300' :
-                      article.trend === 'trending' ? 'bg-blue-500/20 text-blue-300' :
-                      'bg-green-500/20 text-green-300'
-                    }`}>
-                      {article.trend === 'hot' ? 'HOT' : article.trend === 'trending' ? 'TRENDING' : 'NEW'}
-                    </span>
-                    <span className="text-xs px-2 py-0.5 rounded font-semibold bg-blue-500/20 text-blue-300">
-                      {article.tag}
-                    </span>
-                  </div>
-                  <h4 className="font-semibold text-sm mb-2 group-hover:text-blue-400 transition-colors" style={{ color: 'var(--text-primary)' }}>
-                    {article.title}
-                  </h4>
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs" style={{ color: 'var(--text-tertiary)' }}>📖 {article.readTime} read</span>
-                    <ArrowRight className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity" style={{ color: 'var(--primary-blue)' }} />
-                  </div>
+            <div className="space-y-4">
+              {/* Sentiment */}
+              <div className="glass-morphism rounded-xl p-4">
+                <p className="text-xs font-semibold uppercase tracking-wider mb-3" style={{ color: 'var(--text-muted)' }}>Overall Sentiment</p>
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-sm font-semibold text-green-400">Bullish</span>
+                  <span className="text-sm font-semibold" style={{ color: 'var(--text-secondary)' }}>68%</span>
                 </div>
-              ))}
+                <div className="w-full bg-gray-800 rounded-full h-2">
+                  <div className="h-2 rounded-full bg-gradient-to-r from-green-500 to-emerald-400" style={{ width: '68%' }} />
+                </div>
+              </div>
+
+              {/* Top Movers */}
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-wider mb-3" style={{ color: 'var(--text-muted)' }}>Top Movers Today</p>
+                <div className="space-y-2">
+                  {[
+                    { symbol: 'NVDA', change: +4.82, price: 875.40 },
+                    { symbol: 'TSLA', change: +3.17, price: 251.60 },
+                    { symbol: 'AAPL', change: -1.23, price: 188.90 },
+                    { symbol: 'META', change: +2.54, price: 512.30 },
+                  ].map(({ symbol, change, price }) => (
+                    <div key={symbol} className="flex items-center justify-between py-1.5 border-b last:border-0" style={{ borderColor: 'var(--glass-border)' }}>
+                      <span className="text-sm font-bold" style={{ color: 'var(--text-primary)' }}>{symbol}</span>
+                      <span className="text-xs" style={{ color: 'var(--text-muted)' }}>${price.toFixed(2)}</span>
+                      <span className={`text-sm font-semibold ${change > 0 ? 'text-green-400' : 'text-red-400'}`}>
+                        {change > 0 ? '+' : ''}{change}%
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Sector Performance */}
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-wider mb-3" style={{ color: 'var(--text-muted)' }}>Sector Performance</p>
+                <div className="space-y-2">
+                  {[
+                    { sector: 'Technology', change: +2.1 },
+                    { sector: 'Energy', change: -0.8 },
+                    { sector: 'Financials', change: +1.3 },
+                  ].map(({ sector, change }) => (
+                    <div key={sector} className="flex items-center justify-between">
+                      <span className="text-xs" style={{ color: 'var(--text-secondary)' }}>{sector}</span>
+                      <span className={`text-xs font-semibold ${change > 0 ? 'text-green-400' : 'text-red-400'}`}>
+                        {change > 0 ? '+' : ''}{change}%
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </div>
+
     </div>
   );
 
@@ -2537,6 +2399,154 @@ export default function CopyTrading() {
           {activeTab === 'signals' && renderSignals()}
         </div>
       </div>
+
+      {/* Invite Expert — Input Modal */}
+      {showInviteModal && (
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[200] flex items-center justify-center p-6">
+          <div className="card w-full max-w-md">
+            <div className="card-body p-8 space-y-6">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-widest mb-2" style={{ color: 'var(--primary-blue)' }}>Invite via Discord</p>
+                <h2 className="text-2xl font-bold" style={{ color: 'var(--text-primary)' }}>Add an External Expert</h2>
+                <p className="text-sm mt-2" style={{ color: 'var(--text-secondary)' }}>
+                  We'll use these details to connect with the expert's Discord channel and start pulling in their signals.
+                </p>
+              </div>
+
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-semibold mb-2" style={{ color: 'var(--text-secondary)' }}>
+                    Expert's Discord User ID
+                  </label>
+                  <input
+                    type="text"
+                    className="form-input"
+                    placeholder="e.g. 123456789012345678"
+                    value={inviteUserId}
+                    onChange={(e) => setInviteUserId(e.target.value)}
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold mb-2" style={{ color: 'var(--text-secondary)' }}>
+                    Discord Channel ID
+                  </label>
+                  <input
+                    type="text"
+                    className="form-input"
+                    placeholder="e.g. 987654321098765432"
+                    value={inviteChannelId}
+                    onChange={(e) => setInviteChannelId(e.target.value)}
+                  />
+                </div>
+              </div>
+
+              <div className="flex gap-3 pt-2">
+                <button
+                  onClick={() => setShowInviteModal(false)}
+                  className="flex-1 btn-secondary py-3"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={() => {
+                    setShowInviteModal(false);
+                    setShowInviteConfirmModal(true);
+                  }}
+                  className="flex-1 btn-primary py-3"
+                >
+                  Submit Request
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Invite Expert — Confirmation Modal */}
+      {showInviteConfirmModal && (
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[200] flex items-center justify-center p-6">
+          <div className="card w-full max-w-sm">
+            <div className="card-body p-8 flex flex-col items-center text-center gap-5">
+              <div className="w-16 h-16 rounded-full flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #10b981, #059669)' }}>
+                <CheckCircle className="w-8 h-8 text-white" />
+              </div>
+              <div>
+                <h2 className="text-xl font-bold mb-2" style={{ color: 'var(--text-primary)' }}>Request Submitted!</h2>
+                <p className="text-sm leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
+                  We've received your request. Our team will review it and get this expert onboarded onto Sky Trades. Their signals will appear in your feed once they're set up.
+                </p>
+              </div>
+              <button
+                onClick={() => setShowInviteConfirmModal(false)}
+                className="btn-primary w-full py-3"
+              >
+                Done
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Copy Trading Disclaimer Modal */}
+      {showDisclaimerModal && (
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[200] flex items-center justify-center p-6">
+          <div className="card w-full max-w-5xl">
+            <div className="card-body p-0 overflow-hidden">
+              <div className="grid grid-cols-5">
+
+                {/* Left panel — title + actions */}
+                <div className="col-span-2 p-8 flex flex-col justify-between border-r" style={{ borderColor: 'var(--glass-border)' }}>
+                  <div>
+                    <p className="text-xs font-semibold uppercase tracking-widest mb-3 text-orange-400">Risk Disclosure</p>
+                    <h2 className="text-2xl font-bold mb-3" style={{ color: 'var(--text-primary)' }}>Copy Trading Disclaimer</h2>
+                    <p className="text-sm leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
+                      Before you follow an expert or copy a trade, please read and acknowledge the risks involved. This only needs to be accepted once.
+                    </p>
+                  </div>
+                  <div className="flex flex-col gap-3 mt-8">
+                    <button
+                      onClick={handleDisclaimerAccept}
+                      className="btn-primary py-3 font-semibold"
+                    >
+                      I Accept & Continue
+                    </button>
+                    <button
+                      onClick={() => { setShowDisclaimerModal(false); setPendingAction(null); }}
+                      className="btn-secondary py-3"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </div>
+
+                {/* Right panel — scrollable clauses */}
+                <div className="col-span-3 p-8 overflow-y-auto max-h-[70vh] custom-scrollbar space-y-5 text-sm leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
+                  {[
+                    { title: 'No Investment Advice', body: 'All trade ideas, signals, or strategies provided by "experts" or other users are for informational purposes only and do not constitute financial, investment, legal, or tax advice. The application does not endorse or guarantee the accuracy or completeness of any such information.' },
+                    { title: 'User Responsibility', body: 'Whether you choose automatic or manual copy trading, all trading decisions remain solely your responsibility. You are fully accountable for evaluating the suitability of any trade based on your financial situation, investment objectives, and risk tolerance.' },
+                    { title: 'Risk of Loss', body: 'Trading financial instruments involves substantial risk, including the potential loss of your entire investment. Past performance of any expert or strategy is not indicative of future results. There is no guarantee that copying trades will result in profits.' },
+                    { title: 'Execution Differences', body: 'Prices, timing, and execution of copied trades may differ from those of the expert due to market conditions, latency, liquidity, or technical factors. These differences may significantly impact performance outcomes.' },
+                    { title: 'No Guarantee of Performance', body: 'The application makes no representations or warranties regarding the profitability or success of any copied trade or strategy. Experts may experience losses, and such losses may be replicated in your account.' },
+                    { title: 'Technology Risks', body: 'Automated copy trading relies on software and connectivity that may be subject to interruptions, delays, or failures. The application is not liable for losses resulting from system errors, outages, or technical issues.' },
+                    { title: 'Independent Relationship', body: 'Experts are independent users and are not employees, agents, or representatives of Sky app. Their views and strategies are their own.' },
+                    { title: 'Regulatory Considerations', body: 'You are responsible for ensuring that your use of copy trading complies with applicable laws and regulations in your jurisdiction.' },
+                    { title: 'Limitation of Liability', body: 'To the fullest extent permitted by law, the application and its affiliates shall not be liable for any direct, indirect, incidental, or consequential losses arising from your use of the copy trading feature.' },
+                  ].map(({ title, body }) => (
+                    <div key={title}>
+                      <p className="font-semibold mb-1" style={{ color: 'var(--text-primary)' }}>{title}</p>
+                      <p>{body}</p>
+                    </div>
+                  ))}
+                  <p className="font-medium pt-2 border-t" style={{ color: 'var(--text-primary)', borderColor: 'var(--glass-border)' }}>
+                    By enabling or using copy trading, you confirm that you understand and accept these risks and terms.
+                  </p>
+                </div>
+
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Subscribe Modal */}
       {showSubscribeModal && selectedExpert && (
@@ -3396,13 +3406,13 @@ export default function CopyTrading() {
                   <div className="flex items-center gap-4">
                     {!subscriptions.some(sub => sub.expertId === selectedExpertForVideo.id && sub.status === 'active') ? (
                       <button
-                        onClick={() => {
+                        onClick={() => requireDisclaimer(() => {
                           setSelectedExpert(selectedExpertForVideo);
                           setShowSubscribeModal(true);
                           setAgreedToTerms(false);
                           setShowVideoModal(false);
                           setSelectedExpertForVideo(null);
-                        }}
+                        })}
                         className="btn-primary px-6 py-3 flex items-center gap-2 hover:scale-105 transition-all"
                       >
                         <Heart className="w-5 h-5" />

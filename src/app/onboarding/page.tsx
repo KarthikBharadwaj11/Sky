@@ -73,11 +73,16 @@ export default function OnboardingPage() {
     return null;
   }
 
-  const steps = [
-    { id: 1, name: 'Personal Details', shortName: 'Details' },
-    { id: 2, name: 'Risk Assessment', shortName: 'Risk' },
-    { id: 3, name: 'Choose Plan', shortName: 'Subscription' },
-  ];
+  const steps = selectedRole === 'expert'
+    ? [
+        { id: 1, name: 'Personal Details', shortName: 'Details' },
+        { id: 2, name: 'Risk Assessment', shortName: 'Risk' },
+      ]
+    : [
+        { id: 1, name: 'Personal Details', shortName: 'Details' },
+        { id: 2, name: 'Risk Assessment', shortName: 'Risk' },
+        { id: 3, name: 'Choose Plan', shortName: 'Subscription' },
+      ];
 
   const handleStepComplete = (stepData: any) => {
     console.log('Step completed:', currentStep, stepData);
