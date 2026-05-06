@@ -5,7 +5,6 @@ import {
   Heart,
   Zap,
   Eye,
-  CheckCircle,
   Mail,
   Star
 } from 'lucide-react';
@@ -78,24 +77,12 @@ export default function AboutPage() {
                   We're building the future of trading by combining artificial intelligence, social learning, 
                   and intuitive design to create a platform that empowers traders to achieve their financial goals.
                 </p>
-                <div className="space-y-4">
-                  <div className="flex items-center gap-3">
-                    <CheckCircle className="w-6 h-6" style={{ color: 'var(--text-accent)' }} />
-                    <span style={{ color: 'var(--text-primary)' }}>Commission-free trading for all users</span>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <CheckCircle className="w-6 h-6" style={{ color: 'var(--text-accent)' }} />
-                    <span style={{ color: 'var(--text-primary)' }}>AI-powered insights and recommendations</span>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <CheckCircle className="w-6 h-6" style={{ color: 'var(--text-accent)' }} />
-                    <span style={{ color: 'var(--text-primary)' }}>Comprehensive educational resources</span>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <CheckCircle className="w-6 h-6" style={{ color: 'var(--text-accent)' }} />
-                    <span style={{ color: 'var(--text-primary)' }}>24/7 customer support and community</span>
-                  </div>
-                </div>
+                <ul className="list-disc list-inside space-y-3">
+                  <li style={{ color: 'var(--text-primary)' }}>Commission-free trading for all users</li>
+                  <li style={{ color: 'var(--text-primary)' }}>AI-powered insights and recommendations</li>
+                  <li style={{ color: 'var(--text-primary)' }}>Comprehensive educational resources</li>
+                  <li style={{ color: 'var(--text-primary)' }}>24/7 customer support and community</li>
+                </ul>
               </div>
               
               <div className="card">
