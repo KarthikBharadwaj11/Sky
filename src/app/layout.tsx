@@ -5,7 +5,6 @@ import { AuthProvider } from "@/components/auth/AuthProvider";
 import { ThemeProvider } from "@/components/theme/ThemeProvider";
 import ConditionalNavbar from "@/components/layout/ConditionalNavbar";
 import ConditionalLayout from "@/components/layout/ConditionalLayout";
-import CopyTradingNotifications from "@/components/copy-trading/CopyTradingNotifications";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -38,7 +37,6 @@ export default function RootLayout({
             <ConditionalLayout>
               {children}
             </ConditionalLayout>
-            <CopyTradingNotifications />
           </AuthProvider>
         </ThemeProvider>
       </body>

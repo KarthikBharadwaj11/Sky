@@ -37,7 +37,6 @@ export default function LandingNavbar() {
 
               {/* Desktop Navigation */}
               <div className="hidden md:flex items-center space-x-2">
-                <Link href="/copy-trading" className={`nav-link ${pathname === '/copy-trading' ? 'active' : ''}`}>Copy Trading</Link>
                 <Link href="/paper-trading" className={`nav-link ${pathname === '/paper-trading' ? 'active' : ''}`}>Paper Trading</Link>
                 <Link href="/learn" className={`nav-link ${pathname === '/learn' ? 'active' : ''}`}>Learn</Link>
                 <Link href="/about" className={`nav-link ${pathname === '/about' ? 'active' : ''}`}>About</Link>
@@ -69,7 +68,6 @@ export default function LandingNavbar() {
               <div>
                 <div className="mt-4 pt-4 border-t border-white/10">
                   <div className="flex flex-col space-y-3 pb-2">
-                    <Link href="/copy-trading" className={`nav-link px-4 py-3 ${pathname === '/copy-trading' ? 'active' : ''}`} onClick={() => setIsMenuOpen(false)}>Copy Trading</Link>
                     <Link href="/paper-trading" className={`nav-link px-4 py-3 ${pathname === '/paper-trading' ? 'active' : ''}`} onClick={() => setIsMenuOpen(false)}>Paper Trading</Link>
                     <Link href="/learn" className={`nav-link px-4 py-3 ${pathname === '/learn' ? 'active' : ''}`} onClick={() => setIsMenuOpen(false)}>Learn</Link>
                     <Link href="/about" className={`nav-link px-4 py-3 ${pathname === '/about' ? 'active' : ''}`} onClick={() => setIsMenuOpen(false)}>About</Link>

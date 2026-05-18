@@ -6,7 +6,6 @@ import { User, CreditCard, Settings, Gift, Share2, MapPin, Mail, Briefcase, Doll
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recharts';
 import TransferFundsModal from '@/components/accounts/TransferFundsModal';
 import AddPaymentMethodModal, { BankAccountData, CardData } from '@/components/accounts/AddPaymentMethodModal';
-import SubscriptionStep from '@/components/onboarding/SubscriptionStep';
 
 interface Beneficiary {
   id: string;
@@ -63,7 +62,7 @@ interface ReferredUser {
 
 export default function Profile() {
   const { user } = useAuth();
-  const [activeTab, setActiveTab] = useState<'profile' | 'accounts' | 'settings' | 'refer' | 'shared-portfolio'>('profile');
+  const [activeTab, setActiveTab] = useState<'profile' | 'trading-accounts' | 'funding-sources' | 'settings' | 'refer'>('profile');
   const [onboardingData, setOnboardingData] = useState<any>(null);
   const [accounts, setAccounts] = useState<Account[]>([]);
   const [showAddAccountModal, setShowAddAccountModal] = useState(false);
@@ -78,23 +77,9 @@ export default function Profile() {
   const [copiedCode, setCopiedCode] = useState(false);
   const [referredUsers, setReferredUsers] = useState<ReferredUser[]>([]);
   const [showTransferModal, setShowTransferModal] = useState(false);
-  const [accountSection, setAccountSection] = useState<'brokerage' | 'bank'>('brokerage');
   const [bankAccounts, setBankAccounts] = useState<BankAccount[]>([]);
   const [showAddBankAccountModal, setShowAddBankAccountModal] = useState(false);
-  const [showSubscriptionModal, setShowSubscriptionModal] = useState(false);
 
-  // Shared Portfolio state
-  const [showAddMemberModal, setShowAddMemberModal] = useState(false);
-  const [sharedMembers, setSharedMembers] = useState<any[]>([]);
-  const [sharedWithMe, setSharedWithMe] = useState<any[]>([]);
-  const [memberFormData, setMemberFormData] = useState({
-    fullName: '',
-    email: '',
-    phone: '',
-    relationship: '',
-    otherRelationship: '',
-    accessLevel: '' as 'view-only' | 'full-access' | ''
-  });
 
   // Settings state
   const [settings, setSettings] = useState({
@@ -262,58 +247,6 @@ export default function Profile() {
     }
   }, [settings, user]);
 
-  // Initialize shared portfolio dummy data
-  useEffect(() => {
-    // Dummy data: People I've shared my portfolio with
-    setSharedMembers([
-      {
-        id: '1',
-        fullName: 'User 1',
-        email: 'user1@example.com',
-        phone: '+1 (555) 123-4567',
-        relationship: 'Father',
-        accessLevel: 'view-only',
-        addedDate: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString(),
-        lastAccessed: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
-        status: 'active'
-      },
-      {
-        id: '2',
-        fullName: 'User 2',
-        email: 'user2@example.com',
-        phone: '+1 (555) 987-6543',
-        relationship: 'Trading Advisor',
-        accessLevel: 'full-access',
-        addedDate: new Date(Date.now() - 90 * 24 * 60 * 60 * 1000).toISOString(),
-        lastAccessed: new Date(Date.now() - 1 * 60 * 60 * 1000).toISOString(),
-        status: 'active'
-      }
-    ]);
-
-    // Dummy data: People who have shared their portfolio with me
-    setSharedWithMe([
-      {
-        id: '3',
-        ownerName: 'User 3',
-        ownerEmail: 'user3@example.com',
-        relationship: 'Spouse',
-        accessLevel: 'full-access',
-        sharedDate: new Date(Date.now() - 60 * 24 * 60 * 60 * 1000).toISOString(),
-        portfolioValue: 125430.50,
-        portfolioReturn: 12.5
-      },
-      {
-        id: '4',
-        ownerName: 'User 4',
-        ownerEmail: 'user4@example.com',
-        relationship: 'Son',
-        accessLevel: 'view-only',
-        sharedDate: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000).toISOString(),
-        portfolioValue: 45200.25,
-        portfolioReturn: -3.2
-      }
-    ]);
-  }, []);
 
   const generateReferralCode = (username: string) => {
     const prefix = username.substring(0, 3).toUpperCase();
@@ -468,10 +401,16 @@ export default function Profile() {
       description: 'Personal and contact details'
     },
     {
-      id: 'accounts',
-      label: 'Accounts',
+      id: 'trading-accounts',
+      label: 'Trading Accounts',
+      icon: TrendingUp,
+      description: 'Your brokerage accounts'
+    },
+    {
+      id: 'funding-sources',
+      label: 'Funding Sources',
       icon: CreditCard,
-      description: 'Manage your accounts'
+      description: 'Linked banks and cards'
     },
     {
       id: 'settings',
@@ -485,12 +424,6 @@ export default function Profile() {
       icon: Gift,
       description: 'Invite friends'
     },
-    {
-      id: 'shared-portfolio',
-      label: 'Shared Portfolio',
-      icon: Share2,
-      description: 'Portfolio sharing'
-    }
   ];
 
   const renderProfile = () => (
@@ -886,7 +819,7 @@ export default function Profile() {
     </div>
   );
 
-  const renderAccounts = () => {
+  const renderTradingAccounts = () => {
     // If an account is selected, show detailed view
     if (selectedAccount) {
       return (
@@ -956,49 +889,19 @@ export default function Profile() {
     // Otherwise show account list
     return (
       <div className="space-y-4">
-        {/* Account Type Tabs */}
-        <div className="flex gap-2 p-1 glass-morphism rounded-xl max-w-md">
-          <button
-            onClick={() => setAccountSection('brokerage')}
-            className={`flex-1 px-4 py-2.5 rounded-lg text-sm font-semibold transition-all duration-300 ${
-              accountSection === 'brokerage'
-                ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white'
-                : 'text-gray-400 hover:text-white'
-            }`}
-          >
-            Individual Accounts
-          </button>
-          <button
-            onClick={() => setAccountSection('bank')}
-            className={`flex-1 px-4 py-2.5 rounded-lg text-sm font-semibold transition-all duration-300 ${
-              accountSection === 'bank'
-                ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white'
-                : 'text-gray-400 hover:text-white'
-            }`}
-          >
-            Bank Accounts
-          </button>
-        </div>
-
         <div className="card">
           <div className="card-header flex justify-between items-center">
-            <h2 className="text-lg font-bold text-gradient">
-              {accountSection === 'brokerage' ? 'Individual Accounts' : 'Bank Accounts'}
-            </h2>
-            {accountSection === 'brokerage' && (
-              <button
-                onClick={() => setShowAddAccountModal(true)}
-                className="btn-primary px-4 py-2.5 flex items-center gap-2"
-              >
-                <Plus className="w-4 h-4" />
-                Add Individual Account
-              </button>
-            )}
+            <h2 className="text-lg font-bold text-gradient">Trading Accounts</h2>
+            <button
+              onClick={() => setShowAddAccountModal(true)}
+              className="btn-primary px-4 py-2.5 flex items-center gap-2"
+            >
+              <Plus className="w-4 h-4" />
+              Add Trading Account
+            </button>
           </div>
           <div className="card-body">
-            {/* Brokerage Accounts Section */}
-            {accountSection === 'brokerage' && (
-              <>
+            <>
                 {accounts.length === 0 ? (
                   <div className="text-center py-10">
                     <Building2 className="w-16 h-16 mx-auto mb-4" style={{ color: 'var(--text-tertiary)' }} />
@@ -1067,293 +970,6 @@ export default function Profile() {
                   </div>
                 )}
               </>
-            )}
-
-            {/* Bank Accounts Section */}
-            {accountSection === 'bank' && (
-              <>
-                {bankAccounts.length === 0 ? (
-                  <div className="text-center py-10">
-                    <CreditCard className="w-16 h-16 mx-auto mb-4" style={{ color: 'var(--text-tertiary)' }} />
-                    <p className="text-lg font-bold mb-2" style={{ color: 'var(--text-primary)' }}>
-                      No Bank Accounts Yet
-                    </p>
-                    <p className="text-lg mb-4" style={{ color: 'var(--text-tertiary)' }}>
-                      Add your bank account or card to fund your brokerage accounts
-                    </p>
-                    <button
-                      onClick={() => setShowAddBankAccountModal(true)}
-                      className="btn-primary px-6 py-2.5 inline-flex items-center gap-2"
-                    >
-                      <Plus className="w-4 h-4" />
-                      Add Bank Account
-                    </button>
-                  </div>
-                ) : (
-                  <div className="space-y-8">
-                    {/* Bank Accounts Subsection */}
-                    <div>
-                      <div className="flex justify-between items-center mb-4">
-                        <h3 className="text-lg font-bold" style={{ color: 'var(--text-primary)' }}>
-                          Bank Accounts
-                        </h3>
-                        <button
-                          onClick={() => setShowAddBankAccountModal(true)}
-                          className="px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-300 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white flex items-center gap-2"
-                        >
-                          <Plus className="w-4 h-4" />
-                          Add Bank Account
-                        </button>
-                      </div>
-
-                      {bankAccounts.filter(acc => acc.type === 'bank').length === 0 ? (
-                        <div className="glass-morphism p-6 rounded-xl text-center">
-                          <p className="text-sm" style={{ color: 'var(--text-tertiary)' }}>
-                            No bank accounts linked yet
-                          </p>
-                        </div>
-                      ) : (
-                        <div className="glass-morphism rounded-xl overflow-hidden">
-                          <table className="w-full">
-                            <thead>
-                              <tr className="border-b border-white/10">
-                                <th className="text-left px-4 py-3 text-xs font-semibold" style={{ color: 'var(--text-tertiary)' }}>
-                                  BANK
-                                </th>
-                                <th className="text-left px-4 py-3 text-xs font-semibold" style={{ color: 'var(--text-tertiary)' }}>
-                                  ACCOUNT TYPE
-                                </th>
-                                <th className="text-left px-4 py-3 text-xs font-semibold" style={{ color: 'var(--text-tertiary)' }}>
-                                  ACCOUNT NUMBER
-                                </th>
-                                <th className="text-right px-4 py-3 text-xs font-semibold" style={{ color: 'var(--text-tertiary)' }}>
-                                  BALANCE
-                                </th>
-                                <th className="text-center px-4 py-3 text-xs font-semibold" style={{ color: 'var(--text-tertiary)' }}>
-                                  ACTIONS
-                                </th>
-                              </tr>
-                            </thead>
-                            <tbody className="divide-y divide-white/5">
-                              {bankAccounts.filter(acc => acc.type === 'bank').map((bankAccount) => (
-                                <tr
-                                  key={bankAccount.id}
-                                  className="transition-all duration-300 hover:bg-white/5"
-                                >
-                                  <td className="px-4 py-3">
-                                    <div className="flex items-center gap-3">
-                                      <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-gradient-to-r from-green-500 to-emerald-600">
-                                        <Building2 className="w-4 h-4 text-white" />
-                                      </div>
-                                      <div>
-                                        <p className="text-sm font-bold" style={{ color: 'var(--text-primary)' }}>
-                                          {bankAccount.bankName}
-                                        </p>
-                                        {bankAccount.isDefault && (
-                                          <span className="text-xs text-blue-400">Default</span>
-                                        )}
-                                      </div>
-                                    </div>
-                                  </td>
-                                  <td className="px-4 py-3">
-                                    <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>
-                                      {bankAccount.accountType?.charAt(0).toUpperCase() + bankAccount.accountType?.slice(1)}
-                                    </p>
-                                  </td>
-                                  <td className="px-4 py-3">
-                                    <p className="text-sm font-mono" style={{ color: 'var(--text-secondary)' }}>
-                                      {bankAccount.accountNumber}
-                                    </p>
-                                  </td>
-                                  <td className="px-4 py-3 text-right">
-                                    <p className="text-sm font-bold text-green-400">
-                                      ${bankAccount.balance !== undefined ? bankAccount.balance.toFixed(2) : '0.00'}
-                                    </p>
-                                  </td>
-                                  <td className="px-4 py-3">
-                                    <div className="flex items-center justify-center gap-2">
-                                      {!bankAccount.isDefault && (
-                                        <button
-                                          onClick={() => {
-                                            const updated = bankAccounts.map(acc => ({
-                                              ...acc,
-                                              isDefault: acc.id === bankAccount.id && acc.type === 'bank'
-                                            }));
-                                            setBankAccounts(updated);
-                                            localStorage.setItem('bankAccounts', JSON.stringify(updated));
-                                          }}
-                                          className="p-1.5 hover:bg-white/10 rounded-lg transition-colors"
-                                          title="Set as default"
-                                        >
-                                          <Star className="w-4 h-4" style={{ color: 'var(--text-tertiary)' }} />
-                                        </button>
-                                      )}
-                                      <button
-                                        onClick={() => {
-                                          // Edit functionality - placeholder for now
-                                          alert('Edit functionality coming soon');
-                                        }}
-                                        className="p-1.5 hover:bg-white/10 rounded-lg transition-colors"
-                                        title="Edit"
-                                      >
-                                        <Edit className="w-4 h-4" style={{ color: 'var(--text-tertiary)' }} />
-                                      </button>
-                                      <button
-                                        onClick={() => {
-                                          if (confirm(`Are you sure you want to remove ${bankAccount.bankName}?`)) {
-                                            const updated = bankAccounts.filter(acc => acc.id !== bankAccount.id);
-                                            setBankAccounts(updated);
-                                            localStorage.setItem('bankAccounts', JSON.stringify(updated));
-                                          }
-                                        }}
-                                        className="p-1.5 hover:bg-red-500/20 rounded-lg transition-colors"
-                                        title="Delete"
-                                      >
-                                        <Trash2 className="w-4 h-4 text-red-400" />
-                                      </button>
-                                    </div>
-                                  </td>
-                                </tr>
-                              ))}
-                            </tbody>
-                          </table>
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Cards Subsection */}
-                    <div>
-                      <div className="flex justify-between items-center mb-4">
-                        <h3 className="text-lg font-bold" style={{ color: 'var(--text-primary)' }}>
-                          Cards
-                        </h3>
-                        <button
-                          onClick={() => setShowAddBankAccountModal(true)}
-                          className="px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-300 bg-gradient-to-r from-purple-500 to-pink-600 hover:from-purple-600 hover:to-pink-700 text-white flex items-center gap-2"
-                        >
-                          <Plus className="w-4 h-4" />
-                          Add Card
-                        </button>
-                      </div>
-
-                      {bankAccounts.filter(acc => acc.type === 'debit-card' || acc.type === 'credit-card').length === 0 ? (
-                        <div className="glass-morphism p-6 rounded-xl text-center">
-                          <p className="text-sm" style={{ color: 'var(--text-tertiary)' }}>
-                            No cards linked yet
-                          </p>
-                        </div>
-                      ) : (
-                        <div className="glass-morphism rounded-xl overflow-hidden">
-                          <table className="w-full">
-                            <thead>
-                              <tr className="border-b border-white/10">
-                                <th className="text-left px-4 py-3 text-xs font-semibold" style={{ color: 'var(--text-tertiary)' }}>
-                                  CARD
-                                </th>
-                                <th className="text-left px-4 py-3 text-xs font-semibold" style={{ color: 'var(--text-tertiary)' }}>
-                                  TYPE
-                                </th>
-                                <th className="text-left px-4 py-3 text-xs font-semibold" style={{ color: 'var(--text-tertiary)' }}>
-                                  CARD NUMBER
-                                </th>
-                                <th className="text-left px-4 py-3 text-xs font-semibold" style={{ color: 'var(--text-tertiary)' }}>
-                                  EXPIRY
-                                </th>
-                                <th className="text-center px-4 py-3 text-xs font-semibold" style={{ color: 'var(--text-tertiary)' }}>
-                                  ACTIONS
-                                </th>
-                              </tr>
-                            </thead>
-                            <tbody className="divide-y divide-white/5">
-                              {bankAccounts.filter(acc => acc.type === 'debit-card' || acc.type === 'credit-card').map((card) => (
-                                <tr
-                                  key={card.id}
-                                  className="transition-all duration-300 hover:bg-white/5"
-                                >
-                                  <td className="px-4 py-3">
-                                    <div className="flex items-center gap-3">
-                                      <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-gradient-to-r from-purple-500 to-pink-600">
-                                        <CreditCard className="w-4 h-4 text-white" />
-                                      </div>
-                                      <div>
-                                        <p className="text-sm font-bold" style={{ color: 'var(--text-primary)' }}>
-                                          {card.bankName}
-                                        </p>
-                                        {card.isDefault && (
-                                          <span className="text-xs text-blue-400">Default</span>
-                                        )}
-                                      </div>
-                                    </div>
-                                  </td>
-                                  <td className="px-4 py-3">
-                                    <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>
-                                      {card.cardNetwork?.toUpperCase()} {card.type === 'debit-card' ? 'Debit' : 'Credit'}
-                                    </p>
-                                  </td>
-                                  <td className="px-4 py-3">
-                                    <p className="text-sm font-mono" style={{ color: 'var(--text-secondary)' }}>
-                                      {card.cardNumber}
-                                    </p>
-                                  </td>
-                                  <td className="px-4 py-3">
-                                    <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>
-                                      {card.expiryDate || 'N/A'}
-                                    </p>
-                                  </td>
-                                  <td className="px-4 py-3">
-                                    <div className="flex items-center justify-center gap-2">
-                                      {!card.isDefault && (
-                                        <button
-                                          onClick={() => {
-                                            const updated = bankAccounts.map(acc => ({
-                                              ...acc,
-                                              isDefault: acc.id === card.id && (acc.type === 'debit-card' || acc.type === 'credit-card')
-                                            }));
-                                            setBankAccounts(updated);
-                                            localStorage.setItem('bankAccounts', JSON.stringify(updated));
-                                          }}
-                                          className="p-1.5 hover:bg-white/10 rounded-lg transition-colors"
-                                          title="Set as default"
-                                        >
-                                          <Star className="w-4 h-4" style={{ color: 'var(--text-tertiary)' }} />
-                                        </button>
-                                      )}
-                                      <button
-                                        onClick={() => {
-                                          // Edit functionality - placeholder for now
-                                          alert('Edit functionality coming soon');
-                                        }}
-                                        className="p-1.5 hover:bg-white/10 rounded-lg transition-colors"
-                                        title="Edit"
-                                      >
-                                        <Edit className="w-4 h-4" style={{ color: 'var(--text-tertiary)' }} />
-                                      </button>
-                                      <button
-                                        onClick={() => {
-                                          if (confirm(`Are you sure you want to remove this card ending in ${card.cardNumber?.slice(-4)}?`)) {
-                                            const updated = bankAccounts.filter(acc => acc.id !== card.id);
-                                            setBankAccounts(updated);
-                                            localStorage.setItem('bankAccounts', JSON.stringify(updated));
-                                          }
-                                        }}
-                                        className="p-1.5 hover:bg-red-500/20 rounded-lg transition-colors"
-                                        title="Delete"
-                                      >
-                                        <Trash2 className="w-4 h-4 text-red-400" />
-                                      </button>
-                                    </div>
-                                  </td>
-                                </tr>
-                              ))}
-                            </tbody>
-                          </table>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                )}
-              </>
-            )}
           </div>
         </div>
 
@@ -1850,6 +1466,228 @@ export default function Profile() {
     );
   };
 
+  const renderFundingSources = () => (
+    <div className="space-y-4">
+      <div className="card">
+        <div className="card-header flex justify-between items-center">
+          <h2 className="text-lg font-bold text-gradient">Funding Sources</h2>
+          <button
+            onClick={() => setShowAddBankAccountModal(true)}
+            className="btn-primary px-4 py-2.5 flex items-center gap-2"
+          >
+            <Plus className="w-4 h-4" />
+            Add Funding Source
+          </button>
+        </div>
+        <div className="card-body">
+          {bankAccounts.length === 0 ? (
+            <div className="text-center py-10">
+              <CreditCard className="w-16 h-16 mx-auto mb-4" style={{ color: 'var(--text-tertiary)' }} />
+              <p className="text-lg font-bold mb-2" style={{ color: 'var(--text-primary)' }}>No Funding Sources Yet</p>
+              <p className="text-lg mb-4" style={{ color: 'var(--text-tertiary)' }}>Add your bank account or card to fund your trading accounts</p>
+              <button
+                onClick={() => setShowAddBankAccountModal(true)}
+                className="btn-primary px-6 py-2.5 inline-flex items-center gap-2"
+              >
+                <Plus className="w-4 h-4" />
+                Add Funding Source
+              </button>
+            </div>
+          ) : (
+            <div className="space-y-8">
+              {/* Bank Accounts */}
+              <div>
+                <div className="flex justify-between items-center mb-4">
+                  <h3 className="text-lg font-bold" style={{ color: 'var(--text-primary)' }}>Bank Accounts</h3>
+                  <button
+                    onClick={() => setShowAddBankAccountModal(true)}
+                    className="px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-300 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white flex items-center gap-2"
+                  >
+                    <Plus className="w-4 h-4" />
+                    Add Bank Account
+                  </button>
+                </div>
+                {bankAccounts.filter(acc => acc.type === 'bank').length === 0 ? (
+                  <div className="glass-morphism p-6 rounded-xl text-center">
+                    <p className="text-sm" style={{ color: 'var(--text-tertiary)' }}>No bank accounts linked yet</p>
+                  </div>
+                ) : (
+                  <div className="glass-morphism rounded-xl overflow-hidden">
+                    <table className="w-full">
+                      <thead>
+                        <tr className="border-b border-white/10">
+                          <th className="text-left px-4 py-3 text-xs font-semibold" style={{ color: 'var(--text-tertiary)' }}>BANK</th>
+                          <th className="text-left px-4 py-3 text-xs font-semibold" style={{ color: 'var(--text-tertiary)' }}>ACCOUNT TYPE</th>
+                          <th className="text-left px-4 py-3 text-xs font-semibold" style={{ color: 'var(--text-tertiary)' }}>ACCOUNT NUMBER</th>
+                          <th className="text-right px-4 py-3 text-xs font-semibold" style={{ color: 'var(--text-tertiary)' }}>BALANCE</th>
+                          <th className="text-center px-4 py-3 text-xs font-semibold" style={{ color: 'var(--text-tertiary)' }}>ACTIONS</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-white/5">
+                        {bankAccounts.filter(acc => acc.type === 'bank').map((bankAccount) => (
+                          <tr key={bankAccount.id} className="transition-all duration-300 hover:bg-white/5">
+                            <td className="px-4 py-3">
+                              <div className="flex items-center gap-3">
+                                <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-gradient-to-r from-green-500 to-emerald-600">
+                                  <Building2 className="w-4 h-4 text-white" />
+                                </div>
+                                <div>
+                                  <p className="text-sm font-bold" style={{ color: 'var(--text-primary)' }}>{bankAccount.bankName}</p>
+                                  {bankAccount.isDefault && <span className="text-xs text-blue-400">Default</span>}
+                                </div>
+                              </div>
+                            </td>
+                            <td className="px-4 py-3">
+                              <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>
+                                {bankAccount.accountType?.charAt(0).toUpperCase() + bankAccount.accountType?.slice(1)}
+                              </p>
+                            </td>
+                            <td className="px-4 py-3">
+                              <p className="text-sm font-mono" style={{ color: 'var(--text-secondary)' }}>{bankAccount.accountNumber}</p>
+                            </td>
+                            <td className="px-4 py-3 text-right">
+                              <p className="text-sm font-bold text-green-400">
+                                ${bankAccount.balance !== undefined ? bankAccount.balance.toFixed(2) : '0.00'}
+                              </p>
+                            </td>
+                            <td className="px-4 py-3">
+                              <div className="flex items-center justify-center gap-2">
+                                {!bankAccount.isDefault && (
+                                  <button
+                                    onClick={() => {
+                                      const updated = bankAccounts.map(acc => ({ ...acc, isDefault: acc.id === bankAccount.id && acc.type === 'bank' }));
+                                      setBankAccounts(updated);
+                                      localStorage.setItem('bankAccounts', JSON.stringify(updated));
+                                    }}
+                                    className="p-1.5 hover:bg-white/10 rounded-lg transition-colors" title="Set as default"
+                                  >
+                                    <Star className="w-4 h-4" style={{ color: 'var(--text-tertiary)' }} />
+                                  </button>
+                                )}
+                                <button onClick={() => alert('Edit functionality coming soon')} className="p-1.5 hover:bg-white/10 rounded-lg transition-colors" title="Edit">
+                                  <Edit className="w-4 h-4" style={{ color: 'var(--text-tertiary)' }} />
+                                </button>
+                                <button
+                                  onClick={() => {
+                                    if (confirm(`Are you sure you want to remove ${bankAccount.bankName}?`)) {
+                                      const updated = bankAccounts.filter(acc => acc.id !== bankAccount.id);
+                                      setBankAccounts(updated);
+                                      localStorage.setItem('bankAccounts', JSON.stringify(updated));
+                                    }
+                                  }}
+                                  className="p-1.5 hover:bg-red-500/20 rounded-lg transition-colors" title="Delete"
+                                >
+                                  <Trash2 className="w-4 h-4 text-red-400" />
+                                </button>
+                              </div>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+              </div>
+
+              {/* Cards */}
+              <div>
+                <div className="flex justify-between items-center mb-4">
+                  <h3 className="text-lg font-bold" style={{ color: 'var(--text-primary)' }}>Cards</h3>
+                  <button
+                    onClick={() => setShowAddBankAccountModal(true)}
+                    className="px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-300 bg-gradient-to-r from-purple-500 to-pink-600 hover:from-purple-600 hover:to-pink-700 text-white flex items-center gap-2"
+                  >
+                    <Plus className="w-4 h-4" />
+                    Add Card
+                  </button>
+                </div>
+                {bankAccounts.filter(acc => acc.type === 'debit-card' || acc.type === 'credit-card').length === 0 ? (
+                  <div className="glass-morphism p-6 rounded-xl text-center">
+                    <p className="text-sm" style={{ color: 'var(--text-tertiary)' }}>No cards linked yet</p>
+                  </div>
+                ) : (
+                  <div className="glass-morphism rounded-xl overflow-hidden">
+                    <table className="w-full">
+                      <thead>
+                        <tr className="border-b border-white/10">
+                          <th className="text-left px-4 py-3 text-xs font-semibold" style={{ color: 'var(--text-tertiary)' }}>CARD</th>
+                          <th className="text-left px-4 py-3 text-xs font-semibold" style={{ color: 'var(--text-tertiary)' }}>TYPE</th>
+                          <th className="text-left px-4 py-3 text-xs font-semibold" style={{ color: 'var(--text-tertiary)' }}>CARD NUMBER</th>
+                          <th className="text-left px-4 py-3 text-xs font-semibold" style={{ color: 'var(--text-tertiary)' }}>EXPIRY</th>
+                          <th className="text-center px-4 py-3 text-xs font-semibold" style={{ color: 'var(--text-tertiary)' }}>ACTIONS</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-white/5">
+                        {bankAccounts.filter(acc => acc.type === 'debit-card' || acc.type === 'credit-card').map((card) => (
+                          <tr key={card.id} className="transition-all duration-300 hover:bg-white/5">
+                            <td className="px-4 py-3">
+                              <div className="flex items-center gap-3">
+                                <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-gradient-to-r from-purple-500 to-pink-600">
+                                  <CreditCard className="w-4 h-4 text-white" />
+                                </div>
+                                <div>
+                                  <p className="text-sm font-bold" style={{ color: 'var(--text-primary)' }}>{card.bankName}</p>
+                                  {card.isDefault && <span className="text-xs text-blue-400">Default</span>}
+                                </div>
+                              </div>
+                            </td>
+                            <td className="px-4 py-3">
+                              <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>
+                                {card.cardNetwork?.toUpperCase()} {card.type === 'debit-card' ? 'Debit' : 'Credit'}
+                              </p>
+                            </td>
+                            <td className="px-4 py-3">
+                              <p className="text-sm font-mono" style={{ color: 'var(--text-secondary)' }}>{card.cardNumber}</p>
+                            </td>
+                            <td className="px-4 py-3">
+                              <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>{card.expiryDate || 'N/A'}</p>
+                            </td>
+                            <td className="px-4 py-3">
+                              <div className="flex items-center justify-center gap-2">
+                                {!card.isDefault && (
+                                  <button
+                                    onClick={() => {
+                                      const updated = bankAccounts.map(acc => ({ ...acc, isDefault: acc.id === card.id && (acc.type === 'debit-card' || acc.type === 'credit-card') }));
+                                      setBankAccounts(updated);
+                                      localStorage.setItem('bankAccounts', JSON.stringify(updated));
+                                    }}
+                                    className="p-1.5 hover:bg-white/10 rounded-lg transition-colors" title="Set as default"
+                                  >
+                                    <Star className="w-4 h-4" style={{ color: 'var(--text-tertiary)' }} />
+                                  </button>
+                                )}
+                                <button onClick={() => alert('Edit functionality coming soon')} className="p-1.5 hover:bg-white/10 rounded-lg transition-colors" title="Edit">
+                                  <Edit className="w-4 h-4" style={{ color: 'var(--text-tertiary)' }} />
+                                </button>
+                                <button
+                                  onClick={() => {
+                                    if (confirm(`Are you sure you want to remove this card ending in ${card.cardNumber?.slice(-4)}?`)) {
+                                      const updated = bankAccounts.filter(acc => acc.id !== card.id);
+                                      setBankAccounts(updated);
+                                      localStorage.setItem('bankAccounts', JSON.stringify(updated));
+                                    }
+                                  }}
+                                  className="p-1.5 hover:bg-red-500/20 rounded-lg transition-colors" title="Delete"
+                                >
+                                  <Trash2 className="w-4 h-4 text-red-400" />
+                                </button>
+                              </div>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+
+    </div>
+  );
+
   const renderSettings = () => (
     <div className="max-w-4xl mx-auto space-y-6">
       {/* Appearance Section */}
@@ -2060,32 +1898,6 @@ export default function Profile() {
               <div className="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-gradient-to-r peer-checked:from-blue-500 peer-checked:to-purple-600"></div>
             </label>
           </div>
-        </div>
-      </div>
-
-      {/* Subscription */}
-      <div className="glass-morphism rounded-xl overflow-hidden">
-        <div className="px-6 py-4 border-b border-white/10">
-          <h3 className="text-base font-bold flex items-center gap-2" style={{ color: 'var(--text-primary)' }}>
-            <Star className="w-5 h-5" style={{ color: 'var(--warning)' }} />
-            Subscription
-          </h3>
-        </div>
-        <div className="p-6">
-          <div className="mb-4">
-            <p className="font-medium mb-1" style={{ color: 'var(--text-primary)' }}>Current Plan</p>
-            <p className="text-2xl font-bold text-gradient mb-2">Free</p>
-            <p className="text-sm" style={{ color: 'var(--text-tertiary)' }}>
-              Upgrade to unlock premium features
-            </p>
-          </div>
-
-          <button
-            onClick={() => setShowSubscriptionModal(true)}
-            className="w-full px-6 py-3 rounded-xl font-semibold transition-all duration-300 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white"
-          >
-            Upgrade to Premium
-          </button>
         </div>
       </div>
 
@@ -2381,458 +2193,23 @@ export default function Profile() {
     );
   };
 
-  const renderSharedPortfolio = () => {
-    const formatDate = (dateString: string) => {
-      return new Date(dateString).toLocaleDateString('en-US', {
-        year: 'numeric',
-        month: 'short',
-        day: 'numeric'
-      });
-    };
-
-    const formatLastAccessed = (dateString: string) => {
-      const now = Date.now();
-      const then = new Date(dateString).getTime();
-      const diffInHours = Math.floor((now - then) / (1000 * 60 * 60));
-
-      if (diffInHours < 1) return 'Just now';
-      if (diffInHours < 24) return `${diffInHours}h ago`;
-      const diffInDays = Math.floor(diffInHours / 24);
-      if (diffInDays === 1) return 'Yesterday';
-      if (diffInDays < 7) return `${diffInDays} days ago`;
-      return formatDate(dateString);
-    };
-
-    return (
-      <div className="max-w-5xl mx-auto space-y-6">
-        {/* Header with Add Member Button */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 p-6 rounded-xl border" style={{ borderColor: 'var(--glass-border)', background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.05) 0%, rgba(147, 51, 234, 0.05) 100%)' }}>
-          <div>
-            <h2 className="text-xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">Shared Portfolio</h2>
-            <p className="text-sm mt-1" style={{ color: 'var(--text-tertiary)' }}>
-              Manage who has access to your portfolio
-            </p>
-          </div>
-          <button
-            onClick={() => setShowAddMemberModal(true)}
-            className="btn-primary px-5 py-2.5 text-sm flex items-center gap-2 shadow-lg shadow-blue-500/20 hover:shadow-xl hover:shadow-blue-500/30 transition-all hover:scale-105"
-          >
-            <Plus className="w-4 h-4" />
-            Add Member
-          </button>
-        </div>
-
-        {/* Section 1: Portfolio Shared By Me */}
-        <div className="rounded-lg border overflow-hidden" style={{ borderColor: 'var(--glass-border)', background: 'var(--background-secondary)' }}>
-          <div className="px-5 py-4 border-b flex items-center gap-2" style={{ borderColor: 'var(--glass-border)' }}>
-            <Share2 className="w-4 h-4 text-blue-400" />
-            <h3 className="text-base font-semibold" style={{ color: 'var(--text-primary)' }}>
-              Shared by Me
-            </h3>
-            <span className="text-xs px-2 py-0.5 rounded-full" style={{ background: 'var(--background-primary)', color: 'var(--text-tertiary)' }}>
-              {sharedMembers.length}
-            </span>
-          </div>
-          <div className="p-5">
-            {sharedMembers.length > 0 ? (
-              <div className="space-y-4">
-                {sharedMembers.map((member) => (
-                  <div
-                    key={member.id}
-                    className="p-4 rounded-lg border hover:border-blue-500/40 transition-all group hover:shadow-lg hover:shadow-blue-500/10"
-                    style={{
-                      background: 'var(--background-primary)',
-                      borderColor: 'var(--glass-border)'
-                    }}
-                  >
-                    <div className="flex items-center justify-between mb-3">
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-lg flex items-center justify-center text-sm font-semibold bg-gradient-to-br from-blue-500/20 to-purple-500/20 border border-blue-500/30">
-                          <span className="bg-gradient-to-br from-blue-400 to-purple-400 bg-clip-text text-transparent">
-                            {member.fullName.split(' ').map((n: string) => n[0]).join('')}
-                          </span>
-                        </div>
-                        <div>
-                          <h4 className="text-sm font-semibold mb-0.5" style={{ color: 'var(--text-primary)' }}>
-                            {member.fullName}
-                          </h4>
-                          <p className="text-xs" style={{ color: 'var(--text-tertiary)' }}>
-                            {member.relationship}
-                          </p>
-                        </div>
-                      </div>
-
-                      {member.accessLevel === 'view-only' ? (
-                        <span className="px-3 py-1 rounded-full text-xs font-medium bg-blue-500/10 text-blue-400 flex items-center gap-1.5">
-                          <Eye className="w-3 h-3" />
-                          View Only
-                        </span>
-                      ) : (
-                        <span className="px-3 py-1 rounded-full text-xs font-medium bg-purple-500/10 text-purple-400 flex items-center gap-1.5">
-                          <Unlock className="w-3 h-3" />
-                          Full Access
-                        </span>
-                      )}
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mb-3">
-                      <div className="flex items-center gap-2 text-xs" style={{ color: 'var(--text-tertiary)' }}>
-                        <Mail className="w-3.5 h-3.5" />
-                        <span>{member.email}</span>
-                      </div>
-                      <div className="flex items-center gap-2 text-xs" style={{ color: 'var(--text-tertiary)' }}>
-                        <Phone className="w-3.5 h-3.5" />
-                        <span>{member.phone}</span>
-                      </div>
-                    </div>
-
-                    <div className="flex items-center justify-between pt-3 border-t" style={{ borderColor: 'var(--glass-border)' }}>
-                      <span className="text-xs" style={{ color: 'var(--text-tertiary)' }}>
-                        Last active {formatLastAccessed(member.lastAccessed)}
-                      </span>
-
-                      <div className="flex items-center gap-1">
-                        <button className="p-1.5 rounded-lg hover:bg-white/5 transition-colors" title="Edit access">
-                          <Edit className="w-4 h-4" style={{ color: 'var(--text-secondary)' }} />
-                        </button>
-                        <button className="p-1.5 rounded-lg hover:bg-red-500/10 transition-colors" title="Revoke access">
-                          <Trash2 className="w-4 h-4 text-red-400" />
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className="text-center py-8">
-                <Users className="w-12 h-12 mx-auto mb-3" style={{ color: 'var(--text-tertiary)' }} />
-                <p className="text-sm font-medium mb-1" style={{ color: 'var(--text-primary)' }}>
-                  No Members Added
-                </p>
-                <p className="text-xs" style={{ color: 'var(--text-tertiary)' }}>
-                  Click "Add Member" to share your portfolio
-                </p>
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* Section 2: Portfolios Shared With Me */}
-        <div className="rounded-lg border overflow-hidden" style={{ borderColor: 'var(--glass-border)', background: 'var(--background-secondary)' }}>
-          <div className="px-5 py-4 border-b flex items-center gap-2" style={{ borderColor: 'var(--glass-border)' }}>
-            <Users className="w-4 h-4 text-green-400" />
-            <h3 className="text-base font-semibold" style={{ color: 'var(--text-primary)' }}>
-              Shared with Me
-            </h3>
-            <span className="text-xs px-2 py-0.5 rounded-full" style={{ background: 'var(--background-primary)', color: 'var(--text-tertiary)' }}>
-              {sharedWithMe.length}
-            </span>
-          </div>
-          <div className="p-5">
-            {sharedWithMe.length > 0 ? (
-              <div className="space-y-4">
-                {sharedWithMe.map((portfolio) => (
-                  <div
-                    key={portfolio.id}
-                    className="p-4 rounded-lg border cursor-pointer hover:border-green-500/40 transition-all group hover:shadow-lg hover:shadow-green-500/10"
-                    style={{
-                      background: 'var(--background-primary)',
-                      borderColor: 'var(--glass-border)'
-                    }}
-                  >
-                    <div className="flex items-center justify-between mb-3">
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-lg flex items-center justify-center text-sm font-semibold bg-gradient-to-br from-green-500/20 to-blue-500/20 border border-green-500/30">
-                          <span className="bg-gradient-to-br from-green-400 to-blue-400 bg-clip-text text-transparent">
-                            {portfolio.ownerName.split(' ').map((n: string) => n[0]).join('')}
-                          </span>
-                        </div>
-                        <div>
-                          <h4 className="text-sm font-semibold mb-0.5" style={{ color: 'var(--text-primary)' }}>
-                            {portfolio.ownerName}
-                          </h4>
-                          <p className="text-xs" style={{ color: 'var(--text-tertiary)' }}>
-                            {portfolio.relationship}
-                          </p>
-                        </div>
-                      </div>
-
-                      {portfolio.accessLevel === 'view-only' ? (
-                        <span className="px-3 py-1 rounded-full text-xs font-medium bg-blue-500/10 text-blue-400 flex items-center gap-1.5">
-                          <Eye className="w-3 h-3" />
-                          View Only
-                        </span>
-                      ) : (
-                        <span className="px-3 py-1 rounded-full text-xs font-medium bg-purple-500/10 text-purple-400 flex items-center gap-1.5">
-                          <Unlock className="w-3 h-3" />
-                          Full Access
-                        </span>
-                      )}
-                    </div>
-
-                    <div className="grid grid-cols-3 gap-3 mb-3">
-                      <div>
-                        <p className="text-xs mb-0.5" style={{ color: 'var(--text-tertiary)' }}>Value</p>
-                        <p className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>
-                          ${portfolio.portfolioValue.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
-                        </p>
-                      </div>
-                      <div>
-                        <p className="text-xs mb-0.5" style={{ color: 'var(--text-tertiary)' }}>Return</p>
-                        <p className={`text-sm font-semibold ${portfolio.portfolioReturn >= 0 ? 'text-green-400' : 'text-red-400'}`}>
-                          {portfolio.portfolioReturn >= 0 ? '+' : ''}{portfolio.portfolioReturn.toFixed(1)}%
-                        </p>
-                      </div>
-                      <div>
-                        <p className="text-xs mb-0.5" style={{ color: 'var(--text-tertiary)' }}>Shared</p>
-                        <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>
-                          {formatDate(portfolio.sharedDate)}
-                        </p>
-                      </div>
-                    </div>
-
-                    <button className="w-full py-2 rounded-lg btn-primary text-sm group-hover:shadow-lg group-hover:shadow-green-500/20 transition-all">
-                      View Portfolio →
-                    </button>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className="text-center py-8">
-                <Share2 className="w-12 h-12 mx-auto mb-3" style={{ color: 'var(--text-tertiary)' }} />
-                <p className="text-sm font-medium mb-1" style={{ color: 'var(--text-primary)' }}>
-                  No Shared Portfolios
-                </p>
-                <p className="text-xs" style={{ color: 'var(--text-tertiary)' }}>
-                  No one has shared their portfolio with you yet
-                </p>
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* Add Member Modal */}
-        {showAddMemberModal && (
-          <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-            <div className="card max-w-xl w-full max-h-[90vh] overflow-y-auto">
-              <div className="card-header flex items-center justify-between">
-                <h3 className="text-lg font-bold text-gradient">Add Family Member / Advisor</h3>
-                <button
-                  onClick={() => {
-                    setShowAddMemberModal(false);
-                    setMemberFormData({
-                      fullName: '',
-                      email: '',
-                      phone: '',
-                      relationship: '',
-                      otherRelationship: '',
-                      accessLevel: '' as 'view-only' | 'full-access' | ''
-                    });
-                  }}
-                  className="p-1.5 rounded-lg glass-morphism hover:bg-white/5 transition-all"
-                >
-                  <X className="w-5 h-5" />
-                </button>
-              </div>
-              <div className="card-body">
-                <form
-                  onSubmit={(e) => {
-                    e.preventDefault();
-                    // Add the new member
-                    const newMember = {
-                      id: (sharedMembers.length + 1).toString(),
-                      fullName: memberFormData.fullName,
-                      email: memberFormData.email,
-                      phone: memberFormData.phone,
-                      relationship: memberFormData.relationship === 'other' ? memberFormData.otherRelationship : memberFormData.relationship,
-                      accessLevel: memberFormData.accessLevel,
-                      addedDate: new Date().toISOString(),
-                      lastAccessed: new Date().toISOString(),
-                      status: 'active'
-                    };
-                    setSharedMembers([...sharedMembers, newMember]);
-                    setShowAddMemberModal(false);
-                    setMemberFormData({
-                      fullName: '',
-                      email: '',
-                      phone: '',
-                      relationship: '',
-                      otherRelationship: '',
-                      accessLevel: '' as 'view-only' | 'full-access' | ''
-                    });
-                  }}
-                  className="space-y-4"
-                >
-                  {/* Relationship */}
-                  <div>
-                    <label className="block text-sm font-medium mb-2" style={{ color: 'var(--text-secondary)' }}>
-                      Relationship
-                    </label>
-                    <select
-                      className="form-input"
-                      value={memberFormData.relationship}
-                      onChange={(e) => setMemberFormData({ ...memberFormData, relationship: e.target.value })}
-                      required
-                    >
-                      <option value="">Select relationship</option>
-                      <option value="Father">Father</option>
-                      <option value="Mother">Mother</option>
-                      <option value="Son">Son</option>
-                      <option value="Daughter">Daughter</option>
-                      <option value="Spouse">Spouse</option>
-                      <option value="Trading Advisor">Trading Advisor</option>
-                      <option value="other">Other</option>
-                    </select>
-                  </div>
-
-                  {memberFormData.relationship === 'other' && (
-                    <div>
-                      <label className="block text-sm font-medium mb-2" style={{ color: 'var(--text-secondary)' }}>
-                        Specify Relationship
-                      </label>
-                      <input
-                        type="text"
-                        className="form-input"
-                        value={memberFormData.otherRelationship}
-                        onChange={(e) => setMemberFormData({ ...memberFormData, otherRelationship: e.target.value })}
-                        placeholder="e.g., Brother, Financial Advisor"
-                        required
-                      />
-                    </div>
-                  )}
-
-                  {/* Full Name */}
-                  <div>
-                    <label className="block text-sm font-medium mb-2" style={{ color: 'var(--text-secondary)' }}>
-                      Full Name
-                    </label>
-                    <input
-                      type="text"
-                      className="form-input"
-                      value={memberFormData.fullName}
-                      onChange={(e) => setMemberFormData({ ...memberFormData, fullName: e.target.value })}
-                      placeholder="Enter full name"
-                      required
-                    />
-                  </div>
-
-                  {/* Email */}
-                  <div>
-                    <label className="block text-sm font-medium mb-2" style={{ color: 'var(--text-secondary)' }}>
-                      Email Address
-                    </label>
-                    <input
-                      type="email"
-                      className="form-input"
-                      value={memberFormData.email}
-                      onChange={(e) => setMemberFormData({ ...memberFormData, email: e.target.value })}
-                      placeholder="email@example.com"
-                      required
-                    />
-                  </div>
-
-                  {/* Phone */}
-                  <div>
-                    <label className="block text-sm font-medium mb-2" style={{ color: 'var(--text-secondary)' }}>
-                      Phone Number
-                    </label>
-                    <input
-                      type="tel"
-                      className="form-input"
-                      value={memberFormData.phone}
-                      onChange={(e) => setMemberFormData({ ...memberFormData, phone: e.target.value })}
-                      placeholder="+1 (555) 123-4567"
-                      required
-                    />
-                  </div>
-
-                  {/* Access Level */}
-                  <div>
-                    <label className="block text-sm font-medium mb-2" style={{ color: 'var(--text-secondary)' }}>
-                      Access Level
-                    </label>
-                    <div className="grid grid-cols-2 gap-3">
-                      <button
-                        type="button"
-                        onClick={() => setMemberFormData({ ...memberFormData, accessLevel: 'view-only' })}
-                        className={`p-3 rounded-lg border-2 transition-all text-left ${
-                          memberFormData.accessLevel === 'view-only'
-                            ? 'border-blue-500 bg-blue-500/10'
-                            : 'border-gray-600 hover:border-gray-500'
-                        }`}
-                      >
-                        <div className="flex items-center gap-2 mb-1">
-                          <Eye className="w-4 h-4 text-blue-400" />
-                          <span className="text-sm font-bold" style={{ color: 'var(--text-primary)' }}>View Only</span>
-                        </div>
-                        <p className="text-xs" style={{ color: 'var(--text-tertiary)' }}>Can view portfolio</p>
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setMemberFormData({ ...memberFormData, accessLevel: 'full-access' })}
-                        className={`p-3 rounded-lg border-2 transition-all text-left ${
-                          memberFormData.accessLevel === 'full-access'
-                            ? 'border-purple-500 bg-purple-500/10'
-                            : 'border-gray-600 hover:border-gray-500'
-                        }`}
-                      >
-                        <div className="flex items-center gap-2 mb-1">
-                          <Unlock className="w-4 h-4 text-purple-400" />
-                          <span className="text-sm font-bold" style={{ color: 'var(--text-primary)' }}>Full Access</span>
-                        </div>
-                        <p className="text-xs" style={{ color: 'var(--text-tertiary)' }}>Can view & trade</p>
-                      </button>
-                    </div>
-                  </div>
-
-                  {/* Submit */}
-                  <div className="flex gap-3 pt-4">
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setShowAddMemberModal(false);
-                        setMemberFormData({
-                          fullName: '',
-                          email: '',
-                          phone: '',
-                          relationship: '',
-                          otherRelationship: '',
-                          accessLevel: '' as 'view-only' | 'full-access' | ''
-                        });
-                      }}
-                      className="flex-1 btn-secondary"
-                    >
-                      Cancel
-                    </button>
-                    <button type="submit" className="flex-1 btn-primary">
-                      Add Member
-                    </button>
-                  </div>
-                </form>
-              </div>
-            </div>
-          </div>
-        )}
-      </div>
-    );
-  };
-
   const renderContent = () => {
     switch (activeTab) {
       case 'profile':
         return renderProfile();
-      case 'accounts':
-        return renderAccounts();
+      case 'trading-accounts':
+        return renderTradingAccounts();
+      case 'funding-sources':
+        return renderFundingSources();
       case 'settings':
         return renderSettings();
       case 'refer':
         return renderRefer();
-      case 'shared-portfolio':
-        return renderSharedPortfolio();
       default:
         return renderProfile();
     }
   };
+
 
   return (
     <div className="flex min-h-screen">
@@ -2933,30 +2310,6 @@ export default function Profile() {
         }}
       />
 
-      {/* Subscription Modal */}
-      {showSubscriptionModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ background: 'rgba(0, 0, 0, 0.8)' }}>
-          <div className="card max-w-6xl w-full relative max-h-[90vh] overflow-y-auto">
-            <button
-              onClick={() => setShowSubscriptionModal(false)}
-              className="absolute top-4 right-4 p-2 rounded-lg hover:bg-white/10 transition-colors z-10"
-            >
-              <X className="w-5 h-5" style={{ color: 'var(--text-secondary)' }} />
-            </button>
-
-            <div className="card-body p-6">
-              <SubscriptionStep
-                onComplete={(data) => {
-                  console.log('Subscription selected:', data);
-                  setShowSubscriptionModal(false);
-                  alert(`Successfully subscribed to ${data.subscription} plan!`);
-                }}
-                onSkip={() => setShowSubscriptionModal(false)}
-              />
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
