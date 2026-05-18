@@ -115,7 +115,7 @@ export default function Profile() {
     },
     language: 'en',
     currency: 'USD',
-    twoFactorAuth: false
+    twoFactorAuth: true
   });
 
   useEffect(() => {
@@ -463,9 +463,9 @@ export default function Profile() {
   const tabs = [
     {
       id: 'profile',
-      label: 'Profile',
+      label: 'Personal Details',
       icon: User,
-      description: 'Personal information'
+      description: 'Personal and contact details'
     },
     {
       id: 'accounts',
@@ -507,7 +507,7 @@ export default function Profile() {
                 <div className="w-6 h-6 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center">
                   <User className="w-4 h-4 text-white" />
                 </div>
-                <h3 className="text-base font-bold" style={{ color: 'var(--text-primary)' }}>Basic Details</h3>
+                <h3 className="text-base font-bold" style={{ color: 'var(--text-primary)' }}>Personal Details</h3>
               </div>
               <div className="space-y-3">
                 <div>
@@ -552,53 +552,39 @@ export default function Profile() {
                     {onboardingData?.mobile || 'Not provided'}
                   </p>
                 </div>
-              </div>
-            </div>
-
-            {/* Address */}
-            <div className="glass-morphism p-4 rounded-xl md:col-span-2">
-              <div className="flex items-center gap-2.5 mb-3">
-                <div className="w-6 h-6 rounded-full bg-gradient-to-r from-orange-500 to-red-600 flex items-center justify-center">
-                  <MapPin className="w-4 h-4 text-white" />
+                <div>
+                  <label className="text-xs font-medium" style={{ color: 'var(--text-tertiary)' }}>Street Address</label>
+                  <p className="text-sm font-semibold mt-1" style={{ color: 'var(--text-primary)' }}>
+                    {onboardingData?.address?.street || 'Not provided'}
+                  </p>
                 </div>
-                <h3 className="text-base font-bold" style={{ color: 'var(--text-primary)' }}>Address</h3>
-              </div>
-              {onboardingData?.address ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5">
-                  <div>
-                    <label className="text-xs font-medium" style={{ color: 'var(--text-tertiary)' }}>Street Address</label>
-                    <p className="text-sm font-semibold mt-1" style={{ color: 'var(--text-primary)' }}>
-                      {onboardingData.address.street}
-                    </p>
-                  </div>
+                <div className="grid grid-cols-2 gap-2.5">
                   <div>
                     <label className="text-xs font-medium" style={{ color: 'var(--text-tertiary)' }}>City</label>
                     <p className="text-sm font-semibold mt-1" style={{ color: 'var(--text-primary)' }}>
-                      {onboardingData.address.city}
+                      {onboardingData?.address?.city || 'Not provided'}
                     </p>
                   </div>
                   <div>
                     <label className="text-xs font-medium" style={{ color: 'var(--text-tertiary)' }}>State</label>
                     <p className="text-sm font-semibold mt-1" style={{ color: 'var(--text-primary)' }}>
-                      {onboardingData.address.state}
+                      {onboardingData?.address?.state || 'Not provided'}
                     </p>
                   </div>
                   <div>
                     <label className="text-xs font-medium" style={{ color: 'var(--text-tertiary)' }}>ZIP Code</label>
                     <p className="text-sm font-semibold mt-1" style={{ color: 'var(--text-primary)' }}>
-                      {onboardingData.address.zipCode}
+                      {onboardingData?.address?.zipCode || 'Not provided'}
                     </p>
                   </div>
-                  <div className="md:col-span-2">
+                  <div>
                     <label className="text-xs font-medium" style={{ color: 'var(--text-tertiary)' }}>Country</label>
                     <p className="text-sm font-semibold mt-1" style={{ color: 'var(--text-primary)' }}>
-                      {onboardingData.address.country}
+                      {onboardingData?.address?.country || 'Not provided'}
                     </p>
                   </div>
                 </div>
-              ) : (
-                <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>No address information available</p>
-              )}
+              </div>
             </div>
           </div>
         </div>
@@ -1919,29 +1905,27 @@ export default function Profile() {
           </h3>
         </div>
         <div className="divide-y divide-white/5">
-          <div className="px-6 py-4 flex items-center justify-between hover:bg-white/5 transition-all">
+          <div className="px-6 py-4 flex items-center justify-between">
             <div className="flex-1">
               <p className="font-medium mb-1" style={{ color: 'var(--text-primary)' }}>Two-Factor Authentication</p>
-              <p className="text-sm" style={{ color: 'var(--text-tertiary)' }}>Add an extra layer of security to your account</p>
+              <p className="text-sm" style={{ color: 'var(--text-tertiary)' }}>Required for account security — cannot be disabled</p>
             </div>
-            <label className="relative inline-flex items-center cursor-pointer ml-4">
+            <label className="relative inline-flex items-center ml-4 opacity-60 cursor-not-allowed">
               <input
                 type="checkbox"
-                checked={settings.twoFactorAuth}
-                onChange={(e) => updateSettings('twoFactorAuth', e.target.checked)}
+                checked={true}
+                disabled
                 className="sr-only peer"
               />
-              <div className="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-gradient-to-r peer-checked:from-blue-500 peer-checked:to-purple-600"></div>
+              <div className="w-11 h-6 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all bg-gradient-to-r from-blue-500 to-purple-600"></div>
             </label>
           </div>
-          {settings.twoFactorAuth && (
-            <div className="px-6 py-3 bg-green-500/10">
-              <p className="text-sm text-green-400 flex items-center gap-2">
-                <Check className="w-4 h-4" />
-                Two-factor authentication is enabled
-              </p>
-            </div>
-          )}
+          <div className="px-6 py-3 bg-green-500/10">
+            <p className="text-sm text-green-400 flex items-center gap-2">
+              <Check className="w-4 h-4" />
+              Two-factor authentication is enabled
+            </p>
+          </div>
         </div>
       </div>
 

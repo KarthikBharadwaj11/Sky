@@ -9,8 +9,9 @@ interface PersonalDetailsStepProps {
 
 export default function PersonalDetailsStep({ data, onComplete }: PersonalDetailsStepProps) {
   const [formData, setFormData] = useState({
-    fullName: data.fullName || '',
-    email: data.email || '',
+    firstName: data.firstName || '',
+    middleName: data.middleName || '',
+    lastName: data.lastName || '',
     dateOfBirth: {
       month: data.dateOfBirth ? new Date(data.dateOfBirth).getMonth() + 1 : '',
       day: data.dateOfBirth ? new Date(data.dateOfBirth).getDate() : '',
@@ -30,16 +31,14 @@ export default function PersonalDetailsStep({ data, onComplete }: PersonalDetail
   const validateForm = () => {
     const newErrors: any = {};
     
-    if (!formData.fullName.trim()) {
-      newErrors.fullName = 'Full name is required';
+    if (!formData.firstName.trim()) {
+      newErrors.firstName = 'First name is required';
     }
-    
-    if (!formData.email.trim()) {
-      newErrors.email = 'Email is required';
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-      newErrors.email = 'Please enter a valid email address';
+
+    if (!formData.lastName.trim()) {
+      newErrors.lastName = 'Last name is required';
     }
-    
+
     if (!formData.dateOfBirth.month || !formData.dateOfBirth.day || !formData.dateOfBirth.year) {
       newErrors.dateOfBirth = 'Date of birth is required';
     } else {
@@ -179,40 +178,55 @@ export default function PersonalDetailsStep({ data, onComplete }: PersonalDetail
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Full Name */}
-          <div>
-            <label htmlFor="fullName" className="block text-sm font-medium mb-2" style={{ color: 'var(--text-secondary)' }}>
-              Full Name *
-            </label>
-            <input
-              id="fullName"
-              type="text"
-              className={`form-input ${errors.fullName ? 'border-red-500' : ''}`}
-              placeholder="Enter your full legal name"
-              value={formData.fullName}
-              onChange={(e) => handleInputChange('fullName', e.target.value)}
-            />
-            {errors.fullName && (
-              <p className="text-red-400 text-sm mt-1">{errors.fullName}</p>
-            )}
-          </div>
+          {/* Name Fields */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div>
+              <label htmlFor="firstName" className="block text-sm font-medium mb-2" style={{ color: 'var(--text-secondary)' }}>
+                First Name *
+              </label>
+              <input
+                id="firstName"
+                type="text"
+                className={`form-input ${errors.firstName ? 'border-red-500' : ''}`}
+                placeholder="First name"
+                value={formData.firstName}
+                onChange={(e) => handleInputChange('firstName', e.target.value)}
+              />
+              {errors.firstName && (
+                <p className="text-red-400 text-sm mt-1">{errors.firstName}</p>
+              )}
+            </div>
 
-          {/* Email */}
-          <div>
-            <label htmlFor="email" className="block text-sm font-medium mb-2" style={{ color: 'var(--text-secondary)' }}>
-              Email Address *
-            </label>
-            <input
-              id="email"
-              type="email"
-              className={`form-input ${errors.email ? 'border-red-500' : ''}`}
-              placeholder="Enter your email address"
-              value={formData.email}
-              onChange={(e) => handleInputChange('email', e.target.value)}
-            />
-            {errors.email && (
-              <p className="text-red-400 text-sm mt-1">{errors.email}</p>
-            )}
+            <div>
+              <label htmlFor="middleName" className="block text-sm font-medium mb-2" style={{ color: 'var(--text-secondary)' }}>
+                Middle Name
+              </label>
+              <input
+                id="middleName"
+                type="text"
+                className="form-input"
+                placeholder="Middle name"
+                value={formData.middleName}
+                onChange={(e) => handleInputChange('middleName', e.target.value)}
+              />
+            </div>
+
+            <div>
+              <label htmlFor="lastName" className="block text-sm font-medium mb-2" style={{ color: 'var(--text-secondary)' }}>
+                Last Name *
+              </label>
+              <input
+                id="lastName"
+                type="text"
+                className={`form-input ${errors.lastName ? 'border-red-500' : ''}`}
+                placeholder="Last name"
+                value={formData.lastName}
+                onChange={(e) => handleInputChange('lastName', e.target.value)}
+              />
+              {errors.lastName && (
+                <p className="text-red-400 text-sm mt-1">{errors.lastName}</p>
+              )}
+            </div>
           </div>
 
           {/* Date of Birth */}

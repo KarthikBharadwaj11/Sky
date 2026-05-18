@@ -23,8 +23,9 @@ export default function OnboardingPage() {
   const [currentStep, setCurrentStep] = useState(1);
   const [onboardingData, setOnboardingData] = useState({
     accountType: '',
-    fullName: '',
-    email: '',
+    firstName: '',
+    middleName: '',
+    lastName: '',
     dateOfBirth: '',
     address: {
       street: '',

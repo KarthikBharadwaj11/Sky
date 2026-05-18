@@ -10,9 +10,10 @@ interface AccountTypeAndBasicInfoProps {
 
 export default function AccountTypeAndBasicInfo({ data, onComplete, previewMode = false }: AccountTypeAndBasicInfoProps) {
   const [accountType, setAccountType] = useState(data.accountType || '');
-  const [fullName, setFullName] = useState(data.fullName || '');
+  const [firstName, setFirstName] = useState(data.firstName || '');
+  const [middleName, setMiddleName] = useState(data.middleName || '');
+  const [lastName, setLastName] = useState(data.lastName || '');
   const [dateOfBirth, setDateOfBirth] = useState(data.dateOfBirth || '');
-  const [email, setEmail] = useState(data.email || '');
   const [address, setAddress] = useState({
     street: data.address?.street || '',
     city: data.address?.city || '',
@@ -26,9 +27,10 @@ export default function AccountTypeAndBasicInfo({ data, onComplete, previewMode 
 
     onComplete({
       accountType,
-      fullName,
+      firstName,
+      middleName,
+      lastName,
       dateOfBirth,
-      email,
       address,
     });
   };
@@ -51,59 +53,73 @@ export default function AccountTypeAndBasicInfo({ data, onComplete, previewMode 
             </h3>
 
             <div className="space-y-6">
-              {/* Full Name */}
-              <div>
-                <label htmlFor="fullName" className="block text-base font-semibold mb-2" style={{ color: 'var(--text-secondary)' }}>
-                  Full Name <span className="text-red-400">*</span>
-                </label>
-                <input
-                  id="fullName"
-                  type="text"
-                  className={`form-input ${errors.fullName ? 'border-red-500' : ''}`}
-                  placeholder="Enter your full legal name"
-                  value={fullName}
-                  onChange={(e) => setFullName(e.target.value)}
-                />
-                {errors.fullName && (
-                  <p className="text-red-400 text-sm mt-1">{errors.fullName}</p>
-                )}
+              {/* Name Fields */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div>
+                  <label htmlFor="firstName" className="block text-base font-semibold mb-2" style={{ color: 'var(--text-secondary)' }}>
+                    First Name <span className="text-red-400">*</span>
+                  </label>
+                  <input
+                    id="firstName"
+                    type="text"
+                    className={`form-input ${errors.firstName ? 'border-red-500' : ''}`}
+                    placeholder="First name"
+                    value={firstName}
+                    onChange={(e) => setFirstName(e.target.value)}
+                  />
+                  {errors.firstName && (
+                    <p className="text-red-400 text-sm mt-1">{errors.firstName}</p>
+                  )}
+                </div>
+
+                <div>
+                  <label htmlFor="middleName" className="block text-base font-semibold mb-2" style={{ color: 'var(--text-secondary)' }}>
+                    Middle Name
+                  </label>
+                  <input
+                    id="middleName"
+                    type="text"
+                    className="form-input"
+                    placeholder="Middle name"
+                    value={middleName}
+                    onChange={(e) => setMiddleName(e.target.value)}
+                  />
+                </div>
+
+                <div>
+                  <label htmlFor="lastName" className="block text-base font-semibold mb-2" style={{ color: 'var(--text-secondary)' }}>
+                    Last Name <span className="text-red-400">*</span>
+                  </label>
+                  <input
+                    id="lastName"
+                    type="text"
+                    className={`form-input ${errors.lastName ? 'border-red-500' : ''}`}
+                    placeholder="Last name"
+                    value={lastName}
+                    onChange={(e) => setLastName(e.target.value)}
+                  />
+                  {errors.lastName && (
+                    <p className="text-red-400 text-sm mt-1">{errors.lastName}</p>
+                  )}
+                </div>
               </div>
 
-              {/* Date of Birth & Email */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <label htmlFor="dateOfBirth" className="block text-base font-semibold mb-2" style={{ color: 'var(--text-secondary)' }}>
-                    Date of Birth <span className="text-red-400">*</span>
-                  </label>
-                  <input
-                    id="dateOfBirth"
-                    type="date"
-                    className={`form-input ${errors.dateOfBirth ? 'border-red-500' : ''}`}
-                    value={dateOfBirth}
-                    onChange={(e) => setDateOfBirth(e.target.value)}
-                    max={new Date().toISOString().split('T')[0]}
-                  />
-                  {errors.dateOfBirth && (
-                    <p className="text-red-400 text-sm mt-1">{errors.dateOfBirth}</p>
-                  )}
-                </div>
-
-                <div>
-                  <label htmlFor="email" className="block text-base font-semibold mb-2" style={{ color: 'var(--text-secondary)' }}>
-                    Email Address <span className="text-red-400">*</span>
-                  </label>
-                  <input
-                    id="email"
-                    type="email"
-                    className={`form-input ${errors.email ? 'border-red-500' : ''}`}
-                    placeholder="your.email@example.com"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                  />
-                  {errors.email && (
-                    <p className="text-red-400 text-sm mt-1">{errors.email}</p>
-                  )}
-                </div>
+              {/* Date of Birth */}
+              <div className="md:w-1/3">
+                <label htmlFor="dateOfBirth" className="block text-base font-semibold mb-2" style={{ color: 'var(--text-secondary)' }}>
+                  Date of Birth <span className="text-red-400">*</span>
+                </label>
+                <input
+                  id="dateOfBirth"
+                  type="date"
+                  className={`form-input ${errors.dateOfBirth ? 'border-red-500' : ''}`}
+                  value={dateOfBirth}
+                  onChange={(e) => setDateOfBirth(e.target.value)}
+                  max={new Date().toISOString().split('T')[0]}
+                />
+                {errors.dateOfBirth && (
+                  <p className="text-red-400 text-sm mt-1">{errors.dateOfBirth}</p>
+                )}
               </div>
 
               {/* Address */}
