@@ -20,8 +20,6 @@ export default function AccountTypeAndBasicInfo({ data, onComplete, previewMode 
     state: data.address?.state || '',
     zipCode: data.address?.zipCode || '',
   });
-  const [errors, setErrors] = useState<any>({});
-
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -62,14 +60,11 @@ export default function AccountTypeAndBasicInfo({ data, onComplete, previewMode 
                   <input
                     id="firstName"
                     type="text"
-                    className={`form-input ${errors.firstName ? 'border-red-500' : ''}`}
+                    className="form-input"
                     placeholder="First name"
                     value={firstName}
                     onChange={(e) => setFirstName(e.target.value)}
                   />
-                  {errors.firstName && (
-                    <p className="text-red-400 text-sm mt-1">{errors.firstName}</p>
-                  )}
                 </div>
 
                 <div>
@@ -93,14 +88,11 @@ export default function AccountTypeAndBasicInfo({ data, onComplete, previewMode 
                   <input
                     id="lastName"
                     type="text"
-                    className={`form-input ${errors.lastName ? 'border-red-500' : ''}`}
+                    className="form-input"
                     placeholder="Last name"
                     value={lastName}
                     onChange={(e) => setLastName(e.target.value)}
                   />
-                  {errors.lastName && (
-                    <p className="text-red-400 text-sm mt-1">{errors.lastName}</p>
-                  )}
                 </div>
               </div>
 
@@ -112,14 +104,11 @@ export default function AccountTypeAndBasicInfo({ data, onComplete, previewMode 
                 <input
                   id="dateOfBirth"
                   type="date"
-                  className={`form-input ${errors.dateOfBirth ? 'border-red-500' : ''}`}
+                  className="form-input"
                   value={dateOfBirth}
                   onChange={(e) => setDateOfBirth(e.target.value)}
                   max={new Date().toISOString().split('T')[0]}
                 />
-                {errors.dateOfBirth && (
-                  <p className="text-red-400 text-sm mt-1">{errors.dateOfBirth}</p>
-                )}
               </div>
 
               {/* Address */}
@@ -130,14 +119,11 @@ export default function AccountTypeAndBasicInfo({ data, onComplete, previewMode 
                 <input
                   id="street"
                   type="text"
-                  className={`form-input ${errors.street ? 'border-red-500' : ''}`}
+                  className="form-input"
                   placeholder="123 Main Street"
                   value={address.street}
                   onChange={(e) => setAddress({ ...address, street: e.target.value })}
                 />
-                {errors.street && (
-                  <p className="text-red-400 text-sm mt-1">{errors.street}</p>
-                )}
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -148,14 +134,11 @@ export default function AccountTypeAndBasicInfo({ data, onComplete, previewMode 
                   <input
                     id="city"
                     type="text"
-                    className={`form-input ${errors.city ? 'border-red-500' : ''}`}
+                    className="form-input"
                     placeholder="New York"
                     value={address.city}
                     onChange={(e) => setAddress({ ...address, city: e.target.value })}
                   />
-                  {errors.city && (
-                    <p className="text-red-400 text-sm mt-1">{errors.city}</p>
-                  )}
                 </div>
 
                 <div>
@@ -165,14 +148,11 @@ export default function AccountTypeAndBasicInfo({ data, onComplete, previewMode 
                   <input
                     id="state"
                     type="text"
-                    className={`form-input ${errors.state ? 'border-red-500' : ''}`}
+                    className="form-input"
                     placeholder="NY"
                     value={address.state}
                     onChange={(e) => setAddress({ ...address, state: e.target.value })}
                   />
-                  {errors.state && (
-                    <p className="text-red-400 text-sm mt-1">{errors.state}</p>
-                  )}
                 </div>
 
                 <div>
@@ -182,14 +162,11 @@ export default function AccountTypeAndBasicInfo({ data, onComplete, previewMode 
                   <input
                     id="zipCode"
                     type="text"
-                    className={`form-input ${errors.zipCode ? 'border-red-500' : ''}`}
+                    className="form-input"
                     placeholder="10001"
                     value={address.zipCode}
                     onChange={(e) => setAddress({ ...address, zipCode: e.target.value })}
                   />
-                  {errors.zipCode && (
-                    <p className="text-red-400 text-sm mt-1">{errors.zipCode}</p>
-                  )}
                 </div>
               </div>
             </div>

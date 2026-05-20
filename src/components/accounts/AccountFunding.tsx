@@ -1,11 +1,10 @@
 'use client';
 
 import { useState } from 'react';
-import { Building2, CreditCard, Upload, RefreshCw, ArrowRight, Copy, Check, AlertCircle } from 'lucide-react';
+import { Upload, ArrowRight } from 'lucide-react';
 
 interface AccountFundingProps {
   accountType: string;
-  accountNumber?: string;
   onComplete: (method: string, data: any) => void;
   onSkip?: () => void;
   showSkipOption?: boolean;
@@ -13,13 +12,11 @@ interface AccountFundingProps {
 
 export default function AccountFunding({
   accountType,
-  accountNumber,
   onComplete,
   onSkip,
   showSkipOption = true
 }: AccountFundingProps) {
   const [selectedMethod, setSelectedMethod] = useState<'wire' | 'ach' | 'check' | 'rollover' | 'debit' | null>(null);
-  const [copiedWireInfo, setCopiedWireInfo] = useState(false);
   const [achFormData, setAchFormData] = useState({
     routingNumber: '',
     accountNumber: '',
@@ -31,6 +28,14 @@ export default function AccountFunding({
     accountNumber: '',
     accountType: '',
     estimatedValue: ''
+  });
+  const [wireData, setWireData] = useState({
+    bankName: '',
+    routingNumber: '',
+    accountNumber: '',
+    swiftCode: '',
+    beneficiaryName: '',
+    reference: '',
   });
   const [debitCardData, setDebitCardData] = useState({
     cardNumber: '',
@@ -44,74 +49,31 @@ export default function AccountFunding({
   const fundingMethods = [
     {
       id: 'debit' as const,
-      icon: CreditCard,
       title: 'Debit Card',
       description: 'Instant funding with your debit card',
-      time: 'Instant',
-      fee: 'Free',
-      color: 'from-blue-500 to-purple-500'
     },
     {
       id: 'wire' as const,
-      icon: Building2,
       title: 'Wire Transfer',
       description: 'Same-day transfer from your bank',
-      time: 'Same day',
-      fee: 'May vary by bank',
-      color: 'from-blue-500 to-cyan-500'
     },
     {
       id: 'ach' as const,
-      icon: CreditCard,
       title: 'Bank Transfer (ACH)',
       description: 'Link your bank account for transfers',
-      time: '3-5 business days',
-      fee: 'Free',
-      color: 'from-green-500 to-emerald-500'
     },
     {
       id: 'check' as const,
-      icon: Upload,
       title: 'Check Deposit',
       description: 'Upload a photo of your check',
-      time: '3-5 business days',
-      fee: 'Free',
-      color: 'from-purple-500 to-pink-500'
     },
     {
       id: 'rollover' as const,
-      icon: RefreshCw,
       title: 'Account Rollover',
       description: 'Transfer from another brokerage',
-      time: '5-7 business days',
-      fee: 'Free',
-      color: 'from-orange-500 to-red-500'
     }
   ];
 
-  const wireInfo = {
-    bankName: 'Apex Clearing Corporation',
-    routingNumber: '021000021',
-    accountNumber: accountNumber || 'XXXXXXXXXX',
-    swiftCode: 'APEXUS33',
-    beneficiaryName: 'Your Trading Platform LLC',
-    reference: `Account: ${accountNumber || 'TBD'}`
-  };
-
-  const handleCopyWireInfo = () => {
-    const wireText = `
-Bank Name: ${wireInfo.bankName}
-Routing Number: ${wireInfo.routingNumber}
-Account Number: ${wireInfo.accountNumber}
-SWIFT Code: ${wireInfo.swiftCode}
-Beneficiary: ${wireInfo.beneficiaryName}
-Reference: ${wireInfo.reference}
-    `.trim();
-
-    navigator.clipboard.writeText(wireText);
-    setCopiedWireInfo(true);
-    setTimeout(() => setCopiedWireInfo(false), 2000);
-  };
 
   const renderMethodDetails = () => {
     switch (selectedMethod) {
@@ -220,20 +182,9 @@ Reference: ${wireInfo.reference}
               </div>
             </div>
 
-            <div className="flex items-start gap-3 p-4 rounded-xl" style={{ background: 'rgba(59, 130, 246, 0.1)' }}>
-              <AlertCircle className="w-5 h-5 text-blue-400 flex-shrink-0 mt-0.5" />
-              <div>
-                <p className="text-sm font-semibold text-blue-400 mb-1">Instant Funding</p>
-                <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>
-                  Funds will be available immediately in your account. We only accept debit cards, not credit cards.
-                </p>
-              </div>
-            </div>
-
             <button
               onClick={() => onComplete('debit', debitCardData)}
-              disabled={!debitCardData.cardNumber || !debitCardData.expirationDate || !debitCardData.cvv || !debitCardData.cardholderName || !debitCardData.billingZip || !debitCardData.amount}
-              className="w-full btn-primary py-4 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full btn-primary py-4"
             >
               Add Funds
             </button>
@@ -245,71 +196,56 @@ Reference: ${wireInfo.reference}
           <div className="space-y-6">
             <div className="glass-morphism p-6 rounded-xl">
               <h3 className="text-lg font-bold mb-4" style={{ color: 'var(--text-primary)' }}>
-                Wire Transfer Instructions
+                Wire Transfer Details
               </h3>
-
               <div className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <p className="text-xs font-semibold mb-1" style={{ color: 'var(--text-tertiary)' }}>Bank Name</p>
-                    <p className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>{wireInfo.bankName}</p>
-                  </div>
-                  <div>
-                    <p className="text-xs font-semibold mb-1" style={{ color: 'var(--text-tertiary)' }}>Routing Number</p>
-                    <p className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>{wireInfo.routingNumber}</p>
+                    <label className="block text-sm font-semibold mb-2" style={{ color: 'var(--text-secondary)' }}>Bank Name</label>
+                    <input type="text" placeholder="e.g. Chase, Bank of America" className="form-input"
+                      value={wireData.bankName} onChange={(e) => setWireData({ ...wireData, bankName: e.target.value })} />
                   </div>
                   <div>
-                    <p className="text-xs font-semibold mb-1" style={{ color: 'var(--text-tertiary)' }}>Account Number</p>
-                    <p className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>{wireInfo.accountNumber}</p>
+                    <label className="block text-sm font-semibold mb-2" style={{ color: 'var(--text-secondary)' }}>Routing Number</label>
+                    <input type="text" placeholder="9-digit routing number" maxLength={9} className="form-input"
+                      value={wireData.routingNumber} onChange={(e) => setWireData({ ...wireData, routingNumber: e.target.value.replace(/\D/g, '') })} />
                   </div>
                   <div>
-                    <p className="text-xs font-semibold mb-1" style={{ color: 'var(--text-tertiary)' }}>SWIFT Code</p>
-                    <p className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>{wireInfo.swiftCode}</p>
+                    <label className="block text-sm font-semibold mb-2" style={{ color: 'var(--text-secondary)' }}>Account Number</label>
+                    <input type="text" placeholder="Your bank account number" className="form-input"
+                      value={wireData.accountNumber} onChange={(e) => setWireData({ ...wireData, accountNumber: e.target.value })} />
                   </div>
-                  <div className="col-span-2">
-                    <p className="text-xs font-semibold mb-1" style={{ color: 'var(--text-tertiary)' }}>Beneficiary</p>
-                    <p className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>{wireInfo.beneficiaryName}</p>
+                  <div>
+                    <label className="block text-sm font-semibold mb-2" style={{ color: 'var(--text-secondary)' }}>SWIFT / BIC Code</label>
+                    <input type="text" placeholder="e.g. CHASUS33" className="form-input"
+                      value={wireData.swiftCode} onChange={(e) => setWireData({ ...wireData, swiftCode: e.target.value })} />
                   </div>
-                  <div className="col-span-2">
-                    <p className="text-xs font-semibold mb-1" style={{ color: 'var(--text-tertiary)' }}>Reference (Important)</p>
-                    <p className="text-sm font-medium text-blue-400">{wireInfo.reference}</p>
+                  <div className="md:col-span-2">
+                    <label className="block text-sm font-semibold mb-2" style={{ color: 'var(--text-secondary)' }}>Beneficiary Name</label>
+                    <input type="text" placeholder="Name on the account" className="form-input"
+                      value={wireData.beneficiaryName} onChange={(e) => setWireData({ ...wireData, beneficiaryName: e.target.value })} />
+                  </div>
+                  <div className="md:col-span-2">
+                    <label className="block text-sm font-semibold mb-2" style={{ color: 'var(--text-secondary)' }}>Reference / Memo</label>
+                    <input type="text" placeholder="Optional reference for the transfer" className="form-input"
+                      value={wireData.reference} onChange={(e) => setWireData({ ...wireData, reference: e.target.value })} />
                   </div>
                 </div>
-
-                <button
-                  onClick={handleCopyWireInfo}
-                  className="w-full btn-secondary py-3 flex items-center justify-center gap-2"
-                >
-                  {copiedWireInfo ? (
-                    <>
-                      <Check className="w-5 h-5" />
-                      Copied!
-                    </>
-                  ) : (
-                    <>
-                      <Copy className="w-5 h-5" />
-                      Copy Wire Instructions
-                    </>
-                  )}
-                </button>
               </div>
             </div>
 
             <div className="flex items-start gap-3 p-4 rounded-xl" style={{ background: 'rgba(59, 130, 246, 0.1)' }}>
               <AlertCircle className="w-5 h-5 text-blue-400 flex-shrink-0 mt-0.5" />
-              <div>
-                <p className="text-sm font-semibold text-blue-400 mb-1">Important</p>
-                <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>
-                  Contact your bank to initiate the wire transfer. Include your account number in the reference field to ensure proper crediting.
-                </p>
-              </div>
+              <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>
+                Contact your bank to initiate the wire transfer. Include the reference field to ensure proper crediting.
+              </p>
             </div>
 
             <button
-              onClick={() => onComplete('wire', wireInfo)}
+              onClick={() => onComplete('wire', wireData)}
               className="w-full btn-primary py-4"
             >
-              I've Initiated the Wire Transfer
+              Submit Wire Transfer
             </button>
           </div>
         );
@@ -396,8 +332,7 @@ Reference: ${wireInfo.reference}
 
             <button
               onClick={() => onComplete('ach', achFormData)}
-              disabled={!achFormData.routingNumber || !achFormData.accountNumber || !achFormData.amount}
-              className="w-full btn-primary py-4 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full btn-primary py-4"
             >
               Link Bank & Transfer
             </button>
@@ -431,16 +366,6 @@ Reference: ${wireInfo.reference}
                     Choose Files
                   </button>
                 </div>
-              </div>
-            </div>
-
-            <div className="flex items-start gap-3 p-4 rounded-xl" style={{ background: 'rgba(245, 158, 11, 0.1)' }}>
-              <AlertCircle className="w-5 h-5 text-yellow-400 flex-shrink-0 mt-0.5" />
-              <div>
-                <p className="text-sm font-semibold text-yellow-400 mb-1">Review Time</p>
-                <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>
-                  Check deposits are typically reviewed within 1 business day. Funds will be available in 3-5 business days.
-                </p>
               </div>
             </div>
 
@@ -521,20 +446,9 @@ Reference: ${wireInfo.reference}
               </div>
             </div>
 
-            <div className="flex items-start gap-3 p-4 rounded-xl" style={{ background: 'rgba(59, 130, 246, 0.1)' }}>
-              <AlertCircle className="w-5 h-5 text-blue-400 flex-shrink-0 mt-0.5" />
-              <div>
-                <p className="text-sm font-semibold text-blue-400 mb-1">Next Steps</p>
-                <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>
-                  We'll contact your previous brokerage to initiate the transfer. You may also need to complete forms from your previous firm.
-                </p>
-              </div>
-            </div>
-
             <button
               onClick={() => onComplete('rollover', rolloverData)}
-              disabled={!rolloverData.previousBroker || !rolloverData.accountNumber || !rolloverData.accountType}
-              className="w-full btn-primary py-4 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full btn-primary py-4"
             >
               Initiate Account Rollover
             </button>
@@ -584,41 +498,25 @@ Reference: ${wireInfo.reference}
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {fundingMethods.map((method) => {
-          const Icon = method.icon;
-          return (
+        {fundingMethods.map((method) => (
             <button
               key={method.id}
               onClick={() => setSelectedMethod(method.id)}
               className="card hover:border-blue-500 transition-all text-left group"
             >
               <div className="card-body">
-                <div className="flex items-start gap-3 mb-3">
-                  <Icon className="w-5 h-5 flex-shrink-0 mt-0.5" style={{ color: 'var(--text-secondary)' }} />
-                  <div className="flex-1">
-                    <h3 className="text-base font-bold mb-1" style={{ color: 'var(--text-primary)' }}>
-                      {method.title}
-                    </h3>
-                    <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>
-                      {method.description}
-                    </p>
-                  </div>
+                <div className="mb-3">
+                  <h3 className="text-base font-bold mb-1" style={{ color: 'var(--text-primary)' }}>
+                    {method.title}
+                  </h3>
+                  <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>
+                    {method.description}
+                  </p>
                 </div>
 
-                <div className="flex items-center justify-between text-xs ml-8">
-                  <div>
-                    <span style={{ color: 'var(--text-tertiary)' }}>Time: </span>
-                    <span className="font-medium" style={{ color: 'var(--text-primary)' }}>{method.time}</span>
-                  </div>
-                  <div>
-                    <span style={{ color: 'var(--text-tertiary)' }}>Fee: </span>
-                    <span className="font-medium text-green-400">{method.fee}</span>
-                  </div>
-                </div>
               </div>
             </button>
-          );
-        })}
+        ))}
       </div>
 
       {showSkipOption && onSkip && (

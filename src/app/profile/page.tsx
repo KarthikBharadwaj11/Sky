@@ -2253,28 +2253,6 @@ export default function Profile() {
           })}
         </nav>
 
-        {/* Account Summary */}
-        <div className="mt-6 space-y-3">
-          <h3 className="text-base font-bold" style={{ color: 'var(--text-primary)' }}>Account Summary</h3>
-          <div className="space-y-2.5">
-            <div className="glass-morphism p-3 rounded-lg">
-              <div className="flex items-center justify-between">
-                <span className="text-xs" style={{ color: 'var(--text-tertiary)' }}>Cash Balance</span>
-                <span className="font-bold text-base" style={{ color: 'var(--success)' }}>
-                  ${user.balance.toFixed(2)}
-                </span>
-              </div>
-            </div>
-            <div className="glass-morphism p-3 rounded-lg">
-              <div className="flex items-center justify-between">
-                <span className="text-xs" style={{ color: 'var(--text-tertiary)' }}>Account Type</span>
-                <span className="font-bold text-xs" style={{ color: 'var(--text-accent)' }}>
-                  {onboardingData?.accountType || 'Standard'}
-                </span>
-              </div>
-            </div>
-          </div>
-        </div>
       </div>
 
       {/* Main Content */}

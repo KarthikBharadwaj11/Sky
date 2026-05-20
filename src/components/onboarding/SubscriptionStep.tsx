@@ -272,10 +272,6 @@ export default function SubscriptionStep({ onComplete, onSkip }: SubscriptionSte
                   <Check className="w-4 h-4 text-green-400 flex-shrink-0" />
                   <span>Basic trading features</span>
                 </li>
-                <li className="flex items-center gap-2 text-sm" style={{ color: 'var(--text-secondary)' }}>
-                  <Check className="w-4 h-4 text-green-400 flex-shrink-0" />
-                  <span>Paper trading</span>
-                </li>
                 <li className="flex items-center gap-2 text-sm" style={{ color: 'var(--text-tertiary)' }}>
                   <X className="w-4 h-4 text-red-400 flex-shrink-0" />
                   <span>Copy Trading</span>

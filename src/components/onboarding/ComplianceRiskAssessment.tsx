@@ -15,7 +15,6 @@ export default function ComplianceRiskAssessment({ data, onComplete, previewMode
     termsOfService: data.agreements?.termsOfService || false,
     privacyPolicy: data.agreements?.privacyPolicy || false,
   });
-  const [errors, setErrors] = useState<any>({});
 
   const riskLevels = [
     {
@@ -159,9 +158,6 @@ export default function ComplianceRiskAssessment({ data, onComplete, previewMode
                 );
               })}
             </div>
-            {errors.riskTolerance && (
-              <p className="text-red-400 text-sm mt-2">{errors.riskTolerance}</p>
-            )}
           </div>
 
           {/* Info Box */}
@@ -230,9 +226,6 @@ export default function ComplianceRiskAssessment({ data, onComplete, previewMode
                 </div>
               ))}
             </div>
-            {errors.agreements && (
-              <p className="text-red-400 text-sm mt-2">{errors.agreements}</p>
-            )}
 
             {/* Agreement Status */}
             <div className={`mt-4 p-4 rounded-lg border ${

@@ -19,7 +19,6 @@ import {
   DollarSign,
   ArrowRight,
   Quote,
-  ScrollText,
   GraduationCap,
   Newspaper,
   Copy
@@ -51,11 +50,6 @@ export default function LandingPage() {
       icon: <Smartphone className="w-8 h-8" />,
       title: "Mobile Trading",
       description: "Total market access, 24/7. Built for your phone, tablet, or desktop."
-    },
-    {
-      icon: <ScrollText className="w-8 h-8" />,
-      title: "Paper Trading",
-      description: "Practice with $100,000 in virtual money using live market data. Build confidence and refine your strategy before going live."
     },
     {
       icon: <GraduationCap className="w-8 h-8" />,
