@@ -18,6 +18,8 @@ interface LineChartProps {
   showXAxis?: boolean;
   minimalistic?: boolean;
   enableZoom?: boolean;
+  disableTooltip?: boolean;
+  hideLine?: boolean;
 }
 
 const CustomTooltip = ({ active, payload, label, color }: any) => {
@@ -91,7 +93,9 @@ export default function CustomLineChart({
   showGrid = true,
   showXAxis = true,
   minimalistic = false,
-  enableZoom = false
+  enableZoom = false,
+  disableTooltip = false,
+  hideLine = false,
 }: LineChartProps) {
   const [hoveredValue, setHoveredValue] = useState<number | null>(null);
 
@@ -143,10 +147,12 @@ export default function CustomLineChart({
             tickLine={minimalistic ? false : { stroke: 'var(--chart-grid)', strokeWidth: 1 }}
             tickFormatter={minimalistic ? () => '' : (value) => `$${(value / 1000).toFixed(0)}k`}
           />
-          <Tooltip
-            content={<CustomTooltip color={color} />}
-            cursor={!minimalistic ? <CustomCursor color={color} /> : false}
-          />
+          {!disableTooltip && (
+            <Tooltip
+              content={<CustomTooltip color={color} />}
+              cursor={!minimalistic ? <CustomCursor color={color} /> : false}
+            />
+          )}
           <defs>
             <linearGradient id={`gradient-${color.replace('#', '')}`} x1="0" y1="0" x2="0" y2="1">
               <stop offset="0%" stopColor={color} stopOpacity={0.4}/>
@@ -170,11 +176,11 @@ export default function CustomLineChart({
           <Line
             type="monotone"
             dataKey="value"
-            stroke={color}
+            stroke={hideLine ? 'transparent' : color}
             strokeWidth={minimalistic ? 2 : 3}
             fill={minimalistic ? 'none' : `url(#gradient-${color.replace('#', '')})`}
             dot={false}
-            activeDot={{
+            activeDot={disableTooltip ? false : {
               r: minimalistic ? 4 : 6,
               stroke: color,
               strokeWidth: 3,

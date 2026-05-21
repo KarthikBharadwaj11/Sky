@@ -1,7 +1,7 @@
 'use client';
 
 import { useAuth } from '../auth/AuthProvider';
-import { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import LineChart from '../charts/LineChart';
 import AreaChart from '../charts/AreaChart';
 import ComparisonChart from '../charts/ComparisonChart';
@@ -35,24 +35,16 @@ export default function OverviewDashboard() {
   const [comparisonData, setComparisonData] = useState<{ name: string; userPerformance: number; marketPerformance: number }[]>([]);
   const [selectedTimeframe, setSelectedTimeframe] = useState<string>('30d');
   const [selectedComparisonTimeframe, setSelectedComparisonTimeframe] = useState<string>('30d');
-  const [watchlist, setWatchlist] = useState<Stock[]>([]);
   const [marketMovers, setMarketMovers] = useState<{ gainers: Stock[]; losers: Stock[]; mostActive: Stock[] }>({gainers: [], losers: [], mostActive: []});
   const [selectedMoverTab, setSelectedMoverTab] = useState<'gainers' | 'losers' | 'mostActive'>('gainers');
   const [recentActivities, setRecentActivities] = useState<any[]>([]);
   const [isPortfolioLoading, setIsPortfolioLoading] = useState(true);
   const [selectedStock, setSelectedStock] = useState<Holding | null>(null);
   const [showTradingModal, setShowTradingModal] = useState(false);
-  const [watchlists, setWatchlists] = useState<{ name: string; stocks: Stock[] }[]>([]);
-  const [activeWatchlistIndex, setActiveWatchlistIndex] = useState(0);
-  const [showWatchlistManager, setShowWatchlistManager] = useState(false);
-  const [newWatchlistName, setNewWatchlistName] = useState('');
-  const [showAddStock, setShowAddStock] = useState(false);
   const [marketOverview, setMarketOverview] = useState<{ topStocks: Stock[]; us: Stock[]; international: Stock[]; commodities: Stock[] }>({ topStocks: [], us: [], international: [], commodities: [] });
   const [selectedMarketTab, setSelectedMarketTab] = useState<'topStocks' | 'us' | 'international' | 'commodities'>('topStocks');
-  const [searchQuery, setSearchQuery] = useState('');
-  const [searchResults, setSearchResults] = useState<Stock[]>([]);
-  const [showSearchResults, setShowSearchResults] = useState(false);
-  const searchRef = useRef<HTMLDivElement>(null);
+  const [plMode, setPlMode] = useState<'cumulative' | 'daily'>('cumulative');
+  const [calendarMonth, setCalendarMonth] = useState('May 2026');
 
   // Mini sparkline component
   const MiniSparkline = ({ data, color }: { data: number[], color: string }) => {
@@ -79,31 +71,6 @@ export default function OverviewDashboard() {
     );
   };
 
-  // All available stocks for search
-  const allStocks: Stock[] = [
-    { symbol: 'AAPL', name: 'Apple Inc.', price: 175.43, change: 2.15, changePercent: 1.24 },
-    { symbol: 'TSLA', name: 'Tesla Inc.', price: 248.42, change: -5.23, changePercent: -2.06 },
-    { symbol: 'META', name: 'Meta Platforms', price: 644.23, change: -2.45, changePercent: -0.38 },
-    { symbol: 'GOOGL', name: 'Alphabet Inc.', price: 138.21, change: -1.32, changePercent: -0.95 },
-    { symbol: 'NFLX', name: 'Netflix Inc.', price: 95.98, change: -8.12, changePercent: -7.80 },
-    { symbol: 'NVDA', name: 'NVIDIA Corp.', price: 180.00, change: -2.85, changePercent: -1.55 },
-    { symbol: 'MSFT', name: 'Microsoft Corp.', price: 378.85, change: 4.12, changePercent: 1.10 },
-    { symbol: 'AMZN', name: 'Amazon.com Inc.', price: 127.74, change: 1.89, changePercent: 1.50 },
-    { symbol: 'AMD', name: 'Advanced Micro Devices', price: 210.50, change: 3.21, changePercent: 1.55 },
-    { symbol: 'RIVN', name: 'Rivian Automotive', price: 18.92, change: 2.12, changePercent: 12.61 }
-  ];
-
-  // Handle click outside search
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
-        setShowSearchResults(false);
-      }
-    };
-
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
 
   useEffect(() => {
     setTopStocks([
@@ -112,47 +79,6 @@ export default function OverviewDashboard() {
       { symbol: 'MSFT', name: 'Microsoft Corp.', price: 378.85, change: 4.12, changePercent: 1.10 },
       { symbol: 'TSLA', name: 'Tesla Inc.', price: 248.42, change: -5.23, changePercent: -2.06 },
       { symbol: 'AMZN', name: 'Amazon.com Inc.', price: 127.74, change: 1.89, changePercent: 1.50 }
-    ]);
-
-    // Initialize watchlists from localStorage or create default
-    const savedWatchlists = localStorage.getItem(`watchlists_${user?.id}`);
-    if (savedWatchlists) {
-      const parsed = JSON.parse(savedWatchlists);
-      setWatchlists(parsed);
-    } else {
-      // Create default watchlist
-      const defaultWatchlists = [
-        {
-          name: 'My Watchlist',
-          stocks: [
-            { symbol: 'NVDA', name: 'NVIDIA Corp.', price: 180.00, change: -2.85, changePercent: -1.55 },
-            { symbol: 'META', name: 'Meta Platforms', price: 644.23, change: -2.45, changePercent: -0.38 },
-            { symbol: 'AMD', name: 'Advanced Micro Devices', price: 210.50, change: 3.21, changePercent: 1.55 },
-            { symbol: 'NFLX', name: 'Netflix Inc.', price: 95.98, change: -8.12, changePercent: -7.80 }
-          ]
-        },
-        {
-          name: 'Tech Stocks',
-          stocks: [
-            { symbol: 'AAPL', name: 'Apple Inc.', price: 175.43, change: 2.15, changePercent: 1.24 },
-            { symbol: 'MSFT', name: 'Microsoft Corp.', price: 378.85, change: 4.12, changePercent: 1.10 },
-            { symbol: 'GOOGL', name: 'Alphabet Inc.', price: 138.21, change: -1.32, changePercent: -0.95 },
-            { symbol: 'AMZN', name: 'Amazon.com Inc.', price: 127.74, change: 1.89, changePercent: 1.50 }
-          ]
-        }
-      ];
-      setWatchlists(defaultWatchlists);
-      if (user) {
-        localStorage.setItem(`watchlists_${user.id}`, JSON.stringify(defaultWatchlists));
-      }
-    }
-
-    // Backward compatibility with old watchlist
-    setWatchlist([
-      { symbol: 'NVDA', name: 'NVIDIA Corp.', price: 180.00, change: -2.85, changePercent: -1.55 },
-      { symbol: 'META', name: 'Meta Platforms', price: 644.23, change: -2.45, changePercent: -0.38 },
-      { symbol: 'AMD', name: 'Advanced Micro Devices', price: 210.50, change: 3.21, changePercent: 1.55 },
-      { symbol: 'NFLX', name: 'Netflix Inc.', price: 95.98, change: -8.12, changePercent: -7.80 }
     ]);
 
     // Market Movers
@@ -458,430 +384,174 @@ export default function OverviewDashboard() {
     setShowTradingModal(true);
   };
 
-  // Watchlist management functions
-  const createNewWatchlist = () => {
-    if (!newWatchlistName.trim()) return;
-
-    const newWatchlists = [...watchlists, { name: newWatchlistName, stocks: [] }];
-    setWatchlists(newWatchlists);
-    if (user) {
-      localStorage.setItem(`watchlists_${user.id}`, JSON.stringify(newWatchlists));
-    }
-    setNewWatchlistName('');
-    setShowWatchlistManager(false);
-    setActiveWatchlistIndex(newWatchlists.length - 1);
-  };
-
-  const deleteWatchlist = (index: number) => {
-    if (watchlists.length <= 1) {
-      alert('You must have at least one watchlist');
-      return;
-    }
-
-    const newWatchlists = watchlists.filter((_, i) => i !== index);
-    setWatchlists(newWatchlists);
-    if (user) {
-      localStorage.setItem(`watchlists_${user.id}`, JSON.stringify(newWatchlists));
-    }
-    if (activeWatchlistIndex >= newWatchlists.length) {
-      setActiveWatchlistIndex(newWatchlists.length - 1);
-    }
-  };
-
-  const removeFromWatchlist = (stockSymbol: string) => {
-    const updatedWatchlists = [...watchlists];
-    updatedWatchlists[activeWatchlistIndex].stocks = updatedWatchlists[activeWatchlistIndex].stocks.filter(
-      s => s.symbol !== stockSymbol
-    );
-    setWatchlists(updatedWatchlists);
-    if (user) {
-      localStorage.setItem(`watchlists_${user.id}`, JSON.stringify(updatedWatchlists));
-    }
-  };
-
-  const currentWatchlist = watchlists[activeWatchlistIndex] || { name: 'My Watchlist', stocks: [] };
-
-  // Handle search
-  const handleSearch = (query: string) => {
-    setSearchQuery(query);
-    if (query.trim() === '') {
-      setSearchResults([]);
-      setShowSearchResults(false);
-      return;
-    }
-
-    const results = allStocks.filter(stock =>
-      stock.symbol.toLowerCase().includes(query.toLowerCase()) ||
-      stock.name.toLowerCase().includes(query.toLowerCase())
-    );
-    setSearchResults(results);
-    setShowSearchResults(true);
-  };
-
-  const handleSelectStock = (stock: Stock) => {
-    setSearchQuery('');
-    setShowSearchResults(false);
-    // For now, just close the search - functionality to be added later
-  };
 
   return (
     <div className="flex min-h-screen">
-      {/* Left Sidebar - Watchlist - Fixed */}
-      <div className="w-[20.8rem] glass-morphism border-r border-white/10 fixed left-0 top-[143px] h-[calc(100vh-143px)] overflow-hidden z-20 flex flex-col">
-        {/* Watchlist Header */}
-        <div className="p-4 border-b border-white/10">
-          <div className="flex items-center justify-between mb-3">
-            <h2 className="text-xl font-bold" style={{ color: 'var(--text-primary)' }}>
-              Watchlists
-            </h2>
-            <button
-              onClick={() => setShowWatchlistManager(!showWatchlistManager)}
-              className="p-1.5 rounded-lg glass-morphism hover:bg-white/10 transition-all duration-200"
-              style={{ color: 'var(--text-secondary)' }}
-            >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
-              </svg>
-            </button>
-          </div>
-
-          {/* Watchlist Tabs */}
-          <div className="flex gap-1 overflow-x-auto hide-scrollbar">
-            {watchlists.map((wl, index) => (
-              <button
-                key={index}
-                onClick={() => setActiveWatchlistIndex(index)}
-                className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all duration-200 whitespace-nowrap ${
-                  activeWatchlistIndex === index
-                    ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white'
-                    : 'glass-morphism hover:bg-white/5'
-                }`}
-                style={activeWatchlistIndex !== index ? { color: 'var(--text-secondary)' } : {}}
-              >
-                {wl.name}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Watchlist Manager Modal */}
-        {showWatchlistManager && (
-          <div className="p-4 border-b border-white/10 glass-morphism">
-            <h3 className="text-sm font-bold mb-3" style={{ color: 'var(--text-primary)' }}>Manage Watchlists</h3>
-            <div className="space-y-2 mb-3">
-              {watchlists.map((wl, index) => (
-                <div key={index} className="flex items-center justify-between p-2 rounded-lg glass-morphism">
-                  <span className="text-sm" style={{ color: 'var(--text-secondary)' }}>{wl.name}</span>
-                  {watchlists.length > 1 && (
-                    <button
-                      onClick={() => deleteWatchlist(index)}
-                      className="p-1 rounded hover:bg-red-500/20 transition-colors"
-                    >
-                      <svg className="w-4 h-4 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                      </svg>
-                    </button>
-                  )}
-                </div>
-              ))}
-            </div>
-            <div className="flex gap-2">
-              <input
-                type="text"
-                value={newWatchlistName}
-                onChange={(e) => setNewWatchlistName(e.target.value)}
-                placeholder="New watchlist name"
-                className="flex-1 px-3 py-2 rounded-lg text-sm glass-morphism border border-white/10 focus:border-blue-500/50 outline-none"
-                style={{ color: 'var(--text-primary)' }}
-              />
-              <button
-                onClick={createNewWatchlist}
-                disabled={!newWatchlistName.trim()}
-                className="px-3 py-2 rounded-lg text-sm font-medium bg-gradient-to-r from-blue-500 to-purple-600 text-white disabled:opacity-50 disabled:cursor-not-allowed hover:from-blue-600 hover:to-purple-700 transition-all"
-              >
-                Add
-              </button>
-            </div>
-          </div>
-        )}
-
-        {/* Stocks List */}
-        <div className="flex-1 overflow-y-auto p-4">
-          {currentWatchlist.stocks.length > 0 ? (
-            <div className="space-y-3">
-              {currentWatchlist.stocks.map((stock) => (
-                <div key={stock.symbol} className="glass-morphism rounded-xl border border-white/5 hover:border-blue-500/30 transition-all duration-200 overflow-hidden">
-                  <Link href={`/stock/${stock.symbol.toLowerCase()}`}>
-                    <div className="p-4 hover:bg-white/5 transition-colors">
-                      <div className="flex items-start justify-between mb-2">
-                        <div className="flex-1">
-                          <div className="flex items-center gap-2 mb-1">
-                            <span className="text-base font-bold" style={{ color: 'var(--text-primary)' }}>
-                              {stock.symbol}
-                            </span>
-                            <span className={`text-xs font-bold px-2 py-0.5 rounded ${stock.change >= 0 ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'}`}>
-                              {stock.change >= 0 ? '+' : ''}{stock.changePercent.toFixed(2)}%
-                            </span>
-                          </div>
-                          <p className="text-xs truncate mb-2" style={{ color: 'var(--text-tertiary)' }}>{stock.name}</p>
-                        </div>
-                        <button
-                          onClick={(e) => {
-                            e.preventDefault();
-                            removeFromWatchlist(stock.symbol);
-                          }}
-                          className="p-1 rounded hover:bg-red-500/20 transition-colors"
-                        >
-                          <svg className="w-4 h-4" style={{ color: 'var(--text-muted)' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                          </svg>
-                        </button>
-                      </div>
-
-                      <div className="flex items-end justify-between">
-                        <div>
-                          <span className="text-2xl font-bold" style={{ color: 'var(--text-primary)' }}>
-                            ${stock.price.toFixed(2)}
-                          </span>
-                        </div>
-                        <div className={`text-sm font-semibold flex items-center gap-1 ${stock.change >= 0 ? 'text-green-400' : 'text-red-400'}`}>
-                          {stock.change >= 0 ? (
-                            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                              <path fillRule="evenodd" d="M5.293 9.707a1 1 0 010-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 01-1.414 1.414L11 7.414V15a1 1 0 11-2 0V7.414L6.707 9.707a1 1 0 01-1.414 0z" clipRule="evenodd" />
-                            </svg>
-                          ) : (
-                            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                              <path fillRule="evenodd" d="M14.707 10.293a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 111.414-1.414L9 12.586V5a1 1 0 012 0v7.586l2.293-2.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                            </svg>
-                          )}
-                          ${Math.abs(stock.change).toFixed(2)}
-                        </div>
-                      </div>
-                    </div>
-                  </Link>
-                  <Link href={`/stock/${stock.symbol.toLowerCase()}`}>
-                    <button className="w-full px-4 py-2 text-sm font-semibold transition-all duration-200 bg-gradient-to-r from-blue-500/10 to-purple-600/10 hover:from-blue-500/20 hover:to-purple-600/20 border-t border-white/5" style={{ color: 'var(--primary-blue)' }}>
-                      Trade Now →
-                    </button>
-                  </Link>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div className="text-center py-12">
-              <div className="w-16 h-16 mx-auto mb-4 rounded-full flex items-center justify-center" style={{ background: 'var(--gradient-secondary)' }}>
-                <svg className="w-8 h-8" style={{ color: 'var(--text-primary)' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
-                </svg>
-              </div>
-              <p className="text-sm font-medium mb-1" style={{ color: 'var(--text-primary)' }}>No stocks yet</p>
-              <p className="text-xs" style={{ color: 'var(--text-tertiary)' }}>Add stocks to track them here</p>
-            </div>
-          )}
-        </div>
-
-        {/* Add Stock Button */}
-        <div className="p-4 border-t border-white/10">
-          <button
-            onClick={() => setShowAddStock(true)}
-            className="w-full px-4 py-2.5 rounded-lg text-sm font-semibold transition-all duration-200 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white shadow-lg hover:shadow-blue-500/50 flex items-center justify-center gap-2"
-          >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-            </svg>
-            Add Stock
-          </button>
-        </div>
-      </div>
-
-      {/* Main Content - with left margin to account for sidebar */}
-      <div className="flex-1 ml-[20.8rem] px-8 pt-4 pb-8">
+      {/* Main Content */}
+      <div className="flex-1 px-8 pt-4 pb-8">
         {/* Account Switcher */}
         <div className="flex justify-end mb-4">
           <AccountSwitcher />
         </div>
 
-        {/* 1. Stats Cards */}
-        <div className="mb-6">
-          <div className="grid grid-cols-4 gap-0 p-2 rounded-xl" style={{ background: 'var(--glass-bg)', border: '1px solid var(--glass-border-color)' }}>
-            <div className="px-4 py-2">
-              <p className="text-sm font-medium mb-1" style={{ color: 'var(--text-muted)' }}>Buying Power</p>
-              <p className="text-2xl font-bold" style={{ color: 'var(--success)' }}>${user?.balance.toFixed(2)}</p>
-              <span className="text-[10px] text-green-400 font-semibold">+2.1% this week</span>
-            </div>
-            <div className="px-4 py-2 border-l" style={{ borderColor: 'var(--glass-border-color)' }}>
-              <p className="text-sm font-medium mb-1" style={{ color: 'var(--text-muted)' }}>Portfolio Value</p>
-              <p className="text-2xl font-bold" style={{ color: 'var(--primary-blue)' }}>${totalPortfolioValue.toFixed(2)}</p>
-              <span className="text-[10px] text-green-400 font-semibold">+5.8% this week</span>
-            </div>
-            <div className="px-4 py-2 border-l" style={{ borderColor: 'var(--glass-border-color)' }}>
-              <p className="text-sm font-medium mb-1" style={{ color: 'var(--text-muted)' }}>Total Return</p>
-              <p className="text-2xl font-bold" style={{ color: 'var(--accent-violet)' }}>${((user?.balance || 0) + totalPortfolioValue).toFixed(2)}</p>
-              <span className="text-[10px] text-green-400 font-semibold">+12.3% all time</span>
-            </div>
-            <div className="px-4 py-2 border-l" style={{ borderColor: 'var(--glass-border-color)' }}>
-              <p className="text-sm font-medium mb-1" style={{ color: 'var(--text-muted)' }}>Today's P&L</p>
-              <p className="text-2xl font-bold text-green-400">+$234.56</p>
-              <span className="text-[10px] text-green-400 font-semibold">+2.1% today</span>
-            </div>
-          </div>
+        {/* ── Date range ────────────────────────────────────────────── */}
+        <div className="flex items-center gap-2 mb-4">
+          <span className="text-xs px-2.5 py-1 rounded-lg" style={{ background: 'var(--glass-bg)', border: '1px solid var(--glass-border-color)', color: 'var(--text-tertiary)' }}>
+            20 Feb 2026 – 21 May 2026
+          </span>
         </div>
 
-      {/* 2. Charts Section - Moved above Holdings */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-        <div className="card">
-          <div className="card-body p-4">
-            <h3 className="text-base font-bold mb-3" style={{ color: 'var(--text-primary)' }}>Portfolio Performance</h3>
-
-            {/* Sub-tabs for P&L and Symbol */}
-            <div className="flex gap-2 mb-4">
-              <button
-                className="px-4 py-1.5 rounded-lg text-sm font-medium transition-all duration-200 bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg"
-              >
-                P&L
-              </button>
-              <button
-                className="px-4 py-1.5 rounded-lg text-sm font-medium transition-all duration-200 bg-gray-800 text-gray-300 hover:bg-gray-700 hover:text-white"
-              >
-                Symbol
-              </button>
+        {/* ── Performance stat strip ────────────────────────────────── */}
+        <div className="grid grid-cols-4 rounded-xl mb-6 overflow-hidden" style={{ border: '1px solid var(--glass-border-color)' }}>
+          {[
+            { label: 'Net P&L', value: '$0.00', sub: 'Track your daily change', color: 'var(--text-primary)' },
+            { label: 'Win Rate', value: '0.00%', sub: 'Track your daily change', color: 'var(--text-primary)' },
+            { label: 'Profit Factor', value: '—', sub: 'Track your daily change', color: 'var(--text-primary)' },
+            { label: 'Avg. Win/Loss Ratio', value: '—', sub: 'Track your daily change', color: 'var(--text-primary)' },
+          ].map((stat, i) => (
+            <div key={stat.label} className={`px-6 py-5 ${i > 0 ? 'border-l' : ''}`} style={{ background: 'var(--glass-bg)', borderColor: 'var(--glass-border-color)' }}>
+              <p className="text-xs font-medium mb-2" style={{ color: 'var(--text-tertiary)' }}>{stat.label}</p>
+              <p className="text-2xl font-bold mb-1.5" style={{ color: stat.color }}>{stat.value}</p>
+              <p className="text-[11px] flex items-center gap-1" style={{ color: 'var(--text-tertiary)' }}>
+                <svg className="w-3 h-3 opacity-60" viewBox="0 0 12 12" fill="none"><path d="M1 9 L4 5 L7 7 L11 2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                {stat.sub}
+              </p>
             </div>
-
-            <LineChart
-              data={portfolioHistory}
-              color="#10B981"
-              height={280}
-              minimalistic={false}
-              showGrid={true}
-              enableZoom={true}
-            />
-            <div className="flex justify-center gap-1.5 mt-3">
-              {timeframeOptions.map((option) => (
-                <button
-                  key={option.value}
-                  className={`px-2.5 py-1 rounded-lg text-xs font-medium transition-all duration-200 ${
-                    selectedTimeframe === option.value
-                      ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg'
-                      : 'bg-gray-800 text-gray-300 hover:bg-gray-700 hover:text-white'
-                  }`}
-                >
-                  {option.label}
-                </button>
-              ))}
-            </div>
-          </div>
+          ))}
         </div>
-        <div className="card">
-          <div className="card-body p-4">
-            <h3 className="text-base font-bold mb-4" style={{ color: 'var(--text-primary)' }}>Portfolio vs Market</h3>
-            <ComparisonChart
-              data={comparisonData}
-              height={256}
-              showGrid={true}
-            />
-            <div className="flex justify-center gap-1.5 mt-3">
-              {comparisonTimeframeOptions.map((option) => (
-                <button
-                  key={option.value}
-                  className={`px-2.5 py-1 rounded-lg text-xs font-medium transition-all duration-200 ${
-                    selectedComparisonTimeframe === option.value
-                      ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg'
-                      : 'bg-gray-800 text-gray-300 hover:bg-gray-700 hover:text-white'
-                  }`}
-                >
-                  {option.label}
-                </button>
-              ))}
+
+        {/* ── Performance Breakdown + P&L Chart ────────────────────── */}
+        <div className="grid grid-cols-2 gap-6 mb-6">
+
+          {/* Quick Stats */}
+          <div className="card">
+            <div className="card-body p-5">
+              <h3 className="text-base font-bold mb-5" style={{ color: 'var(--text-primary)' }}>Quick Stats</h3>
+              <div className="grid grid-cols-2 gap-4">
+                {[
+                  { label: 'Total Trades', value: '0' },
+                  { label: 'Days Traded', value: '0' },
+                  { label: 'Avg Daily P&L', value: '$0.00' },
+                  { label: 'Largest Win', value: '$0.00', color: '#22c55e' },
+                  { label: 'Largest Loss', value: '$0.00', color: '#ef4444' },
+                  { label: 'Avg Hold Time', value: '—' },
+                ].map(s => (
+                  <div key={s.label} className="rounded-xl p-4" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid var(--glass-border-color)' }}>
+                    <p className="text-xs mb-2" style={{ color: 'var(--text-tertiary)' }}>{s.label}</p>
+                    <p className="text-xl font-bold" style={{ color: s.color ?? 'var(--text-primary)' }}>{s.value}</p>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
-        </div>
-      </div>
 
-      {/* 3. Market Overview */}
-      <div className="card mb-8">
-        <div className="card-body">
-          <h2 className="text-2xl font-bold mb-6" style={{ color: 'var(--text-primary)' }}>
-            Market Overview
-          </h2>
-
-          {/* Tabs */}
-          <div className="flex gap-2 mb-6">
-            <button
-              onClick={() => setSelectedMarketTab('topStocks')}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
-                selectedMarketTab === 'topStocks'
-                  ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg'
-                  : 'bg-white/5 hover:bg-white/10'
-              }`}
-              style={selectedMarketTab !== 'topStocks' ? { color: 'var(--text-secondary)' } : {}}
-            >
-              Top Stocks
-            </button>
-            <button
-              onClick={() => setSelectedMarketTab('us')}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
-                selectedMarketTab === 'us'
-                  ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg'
-                  : 'bg-white/5 hover:bg-white/10'
-              }`}
-              style={selectedMarketTab !== 'us' ? { color: 'var(--text-secondary)' } : {}}
-            >
-              US Indices
-            </button>
-            <button
-              onClick={() => setSelectedMarketTab('international')}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
-                selectedMarketTab === 'international'
-                  ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg'
-                  : 'bg-white/5 hover:bg-white/10'
-              }`}
-              style={selectedMarketTab !== 'international' ? { color: 'var(--text-secondary)' } : {}}
-            >
-              International
-            </button>
-            <button
-              onClick={() => setSelectedMarketTab('commodities')}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
-                selectedMarketTab === 'commodities'
-                  ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg'
-                  : 'bg-white/5 hover:bg-white/10'
-              }`}
-              style={selectedMarketTab !== 'commodities' ? { color: 'var(--text-secondary)' } : {}}
-            >
-              Commodities
-            </button>
-          </div>
-
-          {/* Market Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {marketOverview[selectedMarketTab].map((item) => (
-              <div key={item.symbol} className="glass-morphism p-4 rounded-xl hover:bg-white/5 transition-all duration-200 border border-white/5 hover:border-blue-500/30">
-                <div className="flex items-center justify-between mb-2">
-                  <div>
-                    <h3 className="text-sm font-bold" style={{ color: 'var(--text-primary)' }}>{item.symbol}</h3>
-                    <p className="text-xs" style={{ color: 'var(--text-tertiary)' }}>{item.name}</p>
-                  </div>
-                  <div className={`px-2 py-1 rounded-lg text-xs font-medium ${
-                    item.changePercent >= 0 ? 'bg-green-500/10 text-green-400' : 'bg-red-500/10 text-red-400'
-                  }`}>
-                    {item.changePercent >= 0 ? '+' : ''}{item.changePercent.toFixed(2)}%
-                  </div>
-                </div>
-                <div className="flex items-end justify-between">
-                  <div>
-                    <p className="text-2xl font-bold" style={{ color: 'var(--text-primary)' }}>
-                      {item.price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                    </p>
-                    <p className={`text-xs font-medium ${item.change >= 0 ? 'text-green-400' : 'text-red-400'}`}>
-                      {item.change >= 0 ? '+' : ''}{item.change.toFixed(2)}
-                    </p>
-                  </div>
+          {/* P&L Performance */}
+          <div className="card">
+            <div className="card-body p-5">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-base font-bold" style={{ color: 'var(--text-primary)' }}>P&L Performance</h3>
+                <div className="flex rounded-lg overflow-hidden" style={{ border: '1px solid var(--glass-border-color)' }}>
+                  {(['Cumulative', 'Daily'] as const).map(mode => (
+                    <button
+                      key={mode}
+                      onClick={() => setPlMode(mode.toLowerCase() as 'cumulative' | 'daily')}
+                      className="px-3 py-1.5 text-xs font-semibold transition-all"
+                      style={{
+                        background: plMode === mode.toLowerCase() ? 'linear-gradient(135deg, rgba(59,130,246,0.25), rgba(124,58,237,0.25))' : 'transparent',
+                        color: plMode === mode.toLowerCase() ? 'var(--text-accent)' : 'var(--text-tertiary)',
+                      }}
+                    >
+                      {mode}
+                    </button>
+                  ))}
                 </div>
               </div>
-            ))}
+              <LineChart
+                data={portfolioHistory}
+                color="#10B981"
+                height={280}
+                minimalistic={false}
+                showGrid={true}
+                enableZoom={false}
+                disableTooltip={true}
+                hideLine={true}
+              />
+            </div>
           </div>
         </div>
-      </div>
+
+        {/* ── Trading Calendar ──────────────────────────────────────── */}
+        <div className="card mb-6">
+          <div className="card-body p-5">
+            <div className="flex items-center justify-between mb-5">
+              <h3 className="text-base font-bold" style={{ color: 'var(--text-primary)' }}>Calendar</h3>
+              <div className="flex items-center gap-3">
+                <div className="flex items-center gap-1.5">
+                  <button className="w-6 h-6 flex items-center justify-center rounded hover:bg-white/10 transition-colors" style={{ color: 'var(--text-tertiary)' }}>
+                    <svg viewBox="0 0 12 12" width="12" height="12" fill="none"><path d="M8 2L4 6L8 10" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                  </button>
+                  <span className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>May 2026</span>
+                  <button className="w-6 h-6 flex items-center justify-center rounded hover:bg-white/10 transition-colors" style={{ color: 'var(--text-tertiary)' }}>
+                    <svg viewBox="0 0 12 12" width="12" height="12" fill="none"><path d="M4 2L8 6L4 10" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                  </button>
+                </div>
+                <span className="text-xs px-2.5 py-1 rounded-lg" style={{ background: 'var(--glass-bg)', border: '1px solid var(--glass-border-color)', color: 'var(--text-tertiary)' }}>Current Month</span>
+              </div>
+            </div>
+
+            {/* Calendar grid */}
+            <div className="grid" style={{ gridTemplateColumns: 'repeat(7, 1fr) 140px' }}>
+              {/* Day headers */}
+              {['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'WEEKLY'].map(d => (
+                <div key={d} className="py-2 text-center text-[11px] font-semibold border-b border-r last:border-r-0" style={{ color: 'var(--text-tertiary)', borderColor: 'var(--glass-border-color)' }}>
+                  {d}
+                </div>
+              ))}
+
+              {/* Weeks — flattened to avoid fragment key issues */}
+              {(() => {
+                const weeks = [
+                  { days: [{ n: 26, cur: false }, { n: 27, cur: false }, { n: 28, cur: false }, { n: 29, cur: false }, { n: 30, cur: false }, { n: 1, cur: true }, { n: 2, cur: true }], wk: 1 },
+                  { days: [{ n: 3, cur: true }, { n: 4, cur: true }, { n: 5, cur: true }, { n: 6, cur: true }, { n: 7, cur: true }, { n: 8, cur: true }, { n: 9, cur: true }], wk: 2 },
+                  { days: [{ n: 10, cur: true }, { n: 11, cur: true }, { n: 12, cur: true }, { n: 13, cur: true }, { n: 14, cur: true }, { n: 15, cur: true }, { n: 16, cur: true }], wk: 3 },
+                  { days: [{ n: 17, cur: true }, { n: 18, cur: true }, { n: 19, cur: true }, { n: 20, cur: true }, { n: 21, cur: true }, { n: 22, cur: true }, { n: 23, cur: true }], wk: 4 },
+                  { days: [{ n: 24, cur: true }, { n: 25, cur: true }, { n: 26, cur: true }, { n: 27, cur: true }, { n: 28, cur: true }, { n: 29, cur: true }, { n: 30, cur: true }], wk: 5 },
+                  { days: [{ n: 31, cur: true }, null, null, null, null, null, null], wk: 6 },
+                ];
+                const cells: React.ReactNode[] = [];
+                weeks.forEach(({ days, wk }) => {
+                  days.forEach((day, di) => {
+                    cells.push(
+                      <div
+                        key={`d-${wk}-${di}`}
+                        className="border-b border-r"
+                        style={{
+                          height: '72px',
+                          borderColor: 'var(--glass-border-color)',
+                          background: day === null ? 'transparent' : day.cur ? 'rgba(255,255,255,0.015)' : 'rgba(255,255,255,0.004)',
+                        }}
+                      >
+                        {day !== null && (
+                          <span className="block p-2 text-xs font-medium" style={{ color: day.cur ? 'var(--text-tertiary)' : 'rgba(140,150,170,0.3)' }}>
+                            {day.n}
+                          </span>
+                        )}
+                      </div>
+                    );
+                  });
+                  cells.push(
+                    <div key={`w-${wk}`} className="border-b flex flex-col justify-center px-4" style={{ borderColor: 'var(--glass-border-color)', background: 'rgba(255,255,255,0.02)' }}>
+                      <p className="text-[10px] font-semibold mb-1" style={{ color: 'var(--text-tertiary)' }}>Week {wk}</p>
+                      <p className="text-sm font-bold" style={{ color: 'var(--text-primary)' }}>$0.00</p>
+                      <p className="text-[10px]" style={{ color: 'var(--text-tertiary)' }}>0 days</p>
+                    </div>
+                  );
+                });
+                return cells;
+              })()}
+            </div>
+          </div>
+        </div>
 
       {/* 4. Positions Table */}
       <div className="card mb-8">
@@ -974,41 +644,134 @@ export default function OverviewDashboard() {
         </div>
       </div>
 
+      {/* Profit by Ticker */}
+      <div className="card mb-8">
+        <div className="card-body p-5">
+          <h3 className="text-base font-bold mb-4" style={{ color: 'var(--text-primary)' }}>Profit by Ticker</h3>
+          <table className="w-full text-sm">
+            <thead>
+              <tr style={{ borderBottom: '1px solid var(--glass-border-color)' }}>
+                {['Symbol', 'Trades', 'Net P&L', 'Win Rate', 'Avg Win', 'Avg Loss'].map(h => (
+                  <th key={h} className="pb-3 text-left font-semibold text-xs" style={{ color: 'var(--text-tertiary)' }}>{h}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {[
+                { symbol: 'AAPL', name: 'Apple Inc.'      },
+                { symbol: 'NVDA', name: 'NVIDIA Corp.'    },
+                { symbol: 'MSFT', name: 'Microsoft Corp.' },
+                { symbol: 'AMZN', name: 'Amazon.com'      },
+                { symbol: 'GOOGL', name: 'Alphabet Inc.'  },
+                { symbol: 'TSLA', name: 'Tesla Inc.'      },
+              ].map(t => (
+                <tr key={t.symbol} className="hover:bg-white/5 transition-colors" style={{ borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
+                  <td className="py-3 pr-4">
+                    <p className="font-bold" style={{ color: 'var(--text-primary)' }}>{t.symbol}</p>
+                    <p className="text-xs" style={{ color: 'var(--text-tertiary)' }}>{t.name}</p>
+                  </td>
+                  <td className="py-3 pr-4" style={{ color: 'var(--text-tertiary)' }}>—</td>
+                  <td className="py-3 pr-4" style={{ color: 'var(--text-tertiary)' }}>—</td>
+                  <td className="py-3 pr-4" style={{ color: 'var(--text-tertiary)' }}>—</td>
+                  <td className="py-3 pr-4" style={{ color: 'var(--text-tertiary)' }}>—</td>
+                  <td className="py-3" style={{ color: 'var(--text-tertiary)' }}>—</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      {/* Market Overview */}
+      <div className="card mb-8">
+        <div className="card-body">
+          <h2 className="text-2xl font-bold mb-6" style={{ color: 'var(--text-primary)' }}>
+            Market Overview
+          </h2>
+
+          {/* Tabs */}
+          <div className="flex gap-2 mb-6">
+            <button
+              onClick={() => setSelectedMarketTab('topStocks')}
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+                selectedMarketTab === 'topStocks'
+                  ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg'
+                  : 'bg-white/5 hover:bg-white/10'
+              }`}
+              style={selectedMarketTab !== 'topStocks' ? { color: 'var(--text-secondary)' } : {}}
+            >
+              Top Stocks
+            </button>
+            <button
+              onClick={() => setSelectedMarketTab('us')}
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+                selectedMarketTab === 'us'
+                  ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg'
+                  : 'bg-white/5 hover:bg-white/10'
+              }`}
+              style={selectedMarketTab !== 'us' ? { color: 'var(--text-secondary)' } : {}}
+            >
+              US Indices
+            </button>
+            <button
+              onClick={() => setSelectedMarketTab('international')}
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+                selectedMarketTab === 'international'
+                  ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg'
+                  : 'bg-white/5 hover:bg-white/10'
+              }`}
+              style={selectedMarketTab !== 'international' ? { color: 'var(--text-secondary)' } : {}}
+            >
+              International
+            </button>
+            <button
+              onClick={() => setSelectedMarketTab('commodities')}
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+                selectedMarketTab === 'commodities'
+                  ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg'
+                  : 'bg-white/5 hover:bg-white/10'
+              }`}
+              style={selectedMarketTab !== 'commodities' ? { color: 'var(--text-secondary)' } : {}}
+            >
+              Commodities
+            </button>
+          </div>
+
+          {/* Market Grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {marketOverview[selectedMarketTab].map((item) => (
+              <div key={item.symbol} className="glass-morphism p-4 rounded-xl hover:bg-white/5 transition-all duration-200 border border-white/5 hover:border-blue-500/30">
+                <div className="flex items-center justify-between mb-2">
+                  <div>
+                    <h3 className="text-sm font-bold" style={{ color: 'var(--text-primary)' }}>{item.symbol}</h3>
+                    <p className="text-xs" style={{ color: 'var(--text-tertiary)' }}>{item.name}</p>
+                  </div>
+                  <div className={`px-2 py-1 rounded-lg text-xs font-medium ${
+                    item.changePercent >= 0 ? 'bg-green-500/10 text-green-400' : 'bg-red-500/10 text-red-400'
+                  }`}>
+                    {item.changePercent >= 0 ? '+' : ''}{item.changePercent.toFixed(2)}%
+                  </div>
+                </div>
+                <div className="flex items-end justify-between">
+                  <div>
+                    <p className="text-2xl font-bold" style={{ color: 'var(--text-primary)' }}>
+                      {item.price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                    </p>
+                    <p className={`text-xs font-medium ${item.change >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                      {item.change >= 0 ? '+' : ''}{item.change.toFixed(2)}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
       {/* 4. Performance Metrics & Market Movers | Recent Activity & Copy Trading */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
         {/* Left Column: Performance Metrics + Market Movers */}
         <div className="space-y-8">
-          {/* Performance Metrics */}
-          <div className="card">
-            <div className="card-body">
-              <h3 className="text-lg font-bold mb-4" style={{ color: 'var(--text-primary)' }}>
-                Performance Metrics
-              </h3>
-              <div className="grid grid-cols-2 gap-3">
-                <div className="glass-morphism p-3 rounded-lg">
-                  <span className="text-xs block mb-1" style={{ color: 'var(--text-secondary)' }}>Total Return</span>
-                  <span className={`text-lg font-bold ${totalReturn >= 0 ? 'text-green-400' : 'text-red-400'}`}>
-                    {totalReturn >= 0 ? '+' : ''}${totalReturn.toFixed(2)}
-                  </span>
-                </div>
-                <div className="glass-morphism p-3 rounded-lg">
-                  <span className="text-xs block mb-1" style={{ color: 'var(--text-secondary)' }}>Return %</span>
-                  <span className={`text-lg font-bold ${totalReturnPercent >= 0 ? 'text-green-400' : 'text-red-400'}`}>
-                    {totalReturnPercent >= 0 ? '+' : ''}{totalReturnPercent.toFixed(2)}%
-                  </span>
-                </div>
-                <div className="glass-morphism p-3 rounded-lg">
-                  <span className="text-xs block mb-1" style={{ color: 'var(--text-secondary)' }}>Best Day</span>
-                  <span className="text-lg font-bold text-green-400">+$1,234.56</span>
-                </div>
-                <div className="glass-morphism p-3 rounded-lg">
-                  <span className="text-xs block mb-1" style={{ color: 'var(--text-secondary)' }}>Worst Day</span>
-                  <span className="text-lg font-bold text-red-400">-$567.89</span>
-                </div>
-              </div>
-            </div>
-          </div>
-
           {/* Today's Market Movers */}
           <div className="card">
             <div className="card-body">
@@ -1402,15 +1165,6 @@ export default function OverviewDashboard() {
         )}
       </div>
 
-      <style jsx>{`
-        .hide-scrollbar::-webkit-scrollbar {
-          display: none;
-        }
-        .hide-scrollbar {
-          -ms-overflow-style: none;
-          scrollbar-width: none;
-        }
-      `}</style>
     </div>
   );
 }

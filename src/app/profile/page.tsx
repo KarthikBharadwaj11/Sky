@@ -2214,7 +2214,7 @@ export default function Profile() {
   return (
     <div className="flex min-h-screen">
       {/* Left Sidebar - Fixed */}
-      <div className="w-80 glass-morphism border-r border-white/10 px-5 pb-5 pt-32 fixed left-0 top-0 h-screen overflow-y-auto">
+      <div className="w-80 glass-morphism border-r border-white/10 px-5 pb-5 pt-32 fixed left-[60px] top-0 h-screen overflow-y-auto">
         <div className="mb-6">
           <h1 className="text-lg font-bold text-gradient mb-1.5">Profile</h1>
           <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>

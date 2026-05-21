@@ -3,9 +3,9 @@
 import { useAuth } from "@/components/auth/AuthProvider";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
-import TradingTerminal from "@/components/overview/TradingTerminal";
+import OverviewDashboard from "@/components/overview/OverviewDashboard";
 
-export default function Overview() {
+export default function Dashboard() {
   const { user } = useAuth();
   const router = useRouter();
 
@@ -19,5 +19,5 @@ export default function Overview() {
     return null;
   }
 
-  return <TradingTerminal />;
+  return <OverviewDashboard />;
 }

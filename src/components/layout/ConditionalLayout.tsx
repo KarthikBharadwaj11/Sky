@@ -11,7 +11,7 @@ export default function ConditionalLayout({ children }: ConditionalLayoutProps) 
   
   // For logged-in users, add padding-top for fixed navbar (84px)
   // For non-logged-in users, no padding since floating navbar doesn't need it
-  const layoutClass = user ? "min-h-screen pt-[95px] trading-background" : "min-h-screen trading-background";
+  const layoutClass = user ? "min-h-screen pl-[60px] trading-background" : "min-h-screen trading-background";
 
   return (
     <main className={layoutClass}>

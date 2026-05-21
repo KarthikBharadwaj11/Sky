@@ -2309,7 +2309,7 @@ export default function CopyTrading() {
   return (
     <div className="flex min-h-screen">
       {/* Left Sidebar - Fixed */}
-      <div className="w-80 glass-morphism border-r border-white/10 p-5 fixed left-0 top-[95px] overflow-y-auto" style={{ height: 'calc(100vh - 95px)' }}>
+      <div className="w-80 glass-morphism border-r border-white/10 p-5 fixed left-[60px] top-0 overflow-y-auto" style={{ height: '100vh' }}>
         <div className="mb-8">
           <h1 className="text-base font-bold text-gradient mb-2">Copy Trading</h1>
           <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>
