@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/components/auth/AuthProvider';
 import TradingModal from '@/components/trading/TradingModal';
-import Link from 'next/link';
+
 import { TrendingUp, TrendingDown, BarChart3, Grid3x3, List, Sparkles } from 'lucide-react';
 
 interface Stock {
@@ -136,8 +136,7 @@ export default function SearchStocks() {
             </p>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
               {stocks.slice(0, 3).map((stock) => (
-                <Link key={stock.symbol} href={`/stock/${stock.symbol.toLowerCase()}`}>
-                  <div className="glass-morphism p-3 rounded-lg hover:bg-white/5 transition-all cursor-pointer">
+                  <div key={stock.symbol} className="glass-morphism p-3 rounded-lg hover:bg-white/5 transition-all cursor-pointer">
                     <div className="flex items-center justify-between mb-2">
                       <span className="font-bold text-sm" style={{ color: 'var(--text-primary)' }}>{stock.symbol}</span>
                       <span className={`text-xs font-semibold ${stock.changePercent >= 0 ? 'text-green-400' : 'text-red-400'}`}>
@@ -150,7 +149,6 @@ export default function SearchStocks() {
                       <span className="text-xs text-purple-400">Strong buy signal</span>
                     </div>
                   </div>
-                </Link>
               ))}
             </div>
           </div>
@@ -196,8 +194,7 @@ export default function SearchStocks() {
               </div>
               <div className="space-y-2">
                 {trendingStocks.map((stock) => (
-                  <Link key={stock.symbol} href={`/stock/${stock.symbol.toLowerCase()}`}>
-                    <div className="flex items-center justify-between p-2 rounded-lg glass-morphism hover:bg-white/5 transition-all cursor-pointer">
+                    <div key={stock.symbol} className="flex items-center justify-between p-2 rounded-lg glass-morphism hover:bg-white/5 transition-all cursor-pointer">
                       <div className="flex items-center gap-2">
                         <div>
                           <p className="text-xs font-bold" style={{ color: 'var(--text-primary)' }}>{stock.symbol}</p>
@@ -208,7 +205,6 @@ export default function SearchStocks() {
                         {stock.changePercent >= 0 ? '+' : ''}{stock.changePercent.toFixed(2)}%
                       </span>
                     </div>
-                  </Link>
                 ))}
               </div>
             </div>
@@ -223,8 +219,7 @@ export default function SearchStocks() {
               </div>
               <div className="space-y-2">
                 {topGainers.map((stock) => (
-                  <Link key={stock.symbol} href={`/stock/${stock.symbol.toLowerCase()}`}>
-                    <div className="flex items-center justify-between p-2 rounded-lg glass-morphism hover:bg-white/5 transition-all cursor-pointer">
+                    <div key={stock.symbol} className="flex items-center justify-between p-2 rounded-lg glass-morphism hover:bg-white/5 transition-all cursor-pointer">
                       <div className="flex items-center gap-2">
                         <div>
                           <p className="text-xs font-bold" style={{ color: 'var(--text-primary)' }}>{stock.symbol}</p>
@@ -235,7 +230,6 @@ export default function SearchStocks() {
                         +{stock.changePercent.toFixed(2)}%
                       </span>
                     </div>
-                  </Link>
                 ))}
               </div>
             </div>
@@ -250,8 +244,7 @@ export default function SearchStocks() {
               </div>
               <div className="space-y-2">
                 {topLosers.map((stock) => (
-                  <Link key={stock.symbol} href={`/stock/${stock.symbol.toLowerCase()}`}>
-                    <div className="flex items-center justify-between p-2 rounded-lg glass-morphism hover:bg-white/5 transition-all cursor-pointer">
+                    <div key={stock.symbol} className="flex items-center justify-between p-2 rounded-lg glass-morphism hover:bg-white/5 transition-all cursor-pointer">
                       <div className="flex items-center gap-2">
                         <div>
                           <p className="text-xs font-bold" style={{ color: 'var(--text-primary)' }}>{stock.symbol}</p>
@@ -262,7 +255,6 @@ export default function SearchStocks() {
                         {stock.changePercent.toFixed(2)}%
                       </span>
                     </div>
-                  </Link>
                 ))}
               </div>
             </div>
@@ -341,11 +333,9 @@ export default function SearchStocks() {
               >
                 <div className="flex items-start justify-between mb-3">
                   <div>
-                    <Link href={`/stock/${stock.symbol.toLowerCase()}`}>
-                      <h3 className="font-bold text-base hover:text-blue-400 transition-colors" style={{ color: 'var(--text-primary)' }}>
+                      <h3 className="font-bold text-base" style={{ color: 'var(--text-primary)' }}>
                         {stock.symbol}
                       </h3>
-                    </Link>
                     <p className="text-[10px]" style={{ color: getSectorColor(stock.sector) }}>
                       {stock.sector}
                     </p>
@@ -399,11 +389,9 @@ export default function SearchStocks() {
                     {filteredStocks.map((stock) => (
                       <tr key={stock.symbol}>
                         <td>
-                          <Link href={`/stock/${stock.symbol.toLowerCase()}`}>
-                            <span className="font-bold hover:text-blue-400 transition-colors" style={{ color: 'var(--text-primary)' }}>
+                            <span className="font-bold" style={{ color: 'var(--text-primary)' }}>
                               {stock.symbol}
                             </span>
-                          </Link>
                         </td>
                         <td className="text-sm" style={{ color: 'var(--text-secondary)' }}>{stock.name}</td>
                         <td className="text-right font-semibold" style={{ color: 'var(--text-primary)' }}>

@@ -983,11 +983,9 @@ export default function CopyTradingPortfolio() {
                         </div>
                       </td>
                       <td>
-                        <Link href={`/stock/${trade.symbol.toLowerCase()}`}>
-                          <div className="text-lg font-bold hover:text-blue-400 cursor-pointer transition-colors" style={{ color: 'var(--text-primary)' }}>
+                          <div className="text-lg font-bold" style={{ color: 'var(--text-primary)' }}>
                             {trade.symbol}
                           </div>
-                        </Link>
                       </td>
                       <td className="text-right">
                         <div className="text-base font-semibold" style={{ color: 'var(--text-primary)' }}>

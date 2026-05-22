@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '@/components/auth/AuthProvider';
-import Link from 'next/link';
+
 import { TrendingUp, TrendingDown, Search, Filter, X, Check } from 'lucide-react';
 
 export interface Order {
@@ -482,11 +482,9 @@ export default function OrdersPage() {
                         </td>
                         <td>
                           <div>
-                            <Link href={`/stock/${order.symbol.toLowerCase().split(' ')[0]}`}>
-                              <span className="text-lg font-bold hover:text-blue-400 transition-colors cursor-pointer" style={{ color: 'var(--text-primary)' }}>
+                              <span className="text-lg font-bold" style={{ color: 'var(--text-primary)' }}>
                                 {order.symbol}
                               </span>
-                            </Link>
                             <div className="text-sm" style={{ color: 'var(--text-tertiary)' }}>
                               {order.name}
                             </div>

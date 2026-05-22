@@ -423,11 +423,9 @@ export default function Dashboard() {
                   <div className="flex items-center justify-between">
                     <div className="flex-1">
                       <div className="flex items-center gap-3 mb-1">
-                        <Link href={`/stock/${stock.symbol.toLowerCase()}`}>
-                          <span className="text-lg font-bold hover:text-blue-400 transition-colors" style={{ color: 'var(--text-primary)' }}>
+                          <span className="text-lg font-bold" style={{ color: 'var(--text-primary)' }}>
                             {stock.symbol}
                           </span>
-                        </Link>
                         <span className="text-sm" style={{ color: 'var(--text-tertiary)' }}>{stock.name}</span>
                       </div>
                       <div className="flex items-center gap-4">
@@ -448,11 +446,9 @@ export default function Dashboard() {
                         </span>
                       </div>
                     </div>
-                    <Link href={`/stock/${stock.symbol.toLowerCase()}`}>
                       <button className="px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white shadow-lg hover:shadow-blue-500/50">
                         Trade
                       </button>
-                    </Link>
                   </div>
                 </div>
               ))}
@@ -528,14 +524,12 @@ export default function Dashboard() {
                         {index + 1}
                       </div>
                       <div className="flex-1">
-                        <Link href={`/stock/${stock.symbol.toLowerCase()}`}>
                           <div className="flex items-center gap-2 mb-0.5">
-                            <span className="text-base font-bold hover:text-blue-400 transition-colors" style={{ color: 'var(--text-primary)' }}>
+                            <span className="text-base font-bold" style={{ color: 'var(--text-primary)' }}>
                               {stock.symbol}
                             </span>
                             <span className="text-xs" style={{ color: 'var(--text-tertiary)' }}>{stock.name}</span>
                           </div>
-                        </Link>
                         <div className="flex items-center gap-3">
                           <span className="text-sm font-semibold" style={{ color: 'var(--text-secondary)' }}>
                             ${stock.price.toFixed(2)}
@@ -546,11 +540,9 @@ export default function Dashboard() {
                         </div>
                       </div>
                     </div>
-                    <Link href={`/stock/${stock.symbol.toLowerCase()}`}>
                       <button className="px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-200 glass-morphism border border-white/10 hover:border-blue-500/50 hover:bg-blue-500/10">
                         Trade
                       </button>
-                    </Link>
                   </div>
                 </div>
               ))}
@@ -609,11 +601,9 @@ export default function Dashboard() {
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-1">
                         <span className="font-semibold" style={{ color: 'var(--text-primary)' }}>{activityInfo.label}</span>
-                        <Link href={`/stock/${activity.symbol?.toLowerCase()}`}>
-                          <span className="font-bold text-blue-400 hover:text-blue-300 transition-colors">
+                          <span className="font-bold text-blue-400">
                             ${activity.symbol}
                           </span>
-                        </Link>
                       </div>
 
                       <div className="flex items-center gap-3 text-sm" style={{ color: 'var(--text-secondary)' }}>
@@ -838,11 +828,9 @@ export default function Dashboard() {
                   {topStocks.map((stock) => (
                     <tr key={stock.symbol}>
                       <td>
-                        <Link href={`/stock/${stock.symbol.toLowerCase()}`}>
-                          <span className="font-bold hover:text-blue-400 cursor-pointer transition-colors" style={{ color: 'var(--text-primary)' }}>
+                          <span className="font-bold" style={{ color: 'var(--text-primary)' }}>
                             {stock.symbol}
                           </span>
-                        </Link>
                       </td>
                       <td style={{ color: 'var(--text-tertiary)' }}>{stock.name}</td>
                       <td className="text-right font-semibold" style={{ color: 'var(--text-primary)' }}>${stock.price.toFixed(2)}</td>
@@ -885,11 +873,9 @@ export default function Dashboard() {
                       return (
                         <tr key={holding.symbol}>
                           <td>
-                            <Link href={`/stock/${holding.symbol.toLowerCase()}`}>
-                              <span className="font-bold hover:text-blue-400 cursor-pointer transition-colors" style={{ color: 'var(--text-primary)' }}>
+                              <span className="font-bold" style={{ color: 'var(--text-primary)' }}>
                                 {holding.symbol}
                               </span>
-                            </Link>
                           </td>
                           <td className="text-right font-semibold" style={{ color: 'var(--text-secondary)' }}>{holding.shares}</td>
                           <td className="text-right font-semibold" style={{ color: 'var(--text-primary)' }}>

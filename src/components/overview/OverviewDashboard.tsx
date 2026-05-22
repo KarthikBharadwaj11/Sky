@@ -7,9 +7,8 @@ import AreaChart from '../charts/AreaChart';
 import ComparisonChart from '../charts/ComparisonChart';
 import PieChart from '../charts/PieChart';
 import TradingModal from '../trading/TradingModal';
-import AccountSwitcher from '../trading/AccountSwitcher';
-import Link from 'next/link';
-import { Sparkles } from 'lucide-react';
+
+import { Sparkles, ChevronDown, Plus } from 'lucide-react';
 
 interface Stock {
   symbol: string;
@@ -45,6 +44,9 @@ export default function OverviewDashboard() {
   const [selectedMarketTab, setSelectedMarketTab] = useState<'topStocks' | 'us' | 'international' | 'commodities'>('topStocks');
   const [plMode, setPlMode] = useState<'cumulative' | 'daily'>('cumulative');
   const [calendarMonth, setCalendarMonth] = useState('May 2026');
+  const [selectedAccount, setSelectedAccount] = useState('Demo Account');
+  const [showAccountMenu, setShowAccountMenu] = useState(false);
+  const ACCOUNTS = ['Demo Account', 'Trading Account'];
 
   // Mini sparkline component
   const MiniSparkline = ({ data, color }: { data: number[], color: string }) => {
@@ -386,13 +388,50 @@ export default function OverviewDashboard() {
 
 
   return (
-    <div className="flex min-h-screen">
+    <div className="flex flex-col min-h-screen">
+      {/* ── Top bar ─────────────────────────────────────────────────────── */}
+      <div className="flex items-center justify-end gap-3 px-6 shrink-0" style={{ height: '48px', borderBottom: '1px solid var(--glass-border-color)', background: 'var(--navbar-bg, rgba(10,10,20,0.95))' }}>
+        {/* Account dropdown */}
+        <div className="relative">
+          <button
+            onClick={() => setShowAccountMenu(!showAccountMenu)}
+            className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all hover:bg-white/10"
+            style={{ border: '1px solid var(--glass-border-color)', color: 'var(--text-primary)' }}
+          >
+            <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${selectedAccount === 'Trading Account' ? 'bg-green-400' : 'bg-yellow-400'}`} />
+            {selectedAccount}
+            <ChevronDown className="w-3 h-3" style={{ color: 'var(--text-tertiary)', transform: showAccountMenu ? 'rotate(180deg)' : 'none', transition: 'transform 0.15s' }} />
+          </button>
+          {showAccountMenu && (
+            <div className="absolute top-full right-0 mt-1 w-44 rounded-lg overflow-hidden shadow-xl z-50" style={{ background: 'rgba(10,14,26,0.97)', border: '1px solid var(--glass-border-color)', backdropFilter: 'blur(16px)' }}>
+              {ACCOUNTS.map(acc => (
+                <button
+                  key={acc}
+                  onClick={() => { setSelectedAccount(acc); setShowAccountMenu(false); }}
+                  className="w-full px-3 py-2.5 text-left text-xs flex items-center gap-2 hover:bg-white/10 transition-colors"
+                  style={{ color: acc === selectedAccount ? 'var(--text-accent)' : 'var(--text-secondary)' }}
+                >
+                  <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${acc === 'Trading Account' ? 'bg-green-400' : 'bg-yellow-400'}`} />
+                  {acc}
+                  {acc === selectedAccount && <span className="ml-auto text-[10px]" style={{ color: 'var(--text-accent)' }}>✓</span>}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Add account */}
+        <button
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all hover:bg-white/10"
+          style={{ border: '1px solid var(--glass-border-color)', color: 'var(--text-tertiary)' }}
+        >
+          <Plus className="w-3 h-3" />
+          Add Account
+        </button>
+      </div>
+
       {/* Main Content */}
       <div className="flex-1 px-8 pt-4 pb-8">
-        {/* Account Switcher */}
-        <div className="flex justify-end mb-4">
-          <AccountSwitcher />
-        </div>
 
         {/* ── Date range ────────────────────────────────────────────── */}
         <div className="flex items-center gap-2 mb-4">
@@ -594,11 +633,9 @@ export default function OverviewDashboard() {
                     return (
                       <tr key={holding.symbol}>
                         <td>
-                          <Link href={`/stock/${holding.symbol.toLowerCase()}`}>
-                            <span className="font-bold hover:text-blue-400 cursor-pointer transition-colors" style={{ color: 'var(--text-primary)' }}>
+                            <span className="font-bold" style={{ color: 'var(--text-primary)' }}>
                               {holding.symbol}
                             </span>
-                          </Link>
                         </td>
                         <td style={{ color: 'var(--text-tertiary)' }}>{holding.name}</td>
                         <td className="text-right font-semibold" style={{ color: 'var(--text-secondary)' }}>{holding.shares}</td>
@@ -835,14 +872,12 @@ export default function OverviewDashboard() {
                           {index + 1}
                         </div>
                         <div className="flex-1">
-                          <Link href={`/stock/${stock.symbol.toLowerCase()}`}>
                             <div className="flex items-center gap-2 mb-0.5">
-                              <span className="text-base font-bold hover:text-blue-400 transition-colors" style={{ color: 'var(--text-primary)' }}>
+                              <span className="text-base font-bold" style={{ color: 'var(--text-primary)' }}>
                                 {stock.symbol}
                               </span>
                               <span className="text-xs" style={{ color: 'var(--text-tertiary)' }}>{stock.name}</span>
                             </div>
-                          </Link>
                           <div className="flex items-center gap-3">
                             <span className="text-sm font-semibold" style={{ color: 'var(--text-secondary)' }}>
                               ${stock.price.toFixed(2)}
@@ -853,11 +888,9 @@ export default function OverviewDashboard() {
                           </div>
                         </div>
                       </div>
-                      <Link href={`/stock/${stock.symbol.toLowerCase()}`}>
                         <button className="px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-200 glass-morphism border border-white/10 hover:border-blue-500/50 hover:bg-blue-500/10">
                           Trade
                         </button>
-                      </Link>
                     </div>
                   </div>
                 ))}
@@ -907,11 +940,9 @@ export default function OverviewDashboard() {
                         <div className="flex items-center gap-2 mb-1">
                           <span className="font-semibold" style={{ color: 'var(--text-primary)' }}>{activityInfo.label}</span>
                           {activity.symbol && (
-                            <Link href={`/stock/${activity.symbol?.toLowerCase()}`}>
-                              <span className="font-bold text-blue-400 hover:text-blue-300 transition-colors">
+                              <span className="font-bold text-blue-400">
                                 ${activity.symbol}
                               </span>
-                            </Link>
                           )}
                         </div>
 

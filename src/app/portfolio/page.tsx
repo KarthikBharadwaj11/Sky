@@ -316,11 +316,9 @@ export default function PortfolioAnalytics() {
                         </span>
                       </td>
                       <td>
-                        <Link href={`/stock/${transaction.symbol.toLowerCase()}`}>
-                          <span className="text-lg font-bold hover:text-blue-400 transition-colors cursor-pointer" style={{ color: 'var(--text-primary)' }}>
+                          <span className="text-lg font-bold" style={{ color: 'var(--text-primary)' }}>
                             {transaction.symbol}
                           </span>
-                        </Link>
                       </td>
                       <td>
                         <span className="text-base" style={{ color: 'var(--text-secondary)' }}>
