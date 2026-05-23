@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import { ChevronDown, TrendingUp, TrendingDown, Plus, X, MousePointer2, AlignJustify, ArrowUpRight, Pencil, Type, Ruler, GitFork, Activity, Search } from 'lucide-react';
+import { ChevronDown, TrendingUp, TrendingDown, Plus, X, MousePointer2, AlignJustify, ArrowUpRight, Pencil, Type, Ruler, GitFork, Activity, Search, Sparkles, Send } from 'lucide-react';
 import { useAuth } from '../auth/AuthProvider';
 
 // ── Static demo OHLC chart data ─────────────────────────────────────────────
@@ -204,6 +204,13 @@ const OPEN_ORDERS = [
   { id: 2, symbol: 'AMZN', side: 'Sell', qty: 3, type: 'Limit', price: 185.00, status: 'Pending' },
 ];
 
+const SIGNALS = [
+  { id: 1, expert: 'Expert 1', symbol: 'AAPL', action: 'BUY' as const, qty: 10, price: 189.30, orderType: 'market', time: '2m ago' },
+  { id: 2, expert: 'Expert 2', symbol: 'NVDA', action: 'SELL' as const, qty: 5, price: 490.00, orderType: 'limit', time: '18m ago' },
+  { id: 3, expert: 'Expert 3', symbol: 'TSLA', action: 'BUY' as const, qty: 8, price: 250.00, orderType: 'market', time: '34m ago' },
+  { id: 4, expert: 'Expert 1', symbol: 'META', action: 'BUY' as const, qty: 3, price: 490.50, orderType: 'limit', time: '1h ago' },
+];
+
 
 export default function TradingTerminal() {
   const { user } = useAuth();
@@ -223,6 +230,9 @@ export default function TradingTerminal() {
 
   const [showAccountMenu, setShowAccountMenu] = useState(false);
   const [selectedAccount, setSelectedAccount] = useState('Demo Account');
+  const [rightPanel, setRightPanel] = useState<'watchlist' | 'signals'>('watchlist');
+  const [showSkyIntel, setShowSkyIntel] = useState(false);
+  const [intelInput, setIntelInput] = useState('');
   const ACCOUNTS = ['Demo Account', 'Trading Account'];
 
   const chartRef = useRef<HTMLDivElement>(null);
@@ -254,28 +264,8 @@ export default function TradingTerminal() {
         {/* Divider */}
         <div className="w-px h-5" style={{ background: 'var(--glass-border-color)' }} />
 
-        {/* Account stats */}
-        <div className="hidden lg:flex items-center gap-5">
-          {[
-            { label: 'Cash Balance', value: `$${user?.balance?.toLocaleString() ?? '—'}`, color: undefined },
-            { label: 'Portfolio', value: '$12,847.50', color: undefined },
-            { label: 'Day P&L', value: '+$234.56', color: 'text-green-400' },
-            { label: 'Open P&L', value: '-$4.64', color: 'text-red-400' },
-          ].map(item => (
-            <div key={item.label} className="flex items-center gap-1.5">
-              <span className="text-xs" style={{ color: 'var(--text-tertiary)' }}>{item.label}</span>
-              <span className={`text-xs font-semibold ${item.color ?? ''}`} style={!item.color ? { color: 'var(--text-secondary)' } : {}}>
-                {item.value}
-              </span>
-            </div>
-          ))}
-        </div>
-
-        {/* Spacer */}
-        <div className="flex-1" />
-
         {/* Market indices */}
-        <div className="hidden lg:flex items-center gap-5 mr-4">
+        <div className="hidden lg:flex items-center gap-5">
           {[
             { label: 'S&P 500', value: '5,234.18', up: true },
             { label: 'NASDAQ', value: '16,428.82', up: true },
@@ -284,6 +274,26 @@ export default function TradingTerminal() {
             <div key={idx.label} className="flex items-center gap-1.5">
               <span className="text-xs" style={{ color: 'var(--text-tertiary)' }}>{idx.label}</span>
               <span className={`text-xs font-semibold ${idx.up ? 'text-green-400' : 'text-red-400'}`}>{idx.value}</span>
+            </div>
+          ))}
+        </div>
+
+        {/* Spacer */}
+        <div className="flex-1" />
+
+        {/* Account stats */}
+        <div className="hidden lg:flex items-center gap-5 mr-4">
+          {[
+            { label: 'Cash Balance', value: `$${user?.balance?.toLocaleString() ?? '—'}`, color: undefined },
+            { label: 'Portfolio', value: '$12,847.50', color: undefined },
+            { label: 'Day P&L', value: '+$234.56', color: 'text-green-400' },
+            { label: 'Open P&L', value: '-$4.64', color: 'text-red-400' },
+          ].map(item => (
+            <div key={item.label} className="flex items-center gap-1.5">
+              <span className="text-xs" style={{ color: 'var(--text-tertiary)' }}>{item.label}</span>
+              <span className={`text-sm font-semibold ${item.color ?? ''}`} style={!item.color ? { color: 'var(--text-secondary)' } : {}}>
+                {item.value}
+              </span>
             </div>
           ))}
         </div>
@@ -329,6 +339,22 @@ export default function TradingTerminal() {
             </div>
           )}
         </div>
+
+        {/* Divider */}
+        <div className="w-px h-5" style={{ background: 'var(--glass-border-color)' }} />
+
+        {/* Sky Intelligence button */}
+        <button
+          onClick={() => setShowSkyIntel(!showSkyIntel)}
+          className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-bold transition-all hover:bg-white/10"
+          style={{
+            border: `1px solid ${showSkyIntel ? 'rgba(139,92,246,0.6)' : 'var(--glass-border-color)'}`,
+            background: showSkyIntel ? 'rgba(139,92,246,0.12)' : 'transparent',
+            color: showSkyIntel ? '#a78bfa' : 'var(--text-secondary)',
+          }}
+        >
+          Sky Intelligence
+        </button>
       </div>
 
       {/* ── Main area ───────────────────────────────────────────────────── */}
@@ -480,38 +506,99 @@ export default function TradingTerminal() {
         </div>
 
         {/* ── Right panel ─────────────────────────────────────────────── */}
-        <div className="flex flex-col shrink-0 overflow-hidden" style={{ width: '260px', borderLeft: '1px solid var(--glass-border-color)' }}>
+        <div className="flex flex-col shrink-0 overflow-hidden" style={{ width: '290px', borderLeft: '1px solid var(--glass-border-color)' }}>
 
-          {/* Watchlist */}
+          {/* Watchlist / Signals tabs */}
           <div className="flex flex-col flex-1 overflow-hidden">
-            <div className="flex items-center justify-between px-3 py-2 border-b shrink-0" style={{ borderColor: 'var(--glass-border-color)' }}>
-              <span className="text-xs font-bold" style={{ color: 'var(--text-primary)' }}>Watchlist</span>
-              <button><Plus className="w-3.5 h-3.5" style={{ color: 'var(--text-tertiary)' }} /></button>
+            {/* Tab header */}
+            <div className="flex shrink-0 border-b" style={{ borderColor: 'var(--glass-border-color)' }}>
+              <button
+                onClick={() => setRightPanel('watchlist')}
+                className="flex-1 py-2 text-xs font-bold transition-colors"
+                style={{
+                  color: rightPanel === 'watchlist' ? 'var(--text-primary)' : 'var(--text-tertiary)',
+                  borderBottom: rightPanel === 'watchlist' ? '2px solid #3b82f6' : '2px solid transparent',
+                }}
+              >
+                Watchlist
+              </button>
+              <button
+                onClick={() => setRightPanel('signals')}
+                className="flex-1 py-2 text-xs font-bold transition-colors relative"
+                style={{
+                  color: rightPanel === 'signals' ? 'var(--text-primary)' : 'var(--text-tertiary)',
+                  borderBottom: rightPanel === 'signals' ? '2px solid #3b82f6' : '2px solid transparent',
+                }}
+              >
+                Signals
+                <span className="ml-1.5 inline-flex items-center justify-center w-4 h-4 rounded-full text-[10px] font-bold bg-blue-500/20 text-blue-400">{SIGNALS.length}</span>
+              </button>
+              {rightPanel === 'watchlist' && (
+                <button className="px-2.5"><Plus className="w-3.5 h-3.5" style={{ color: 'var(--text-tertiary)' }} /></button>
+              )}
             </div>
-            <div className="overflow-y-auto flex-1">
-              {WATCHLIST.map(stock => (
-                <button
-                  key={stock.symbol}
-                  onClick={() => setSelectedSymbol(stock.symbol)}
-                  className="w-full flex items-center justify-between px-3 py-2.5 transition-colors hover:bg-white/5"
-                  style={{
-                    background: selectedSymbol === stock.symbol ? 'rgba(59,130,246,0.08)' : 'transparent',
-                    borderLeft: selectedSymbol === stock.symbol ? '2px solid #3b82f6' : '2px solid transparent',
-                  }}
-                >
-                  <div className="text-left">
-                    <p className="text-xs font-bold" style={{ color: 'var(--text-primary)' }}>{stock.symbol}</p>
-                    <p className="text-[10px]" style={{ color: 'var(--text-tertiary)' }}>{stock.name}</p>
-                  </div>
-                  <div className="text-right">
-                    <p className="text-xs font-semibold" style={{ color: 'var(--text-primary)' }}>${stock.price.toFixed(2)}</p>
-                    <p className={`text-[10px] font-semibold ${stock.change >= 0 ? 'text-green-400' : 'text-red-400'}`}>
-                      {stock.change >= 0 ? '+' : ''}{stock.pct.toFixed(2)}%
-                    </p>
-                  </div>
-                </button>
-              ))}
-            </div>
+
+            {/* Watchlist content */}
+            {rightPanel === 'watchlist' && (
+              <div className="overflow-y-auto flex-1">
+                {WATCHLIST.map(stock => (
+                  <button
+                    key={stock.symbol}
+                    onClick={() => setSelectedSymbol(stock.symbol)}
+                    className="w-full flex items-center justify-between px-3 py-2.5 transition-colors hover:bg-white/5"
+                    style={{
+                      background: selectedSymbol === stock.symbol ? 'rgba(59,130,246,0.08)' : 'transparent',
+                      borderLeft: selectedSymbol === stock.symbol ? '2px solid #3b82f6' : '2px solid transparent',
+                    }}
+                  >
+                    <div className="text-left">
+                      <p className="text-xs font-bold" style={{ color: 'var(--text-primary)' }}>{stock.symbol}</p>
+                      <p className="text-[10px]" style={{ color: 'var(--text-tertiary)' }}>{stock.name}</p>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-xs font-semibold" style={{ color: 'var(--text-primary)' }}>${stock.price.toFixed(2)}</p>
+                      <p className={`text-[10px] font-semibold ${stock.change >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                        {stock.change >= 0 ? '+' : ''}{stock.pct.toFixed(2)}%
+                      </p>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            )}
+
+            {/* Signals content */}
+            {rightPanel === 'signals' && (
+              <div className="overflow-y-auto flex-1">
+                {SIGNALS.map(sig => (
+                  <button
+                    key={sig.id}
+                    onClick={() => setSelectedSymbol(sig.symbol)}
+                    className="w-full px-3 py-2.5 text-left transition-colors hover:bg-white/5 border-b"
+                    style={{
+                      borderColor: 'var(--glass-border-color)',
+                      background: selectedSymbol === sig.symbol ? 'rgba(59,130,246,0.06)' : 'transparent',
+                      borderLeft: selectedSymbol === sig.symbol ? '2px solid #3b82f6' : '2px solid transparent',
+                    }}
+                  >
+                    {/* Row 1: badge + symbol + price */}
+                    <div className="flex items-center justify-between mb-1.5">
+                      <div className="flex items-center gap-2">
+                        <span className={`text-xs font-bold px-2 py-0.5 rounded ${sig.action === 'BUY' ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'}`}>
+                          {sig.action}
+                        </span>
+                        <span className="text-sm font-bold" style={{ color: 'var(--text-primary)' }}>{sig.symbol}</span>
+                      </div>
+                      <span className="text-sm font-semibold" style={{ color: 'var(--text-secondary)' }}>${sig.price.toFixed(2)}</span>
+                    </div>
+                    {/* Row 2: expert + qty + time */}
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs" style={{ color: 'var(--text-tertiary)' }}>{sig.expert}</span>
+                      <span className="text-xs" style={{ color: 'var(--text-tertiary)' }}>{sig.qty} shares · {sig.time}</span>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
 
           {/* Order form */}
@@ -678,6 +765,73 @@ export default function TradingTerminal() {
             </table>
           )}
 
+        </div>
+      </div>
+
+      {/* ── Sky Intelligence slide-in panel ─────────────────────────── */}
+      <div
+        className="fixed top-0 right-0 bottom-0 z-50 flex flex-col"
+        style={{
+          width: '360px',
+          background: 'rgba(8,10,20,0.98)',
+          borderLeft: '1px solid rgba(139,92,246,0.3)',
+          backdropFilter: 'blur(24px)',
+          transform: showSkyIntel ? 'translateX(0)' : 'translateX(100%)',
+          transition: 'transform 0.25s cubic-bezier(0.4,0,0.2,1)',
+        }}
+      >
+        {/* Header */}
+        <div className="flex items-center justify-between px-5 py-4 border-b shrink-0" style={{ borderColor: 'rgba(139,92,246,0.2)' }}>
+          <span className="text-sm font-bold text-violet-300">Sky Intelligence</span>
+          <button onClick={() => setShowSkyIntel(false)} className="hover:text-white transition-colors" style={{ color: 'var(--text-tertiary)' }}>
+            <X className="w-4 h-4" />
+          </button>
+        </div>
+
+        {/* Feed */}
+        <div className="flex-1 overflow-y-auto px-4 py-4 flex flex-col gap-4">
+
+          {/* AI insight card */}
+          <div className="rounded-xl p-4" style={{ background: 'rgba(139,92,246,0.08)', border: '1px solid rgba(139,92,246,0.2)' }}>
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-[11px] font-bold text-violet-400 uppercase tracking-wide">AI Insight</span>
+              <span className="text-[10px]" style={{ color: 'var(--text-tertiary)' }}>Just now</span>
+            </div>
+            <p className="text-xs leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
+              NVIDIA looks strong today. The stock has been climbing steadily and traders are buying more ahead of next week's earnings. A good level to watch is $490 — if it stays above that, the trend is likely to continue.
+            </p>
+          </div>
+
+          {/* News card */}
+          <div className="rounded-xl p-4" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid var(--glass-border-color)' }}>
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-[11px] font-bold uppercase tracking-wide" style={{ color: 'var(--text-tertiary)' }}>Market News</span>
+              <span className="text-[10px]" style={{ color: 'var(--text-tertiary)' }}>14m ago</span>
+            </div>
+            <p className="text-xs font-semibold mb-1.5" style={{ color: 'var(--text-primary)' }}>Apple set to unveil new AI features at WWDC</p>
+            <p className="text-xs leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
+              Apple is expected to announce a major update to its AI capabilities at next month's developer conference. Investors are watching closely — the last time Apple made a big AI announcement, the stock jumped over 7% in a single day.
+            </p>
+          </div>
+
+        </div>
+
+        {/* Chat input */}
+        <div className="shrink-0 px-4 py-4 border-t" style={{ borderColor: 'rgba(139,92,246,0.2)' }}>
+          <div className="flex items-center gap-2 rounded-xl px-3 py-2.5" style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(139,92,246,0.25)' }}>
+            <input
+              type="text"
+              placeholder="Ask Sky Intelligence…"
+              value={intelInput}
+              onChange={e => setIntelInput(e.target.value)}
+              className="flex-1 bg-transparent outline-none text-xs"
+              style={{ color: 'var(--text-primary)' }}
+            />
+            <button className="shrink-0 transition-colors hover:text-violet-300" style={{ color: intelInput ? '#a78bfa' : 'var(--text-tertiary)' }}>
+              <Send className="w-3.5 h-3.5" />
+            </button>
+          </div>
+          <p className="text-[10px] mt-2 text-center" style={{ color: 'var(--text-tertiary)' }}>Powered by Sky AI · For informational purposes only</p>
         </div>
       </div>
     </div>
