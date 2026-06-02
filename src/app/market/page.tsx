@@ -8,6 +8,31 @@ export default function MarketPage() {
   const { user } = useAuth();
   const [selectedTimeframe, setSelectedTimeframe] = useState('1D');
   const [selectedNewsCategory, setSelectedNewsCategory] = useState('Technology');
+  const [selectedMoverTab, setSelectedMoverTab] = useState<'gainers' | 'losers' | 'mostActive'>('gainers');
+
+  const marketMovers = {
+    gainers: [
+      { symbol: 'RIVN', name: 'Rivian', price: 18.92, change: 2.12, changePercent: 12.61 },
+      { symbol: 'PLTR', name: 'Palantir', price: 23.45, change: 1.89, changePercent: 8.78 },
+      { symbol: 'AMD', name: 'AMD Inc.', price: 210.50, change: 8.42, changePercent: 4.16 },
+      { symbol: 'NVDA', name: 'NVIDIA Corp.', price: 487.65, change: 18.40, changePercent: 3.92 },
+      { symbol: 'AMZN', name: 'Amazon', price: 182.40, change: 5.60, changePercent: 3.17 },
+    ],
+    losers: [
+      { symbol: 'NFLX', name: 'Netflix', price: 95.98, change: -22.12, changePercent: -18.73 },
+      { symbol: 'SNAP', name: 'Snap Inc.', price: 12.34, change: -0.98, changePercent: -7.36 },
+      { symbol: 'LYFT', name: 'Lyft', price: 14.56, change: -1.23, changePercent: -7.79 },
+      { symbol: 'TSLA', name: 'Tesla Inc.', price: 248.42, change: -15.23, changePercent: -5.78 },
+      { symbol: 'UBER', name: 'Uber', price: 62.31, change: -3.42, changePercent: -5.20 },
+    ],
+    mostActive: [
+      { symbol: 'AAPL', name: 'Apple Inc.', price: 189.30, change: 1.24, changePercent: 0.66 },
+      { symbol: 'TSLA', name: 'Tesla Inc.', price: 248.42, change: -5.23, changePercent: -2.06 },
+      { symbol: 'NVDA', name: 'NVIDIA Corp.', price: 487.65, change: 18.40, changePercent: 3.92 },
+      { symbol: 'AMZN', name: 'Amazon', price: 182.40, change: -1.30, changePercent: -0.71 },
+      { symbol: 'MSFT', name: 'Microsoft', price: 378.92, change: 2.10, changePercent: 0.56 },
+    ],
+  };
 
   // Mock data for major indices
   const majorIndices = [
@@ -151,6 +176,48 @@ export default function MarketPage() {
                 </p>
               </div>
             ))}
+          </div>
+        </div>
+
+        {/* Today's Market Movers */}
+        <div className="mb-6">
+          <div className="card">
+            <div className="card-body p-5">
+              <h2 className="text-xl font-bold mb-4" style={{ color: 'var(--text-primary)' }}>Today's Market Movers</h2>
+              <div className="flex gap-2 mb-4">
+                {([['gainers', 'Gainers', 'from-green-500 to-emerald-600'], ['losers', 'Losers', 'from-red-500 to-rose-600'], ['mostActive', 'Most Active', 'from-blue-500 to-purple-600']] as const).map(([key, label, grad]) => (
+                  <button
+                    key={key}
+                    onClick={() => setSelectedMoverTab(key)}
+                    className={`flex-1 px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-200 ${
+                      selectedMoverTab === key
+                        ? `bg-gradient-to-r ${grad} text-white shadow-lg`
+                        : 'glass-morphism border border-white/10 hover:bg-white/5'
+                    }`}
+                    style={selectedMoverTab !== key ? { color: 'var(--text-secondary)' } : {}}
+                  >
+                    {label}
+                  </button>
+                ))}
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-3">
+                {marketMovers[selectedMoverTab].map((stock, index) => (
+                  <div key={stock.symbol} className="glass-morphism p-4 rounded-xl border border-white/5 hover:border-blue-500/30 transition-all cursor-pointer">
+                    <div className="flex items-center gap-2 mb-2">
+                      <div className="w-7 h-7 rounded-lg flex items-center justify-center text-xs font-bold text-white" style={{
+                        background: selectedMoverTab === 'gainers' ? 'linear-gradient(135deg,#10B981,#059669)' : selectedMoverTab === 'losers' ? 'linear-gradient(135deg,#EF4444,#DC2626)' : 'linear-gradient(135deg,#3B82F6,#8B5CF6)'
+                      }}>{index + 1}</div>
+                      <span className="font-bold text-sm" style={{ color: 'var(--text-primary)' }}>{stock.symbol}</span>
+                    </div>
+                    <p className="text-xs mb-2 truncate" style={{ color: 'var(--text-tertiary)' }}>{stock.name}</p>
+                    <p className="text-base font-bold" style={{ color: 'var(--text-primary)' }}>${stock.price.toFixed(2)}</p>
+                    <p className={`text-sm font-semibold ${stock.changePercent >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                      {stock.changePercent >= 0 ? '+' : ''}{stock.changePercent.toFixed(2)}%
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
 

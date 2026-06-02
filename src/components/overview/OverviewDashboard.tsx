@@ -8,7 +8,7 @@ import ComparisonChart from '../charts/ComparisonChart';
 import PieChart from '../charts/PieChart';
 import TradingModal from '../trading/TradingModal';
 
-import { Sparkles, ChevronDown, Plus } from 'lucide-react';
+import { Sparkles, ChevronDown, Plus, Search, Filter, X, Check } from 'lucide-react';
 
 interface Stock {
   symbol: string;
@@ -26,6 +26,21 @@ interface Holding {
   currentPrice: number;
 }
 
+interface Order {
+  id: string;
+  orderId: string;
+  assetType: 'stock' | 'option' | 'etf';
+  symbol: string;
+  name: string;
+  quantity: number;
+  orderType: 'market' | 'limit' | 'stop-loss' | 'stop-limit';
+  orderPrice: number;
+  currentPrice: number;
+  status: 'pending' | 'executed' | 'cancelled' | 'partially-filled' | 'rejected';
+  date: string;
+  side: 'buy' | 'sell';
+}
+
 export default function OverviewDashboard() {
   const { user } = useAuth();
   const [topStocks, setTopStocks] = useState<Stock[]>([]);
@@ -34,19 +49,28 @@ export default function OverviewDashboard() {
   const [comparisonData, setComparisonData] = useState<{ name: string; userPerformance: number; marketPerformance: number }[]>([]);
   const [selectedTimeframe, setSelectedTimeframe] = useState<string>('30d');
   const [selectedComparisonTimeframe, setSelectedComparisonTimeframe] = useState<string>('30d');
-  const [marketMovers, setMarketMovers] = useState<{ gainers: Stock[]; losers: Stock[]; mostActive: Stock[] }>({gainers: [], losers: [], mostActive: []});
-  const [selectedMoverTab, setSelectedMoverTab] = useState<'gainers' | 'losers' | 'mostActive'>('gainers');
   const [recentActivities, setRecentActivities] = useState<any[]>([]);
   const [isPortfolioLoading, setIsPortfolioLoading] = useState(true);
   const [selectedStock, setSelectedStock] = useState<Holding | null>(null);
   const [showTradingModal, setShowTradingModal] = useState(false);
-  const [marketOverview, setMarketOverview] = useState<{ topStocks: Stock[]; us: Stock[]; international: Stock[]; commodities: Stock[] }>({ topStocks: [], us: [], international: [], commodities: [] });
-  const [selectedMarketTab, setSelectedMarketTab] = useState<'topStocks' | 'us' | 'international' | 'commodities'>('topStocks');
   const [plMode, setPlMode] = useState<'cumulative' | 'daily'>('cumulative');
   const [calendarMonth, setCalendarMonth] = useState('May 2026');
   const [selectedAccount, setSelectedAccount] = useState('Demo Account');
   const [showAccountMenu, setShowAccountMenu] = useState(false);
   const ACCOUNTS = ['Demo Account', 'Trading Account'];
+
+  // Orders state
+  const [orders, setOrders] = useState<Order[]>([]);
+  const [ordersTab, setOrdersTab] = useState<'all' | 'stocks' | 'options' | 'etfs'>('all');
+  const [selectedOrders, setSelectedOrders] = useState<Set<string>>(new Set());
+  const [orderStatusFilter, setOrderStatusFilter] = useState<'all' | Order['status']>('all');
+  const [orderTypeFilter, setOrderTypeFilter] = useState<'all' | Order['orderType']>('all');
+  const [orderSearchQuery, setOrderSearchQuery] = useState('');
+  const [orderSortBy, setOrderSortBy] = useState<'date' | 'price' | 'quantity'>('date');
+  const [showOrderFilters, setShowOrderFilters] = useState(false);
+  const [showBuyModal, setShowBuyModal] = useState(false);
+  const [showSellModal, setShowSellModal] = useState(false);
+  const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
 
   // Mini sparkline component
   const MiniSparkline = ({ data, color }: { data: number[], color: string }) => {
@@ -82,63 +106,6 @@ export default function OverviewDashboard() {
       { symbol: 'TSLA', name: 'Tesla Inc.', price: 248.42, change: -5.23, changePercent: -2.06 },
       { symbol: 'AMZN', name: 'Amazon.com Inc.', price: 127.74, change: 1.89, changePercent: 1.50 }
     ]);
-
-    // Market Movers
-    setMarketMovers({
-      gainers: [
-        { symbol: 'NVDA', name: 'NVIDIA Corp.', price: 180.00, change: -2.85, changePercent: -1.55 },
-        { symbol: 'AMD', name: 'AMD Inc.', price: 210.50, change: 8.42, changePercent: 4.16 },
-        { symbol: 'PLTR', name: 'Palantir', price: 23.45, change: 1.89, changePercent: 8.78 },
-        { symbol: 'RIVN', name: 'Rivian', price: 18.92, change: 2.12, changePercent: 12.61 }
-      ],
-      losers: [
-        { symbol: 'TSLA', name: 'Tesla Inc.', price: 248.42, change: -15.23, changePercent: -5.78 },
-        { symbol: 'NFLX', name: 'Netflix', price: 95.98, change: -22.12, changePercent: -18.73 },
-        { symbol: 'SNAP', name: 'Snap Inc.', price: 12.34, change: -0.98, changePercent: -7.36 },
-        { symbol: 'UBER', name: 'Uber', price: 62.31, change: -3.42, changePercent: -5.20 },
-        { symbol: 'LYFT', name: 'Lyft', price: 14.56, change: -1.23, changePercent: -7.79 }
-      ],
-      mostActive: [
-        { symbol: 'AAPL', name: 'Apple Inc.', price: 175.43, change: 2.15, changePercent: 1.24 },
-        { symbol: 'TSLA', name: 'Tesla Inc.', price: 248.42, change: -5.23, changePercent: -2.06 },
-        { symbol: 'NVDA', name: 'NVIDIA', price: 180.00, change: -2.85, changePercent: -1.55 },
-        { symbol: 'AMZN', name: 'Amazon', price: 127.74, change: 1.89, changePercent: 1.50 },
-        { symbol: 'MSFT', name: 'Microsoft', price: 378.85, change: 4.12, changePercent: 1.10 }
-      ]
-    });
-
-    // Market Overview
-    setMarketOverview({
-      topStocks: [
-        { symbol: 'AAPL', name: 'Apple Inc.', price: 175.43, change: 2.15, changePercent: 1.24 },
-        { symbol: 'GOOGL', name: 'Alphabet Inc.', price: 138.21, change: -1.32, changePercent: -0.95 },
-        { symbol: 'MSFT', name: 'Microsoft Corp.', price: 378.85, change: 4.12, changePercent: 1.10 },
-        { symbol: 'TSLA', name: 'Tesla Inc.', price: 248.42, change: -5.23, changePercent: -2.06 },
-        { symbol: 'AMZN', name: 'Amazon.com Inc.', price: 127.74, change: 1.89, changePercent: 1.50 }
-      ],
-      us: [
-        { symbol: 'SPX', name: 'S&P 500', price: 5234.18, change: 23.45, changePercent: 0.45 },
-        { symbol: 'IXIC', name: 'NASDAQ', price: 16428.82, change: 127.34, changePercent: 0.78 },
-        { symbol: 'DJI', name: 'Dow Jones', price: 38712.21, change: -46.32, changePercent: -0.12 },
-        { symbol: 'RUT', name: 'Russell 2000', price: 2048.52, change: 15.67, changePercent: 0.77 },
-        { symbol: 'VIX', name: 'Volatility Index', price: 14.23, change: -0.89, changePercent: -5.89 }
-      ],
-      international: [
-        { symbol: 'FTSE', name: 'FTSE 100', price: 7842.45, change: 34.21, changePercent: 0.44 },
-        { symbol: 'DAX', name: 'DAX', price: 17234.67, change: -45.32, changePercent: -0.26 },
-        { symbol: 'CAC', name: 'CAC 40', price: 7523.89, change: 12.45, changePercent: 0.17 },
-        { symbol: 'N225', name: 'Nikkei 225', price: 38456.78, change: 234.56, changePercent: 0.61 },
-        { symbol: 'HSI', name: 'Hang Seng', price: 17892.34, change: -123.45, changePercent: -0.68 },
-        { symbol: 'SSEC', name: 'Shanghai Composite', price: 3234.56, change: 23.45, changePercent: 0.73 }
-      ],
-      commodities: [
-        { symbol: 'GC', name: 'Gold', price: 2034.50, change: 12.30, changePercent: 0.61 },
-        { symbol: 'SI', name: 'Silver', price: 24.67, change: 0.34, changePercent: 1.40 },
-        { symbol: 'CL', name: 'Crude Oil WTI', price: 78.45, change: -1.23, changePercent: -1.54 },
-        { symbol: 'BZ', name: 'Brent Crude', price: 82.34, change: -0.89, changePercent: -1.07 },
-        { symbol: 'NG', name: 'Natural Gas', price: 2.87, change: 0.12, changePercent: 4.36 }
-      ]
-    });
 
     // Load portfolio with loading state
     setIsPortfolioLoading(true);
@@ -330,6 +297,63 @@ export default function OverviewDashboard() {
     };
 
     setComparisonData(staticComparisonData[timeframe] || staticComparisonData['30d']);
+  };
+
+  // Orders logic
+  const generateMockOrders = (): Order[] => ([
+    { id: 'order_1', orderId: 'ORD001002', assetType: 'stock',  symbol: 'NVDA',      name: 'NVIDIA Corporation',    quantity: 10, orderType: 'limit',     orderPrice: 842.50, currentPrice: 855.20, status: 'executed',  date: new Date('2026-04-28T10:32:00').toISOString(), side: 'buy'  },
+    { id: 'order_2', orderId: 'ORD001003', assetType: 'stock',  symbol: 'AAPL',      name: 'Apple Inc.',            quantity: 25, orderType: 'market',    orderPrice: 175.43, currentPrice: 178.10, status: 'executed',  date: new Date('2026-04-27T14:15:00').toISOString(), side: 'buy'  },
+    { id: 'order_3', orderId: 'ORD001004', assetType: 'option', symbol: 'TSLA 180P', name: 'Tesla Put $180',        quantity: 10, orderType: 'limit',     orderPrice: 3.50,   currentPrice: 3.80,   status: 'pending',   date: new Date('2026-04-29T09:45:00').toISOString(), side: 'buy'  },
+    { id: 'order_4', orderId: 'ORD001005', assetType: 'etf',    symbol: 'SPY',       name: 'SPDR S&P 500 ETF',     quantity: 5,  orderType: 'stop-loss', orderPrice: 510.00, currentPrice: 523.18, status: 'cancelled', date: new Date('2026-04-26T11:20:00').toISOString(), side: 'sell' },
+    { id: 'order_5', orderId: 'ORD001006', assetType: 'stock',  symbol: 'AMD',       name: 'Advanced Micro Devices',quantity: 20, orderType: 'market',    orderPrice: 182.00, currentPrice: 179.50, status: 'executed',  date: new Date('2026-04-25T15:55:00').toISOString(), side: 'sell' },
+  ]);
+
+  useEffect(() => {
+    if (!user) return;
+    const stored = localStorage.getItem(`orders_${user.id}`);
+    if (stored) {
+      setOrders(JSON.parse(stored));
+    } else {
+      const mock = generateMockOrders();
+      localStorage.setItem(`orders_${user.id}`, JSON.stringify(mock));
+      setOrders(mock);
+    }
+  }, [user]);
+
+  const filteredOrders = orders.filter(o => {
+    if (ordersTab !== 'all' && o.assetType !== ordersTab.slice(0, -1)) return false;
+    if (orderStatusFilter !== 'all' && o.status !== orderStatusFilter) return false;
+    if (orderTypeFilter !== 'all' && o.orderType !== orderTypeFilter) return false;
+    if (orderSearchQuery && !o.symbol.toLowerCase().includes(orderSearchQuery.toLowerCase()) && !o.name.toLowerCase().includes(orderSearchQuery.toLowerCase())) return false;
+    return true;
+  });
+
+  const sortedOrders = [...filteredOrders].sort((a, b) => {
+    if (orderSortBy === 'date')     return new Date(b.date).getTime() - new Date(a.date).getTime();
+    if (orderSortBy === 'price')    return b.currentPrice - a.currentPrice;
+    if (orderSortBy === 'quantity') return b.quantity - a.quantity;
+    return 0;
+  });
+
+  const handleSelectAll = () => {
+    setSelectedOrders(selectedOrders.size === sortedOrders.length ? new Set() : new Set(sortedOrders.map(o => o.id)));
+  };
+
+  const handleSelectOrder = (id: string) => {
+    const next = new Set(selectedOrders);
+    next.has(id) ? next.delete(id) : next.add(id);
+    setSelectedOrders(next);
+  };
+
+  const getOrderStatusColor = (status: Order['status']) => {
+    switch (status) {
+      case 'executed':        return 'bg-green-500/20 text-green-400 border border-green-500/30';
+      case 'pending':         return 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/30';
+      case 'cancelled':       return 'bg-red-500/20 text-red-400 border border-red-500/30';
+      case 'partially-filled':return 'bg-blue-500/20 text-blue-400 border border-blue-500/30';
+      case 'rejected':        return 'bg-red-500/20 text-red-400 border border-red-500/30';
+      default:                return 'glass-morphism';
+    }
   };
 
   const timeframeOptions = [
@@ -681,10 +705,194 @@ export default function OverviewDashboard() {
         </div>
       </div>
 
-      {/* Profit by Ticker */}
+      {/* ── Orders ───────────────────────────────────────────────── */}
+      <div className="card mb-8">
+        {/* Stats bar */}
+        <div className="grid grid-cols-4 border-b" style={{ borderColor: 'var(--glass-border-color)' }}>
+          {[
+            { label: 'Total Orders', value: orders.length, color: 'var(--primary-blue)' },
+            { label: 'Executed',     value: orders.filter(o => o.status === 'executed').length,  color: '#22c55e' },
+            { label: 'Pending',      value: orders.filter(o => o.status === 'pending').length,   color: '#facc15' },
+            { label: 'Total Value',  value: `$${orders.reduce((s, o) => s + o.quantity * o.currentPrice, 0).toFixed(2)}`, color: 'var(--primary-purple)' },
+          ].map((stat, i) => (
+            <div key={stat.label} className={`px-5 py-4 ${i > 0 ? 'border-l' : ''}`} style={{ borderColor: 'var(--glass-border-color)' }}>
+              <p className="text-xs mb-1" style={{ color: 'var(--text-tertiary)' }}>{stat.label}</p>
+              <p className="text-xl font-bold" style={{ color: stat.color }}>{stat.value}</p>
+            </div>
+          ))}
+        </div>
+
+        {/* Tabs */}
+        <div className="flex items-center gap-2 px-5 pt-4 pb-0 border-b" style={{ borderColor: 'var(--glass-border-color)' }}>
+          <h2 className="text-base font-bold mr-4" style={{ color: 'var(--text-primary)' }}>Orders</h2>
+          {(['all', 'stocks', 'options', 'etfs'] as const).map(tab => (
+            <button
+              key={tab}
+              onClick={() => setOrdersTab(tab)}
+              className="px-4 py-2 rounded-t-lg text-xs font-semibold transition-all"
+              style={{
+                background: ordersTab === tab ? 'linear-gradient(135deg, #3b82f6, #9333ea)' : 'transparent',
+                color: ordersTab === tab ? '#fff' : 'var(--text-secondary)',
+                borderBottom: ordersTab === tab ? 'none' : undefined,
+              }}
+            >
+              {tab.charAt(0).toUpperCase() + tab.slice(1)}
+            </button>
+          ))}
+        </div>
+
+        {/* Search + filters */}
+        <div className="px-5 py-3 border-b flex flex-col gap-3" style={{ borderColor: 'var(--glass-border-color)' }}>
+          <div className="flex items-center gap-3">
+            <div className="relative flex-1 max-w-sm">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: 'var(--text-tertiary)' }} />
+              <input
+                type="text"
+                placeholder="Search by symbol or name…"
+                value={orderSearchQuery}
+                onChange={e => setOrderSearchQuery(e.target.value)}
+                className="w-full pl-9 pr-3 py-2 text-xs rounded-lg"
+                style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid var(--glass-border-color)', color: 'var(--text-primary)' }}
+              />
+            </div>
+            <button
+              onClick={() => setShowOrderFilters(!showOrderFilters)}
+              className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-semibold transition-all"
+              style={{
+                background: showOrderFilters ? 'linear-gradient(135deg, #3b82f6, #9333ea)' : 'rgba(255,255,255,0.04)',
+                color: showOrderFilters ? '#fff' : 'var(--text-secondary)',
+                border: '1px solid var(--glass-border-color)',
+              }}
+            >
+              <Filter className="w-3.5 h-3.5" /> Filters
+            </button>
+            <select
+              value={orderSortBy}
+              onChange={e => setOrderSortBy(e.target.value as typeof orderSortBy)}
+              className="px-3 py-2 text-xs rounded-lg"
+              style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid var(--glass-border-color)', color: 'var(--text-secondary)' }}
+            >
+              <option value="date">Sort by Date</option>
+              <option value="price">Sort by Price</option>
+              <option value="quantity">Sort by Quantity</option>
+            </select>
+          </div>
+
+          {showOrderFilters && (
+            <div className="flex items-end gap-4 p-3 rounded-lg" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid var(--glass-border-color)' }}>
+              <div className="flex flex-col gap-1">
+                <label className="text-xs font-semibold" style={{ color: 'var(--text-secondary)' }}>Status</label>
+                <select value={orderStatusFilter} onChange={e => setOrderStatusFilter(e.target.value as typeof orderStatusFilter)} className="px-3 py-1.5 text-xs rounded-lg" style={{ background: 'var(--glass-bg)', border: '1px solid var(--glass-border-color)', color: 'var(--text-secondary)' }}>
+                  <option value="all">All</option>
+                  <option value="pending">Pending</option>
+                  <option value="executed">Executed</option>
+                  <option value="cancelled">Cancelled</option>
+                  <option value="partially-filled">Partially Filled</option>
+                  <option value="rejected">Rejected</option>
+                </select>
+              </div>
+              <div className="flex flex-col gap-1">
+                <label className="text-xs font-semibold" style={{ color: 'var(--text-secondary)' }}>Order Type</label>
+                <select value={orderTypeFilter} onChange={e => setOrderTypeFilter(e.target.value as typeof orderTypeFilter)} className="px-3 py-1.5 text-xs rounded-lg" style={{ background: 'var(--glass-bg)', border: '1px solid var(--glass-border-color)', color: 'var(--text-secondary)' }}>
+                  <option value="all">All</option>
+                  <option value="market">Market</option>
+                  <option value="limit">Limit</option>
+                  <option value="stop-loss">Stop Loss</option>
+                  <option value="stop-limit">Stop Limit</option>
+                </select>
+              </div>
+              <button
+                onClick={() => { setOrderStatusFilter('all'); setOrderTypeFilter('all'); setOrderSearchQuery(''); }}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs hover:bg-red-500/20 transition-colors"
+                style={{ border: '1px solid var(--glass-border-color)', color: 'var(--text-secondary)' }}
+              >
+                <X className="w-3.5 h-3.5" /> Clear
+              </button>
+            </div>
+          )}
+        </div>
+
+        {/* Bulk actions */}
+        {selectedOrders.size > 0 && (
+          <div className="px-5 py-3 border-b flex items-center justify-between" style={{ background: 'rgba(59,130,246,0.06)', borderColor: 'var(--glass-border-color)' }}>
+            <span className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>{selectedOrders.size} selected</span>
+            <div className="flex gap-2">
+              <button onClick={() => { if (confirm(`Sell ${selectedOrders.size} order(s)?`)) setSelectedOrders(new Set()); }} className="px-4 py-1.5 rounded-lg text-xs font-semibold bg-gradient-to-r from-red-500 to-red-600 text-white hover:from-red-600 hover:to-red-700 transition-all">Sell Selected</button>
+              <button onClick={() => setSelectedOrders(new Set())} className="px-3 py-1.5 rounded-lg text-xs" style={{ border: '1px solid var(--glass-border-color)', color: 'var(--text-secondary)' }}>Cancel</button>
+            </div>
+          </div>
+        )}
+
+        {/* Table */}
+        <div className="overflow-x-auto">
+          {sortedOrders.length > 0 ? (
+            <table className="table w-full">
+              <thead>
+                <tr>
+                  <th><input type="checkbox" checked={selectedOrders.size === sortedOrders.length && sortedOrders.length > 0} onChange={handleSelectAll} className="w-4 h-4 rounded" /></th>
+                  <th className="text-left text-xs">Order ID</th>
+                  <th className="text-left text-xs">Asset</th>
+                  <th className="text-left text-xs">Side</th>
+                  <th className="text-right text-xs">Qty</th>
+                  <th className="text-left text-xs">Type</th>
+                  <th className="text-right text-xs">Order Price</th>
+                  <th className="text-right text-xs">Current Price</th>
+                  <th className="text-left text-xs">Status</th>
+                  <th className="text-left text-xs">Date</th>
+                  <th className="text-center text-xs">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {sortedOrders.map(order => {
+                  const change = order.currentPrice - order.orderPrice;
+                  const changePct = (change / order.orderPrice) * 100;
+                  return (
+                    <tr key={order.id} className={selectedOrders.has(order.id) ? 'bg-blue-500/5' : ''}>
+                      <td><input type="checkbox" checked={selectedOrders.has(order.id)} onChange={() => handleSelectOrder(order.id)} className="w-4 h-4 rounded" /></td>
+                      <td><span className="text-xs font-mono" style={{ color: 'var(--text-secondary)' }}>{order.orderId}</span></td>
+                      <td>
+                        <span className="font-bold text-sm" style={{ color: 'var(--text-primary)' }}>{order.symbol}</span>
+                        <div className="text-xs" style={{ color: 'var(--text-tertiary)' }}>{order.name}</div>
+                      </td>
+                      <td><span className={`text-xs font-bold px-2 py-0.5 rounded-full ${order.side === 'buy' ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'}`}>{order.side.toUpperCase()}</span></td>
+                      <td className="text-right text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>{order.quantity}</td>
+                      <td><span className="text-xs px-2 py-0.5 rounded capitalize" style={{ background: 'rgba(255,255,255,0.05)', color: 'var(--text-secondary)' }}>{order.orderType.replace('-', ' ')}</span></td>
+                      <td className="text-right text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>${order.orderPrice.toFixed(2)}</td>
+                      <td className="text-right">
+                        <div className="text-sm font-bold" style={{ color: 'var(--text-accent)' }}>${order.currentPrice.toFixed(2)}</div>
+                        <div className={`text-xs ${change >= 0 ? 'text-green-400' : 'text-red-400'}`}>{change >= 0 ? '+' : ''}{changePct.toFixed(2)}%</div>
+                      </td>
+                      <td><span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${getOrderStatusColor(order.status)}`}>{order.status.replace('-', ' ').toUpperCase()}</span></td>
+                      <td>
+                        <div className="text-xs" style={{ color: 'var(--text-secondary)' }}>{new Date(order.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</div>
+                        <div className="text-xs" style={{ color: 'var(--text-tertiary)' }}>{new Date(order.date).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}</div>
+                      </td>
+                      <td>
+                        <div className="flex items-center justify-center gap-1.5">
+                          <button onClick={() => { setSelectedOrder(order); setShowBuyModal(true); }} className="text-xs px-2.5 py-1 rounded-lg bg-gradient-to-r from-green-500 to-green-600 text-white hover:from-green-600 hover:to-green-700 transition-all font-semibold">Buy More</button>
+                          <button onClick={() => { setSelectedOrder(order); setShowSellModal(true); }} className="text-xs px-2.5 py-1 rounded-lg bg-gradient-to-r from-red-500 to-red-600 text-white hover:from-red-600 hover:to-red-700 transition-all font-semibold">Sell</button>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          ) : (
+            <div className="text-center py-12">
+              <p className="text-lg font-semibold mb-1" style={{ color: 'var(--text-primary)' }}>No orders found</p>
+              <p className="text-sm" style={{ color: 'var(--text-tertiary)' }}>
+                {orderSearchQuery || orderStatusFilter !== 'all' || orderTypeFilter !== 'all' ? 'Try adjusting your filters' : 'Start trading to see your orders here'}
+              </p>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* P/L by Ticker */}
       <div className="card mb-8">
         <div className="card-body p-5">
-          <h3 className="text-base font-bold mb-4" style={{ color: 'var(--text-primary)' }}>Profit by Ticker</h3>
+          <h3 className="text-base font-bold mb-4" style={{ color: 'var(--text-primary)' }}>P/L by Ticker</h3>
           <table className="w-full text-sm">
             <thead>
               <tr style={{ borderBottom: '1px solid var(--glass-border-color)' }}>
@@ -719,189 +927,10 @@ export default function OverviewDashboard() {
         </div>
       </div>
 
-      {/* Market Overview */}
-      <div className="card mb-8">
+
+      {/* Recent Activity */}
+      <div className="card mb-12">
         <div className="card-body">
-          <h2 className="text-2xl font-bold mb-6" style={{ color: 'var(--text-primary)' }}>
-            Market Overview
-          </h2>
-
-          {/* Tabs */}
-          <div className="flex gap-2 mb-6">
-            <button
-              onClick={() => setSelectedMarketTab('topStocks')}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
-                selectedMarketTab === 'topStocks'
-                  ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg'
-                  : 'bg-white/5 hover:bg-white/10'
-              }`}
-              style={selectedMarketTab !== 'topStocks' ? { color: 'var(--text-secondary)' } : {}}
-            >
-              Top Stocks
-            </button>
-            <button
-              onClick={() => setSelectedMarketTab('us')}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
-                selectedMarketTab === 'us'
-                  ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg'
-                  : 'bg-white/5 hover:bg-white/10'
-              }`}
-              style={selectedMarketTab !== 'us' ? { color: 'var(--text-secondary)' } : {}}
-            >
-              US Indices
-            </button>
-            <button
-              onClick={() => setSelectedMarketTab('international')}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
-                selectedMarketTab === 'international'
-                  ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg'
-                  : 'bg-white/5 hover:bg-white/10'
-              }`}
-              style={selectedMarketTab !== 'international' ? { color: 'var(--text-secondary)' } : {}}
-            >
-              International
-            </button>
-            <button
-              onClick={() => setSelectedMarketTab('commodities')}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
-                selectedMarketTab === 'commodities'
-                  ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg'
-                  : 'bg-white/5 hover:bg-white/10'
-              }`}
-              style={selectedMarketTab !== 'commodities' ? { color: 'var(--text-secondary)' } : {}}
-            >
-              Commodities
-            </button>
-          </div>
-
-          {/* Market Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {marketOverview[selectedMarketTab].map((item) => (
-              <div key={item.symbol} className="glass-morphism p-4 rounded-xl hover:bg-white/5 transition-all duration-200 border border-white/5 hover:border-blue-500/30">
-                <div className="flex items-center justify-between mb-2">
-                  <div>
-                    <h3 className="text-sm font-bold" style={{ color: 'var(--text-primary)' }}>{item.symbol}</h3>
-                    <p className="text-xs" style={{ color: 'var(--text-tertiary)' }}>{item.name}</p>
-                  </div>
-                  <div className={`px-2 py-1 rounded-lg text-xs font-medium ${
-                    item.changePercent >= 0 ? 'bg-green-500/10 text-green-400' : 'bg-red-500/10 text-red-400'
-                  }`}>
-                    {item.changePercent >= 0 ? '+' : ''}{item.changePercent.toFixed(2)}%
-                  </div>
-                </div>
-                <div className="flex items-end justify-between">
-                  <div>
-                    <p className="text-2xl font-bold" style={{ color: 'var(--text-primary)' }}>
-                      {item.price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                    </p>
-                    <p className={`text-xs font-medium ${item.change >= 0 ? 'text-green-400' : 'text-red-400'}`}>
-                      {item.change >= 0 ? '+' : ''}{item.change.toFixed(2)}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {/* 4. Performance Metrics & Market Movers | Recent Activity & Copy Trading */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
-        {/* Left Column: Performance Metrics + Market Movers */}
-        <div className="space-y-8">
-          {/* Today's Market Movers */}
-          <div className="card">
-            <div className="card-body">
-              <h2 className="text-2xl font-bold mb-6" style={{ color: 'var(--text-primary)' }}>
-                Today's Market Movers
-              </h2>
-
-              {/* Tabs */}
-              <div className="flex gap-2 mb-4">
-                <button
-                  onClick={() => setSelectedMoverTab('gainers')}
-                  className={`flex-1 px-4 py-2.5 rounded-lg text-sm font-semibold transition-all duration-200 ${
-                    selectedMoverTab === 'gainers'
-                      ? 'bg-gradient-to-r from-green-500 to-emerald-600 text-white shadow-lg shadow-green-500/30'
-                      : 'glass-morphism border border-white/10 hover:border-green-500/30'
-                  }`}
-                >
-                  <span className="flex items-center justify-center gap-2">
-                    Gainers
-                  </span>
-                </button>
-                <button
-                  onClick={() => setSelectedMoverTab('losers')}
-                  className={`flex-1 px-4 py-2.5 rounded-lg text-sm font-semibold transition-all duration-200 ${
-                    selectedMoverTab === 'losers'
-                      ? 'bg-gradient-to-r from-red-500 to-rose-600 text-white shadow-lg shadow-red-500/30'
-                      : 'glass-morphism border border-white/10 hover:border-red-500/30'
-                  }`}
-                >
-                  <span className="flex items-center justify-center gap-2">
-                    Losers
-                  </span>
-                </button>
-                <button
-                  onClick={() => setSelectedMoverTab('mostActive')}
-                  className={`flex-1 px-4 py-2.5 rounded-lg text-sm font-semibold transition-all duration-200 ${
-                    selectedMoverTab === 'mostActive'
-                      ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg shadow-blue-500/30'
-                      : 'glass-morphism border border-white/10 hover:border-blue-500/30'
-                  }`}
-                >
-                  <span className="flex items-center justify-center gap-2">
-                    Most Active
-                  </span>
-                </button>
-              </div>
-
-              {/* Stock List */}
-              <div className="space-y-2.5">
-                {marketMovers[selectedMoverTab].map((stock, index) => (
-                  <div key={stock.symbol} className="glass-morphism p-4 rounded-xl hover:bg-white/5 transition-all duration-200 cursor-pointer border border-white/5 hover:border-blue-500/30">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-3 flex-1">
-                        <div className="w-8 h-8 rounded-lg flex items-center justify-center text-sm font-bold" style={{
-                          background: selectedMoverTab === 'gainers'
-                            ? 'linear-gradient(135deg, #10B981 0%, #059669 100%)'
-                            : selectedMoverTab === 'losers'
-                            ? 'linear-gradient(135deg, #EF4444 0%, #DC2626 100%)'
-                            : 'linear-gradient(135deg, #3B82F6 0%, #8B5CF6 100%)'
-                        }}>
-                          {index + 1}
-                        </div>
-                        <div className="flex-1">
-                            <div className="flex items-center gap-2 mb-0.5">
-                              <span className="text-base font-bold" style={{ color: 'var(--text-primary)' }}>
-                                {stock.symbol}
-                              </span>
-                              <span className="text-xs" style={{ color: 'var(--text-tertiary)' }}>{stock.name}</span>
-                            </div>
-                          <div className="flex items-center gap-3">
-                            <span className="text-sm font-semibold" style={{ color: 'var(--text-secondary)' }}>
-                              ${stock.price.toFixed(2)}
-                            </span>
-                            <span className={`text-sm font-bold ${stock.change >= 0 ? 'text-green-400' : 'text-red-400'}`}>
-                              {stock.change >= 0 ? '+' : ''}{stock.changePercent.toFixed(2)}%
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-                        <button className="px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-200 glass-morphism border border-white/10 hover:border-blue-500/50 hover:bg-blue-500/10">
-                          Trade
-                        </button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Recent Activity */}
-        <div className="card">
-          <div className="card-body">
             <div className="mb-6">
               <h2 className="text-2xl font-bold" style={{ color: 'var(--text-primary)' }}>
                 Recent Activity
@@ -1017,170 +1046,45 @@ export default function OverviewDashboard() {
         </div>
       )}
 
-      {/* 6. Market News & Sentiment Section */}
-      <div className="card mb-12">
-        <div className="card-body">
-          <div className="flex items-center justify-between mb-8">
-            <h2 className="text-3xl font-bold" style={{ color: 'var(--text-primary)' }}>
-              Market News & Sentiment
-            </h2>
 
-            {/* Overall Market Sentiment Gauge */}
-            <div className="flex items-center gap-4">
-              <span className="text-sm" style={{ color: 'var(--text-secondary)' }}>Market Sentiment:</span>
-              <div className="flex items-center gap-2 px-4 py-2 rounded-lg glass-morphism border border-green-500/30">
-                <div className="w-2 h-2 rounded-full bg-green-500 transition-opacity duration-1000"></div>
-                <span className="text-sm font-bold text-green-400">Bullish (72%)</span>
+        {/* Buy More Modal */}
+        {showBuyModal && selectedOrder && (
+          <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+            <div className="card max-w-md w-full">
+              <div className="card-header border-b" style={{ borderColor: 'var(--glass-border-color)' }}>
+                <h3 className="text-xl font-bold text-gradient">Buy More {selectedOrder.symbol}</h3>
               </div>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {/* News Item 1 */}
-            <div className="glass-morphism p-6 rounded-xl market-update-card cursor-pointer hover:border-green-500/30 border border-white/5 transition-all duration-200">
-              <div className="flex items-start">
-                <div className="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: 'var(--gradient-primary)' }}>
-                  <span className="text-white font-bold text-xs">UP</span>
-                </div>
-                <div className="flex-1">
-                  <div className="flex items-center gap-2 mb-2">
-                    <span className="text-xs px-2 py-0.5 rounded-full bg-green-500/20 text-green-400 font-semibold">Bullish</span>
-                    <span className="text-xs" style={{ color: 'var(--text-muted)' }}>CNBC</span>
-                  </div>
-                  <p className="text-sm font-semibold mb-2" style={{ color: 'var(--text-primary)' }}>S&P 500 hits new all-time high as tech stocks rally continues</p>
-                  <p className="text-xs mb-3" style={{ color: 'var(--text-secondary)' }}>Major indices surge on positive earnings reports and Fed rate speculation...</p>
-                  <div className="flex items-center justify-between">
-                    <p className="text-xs" style={{ color: 'var(--text-muted)' }}>2 minutes ago</p>
-                    <div className="flex gap-1">
-                      <span className="text-xs px-2 py-0.5 rounded glass-morphism">SPY</span>
-                      <span className="text-xs px-2 py-0.5 rounded glass-morphism">QQQ</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* News Item 2 */}
-            <div className="glass-morphism p-6 rounded-xl market-update-card cursor-pointer hover:border-blue-500/30 border border-white/5 transition-all duration-200">
-              <div className="flex items-start">
-                <div className="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: 'var(--gradient-secondary)' }}>
-                  <span className="text-white font-bold text-xs">FED</span>
-                </div>
-                <div className="flex-1">
-                  <div className="flex items-center gap-2 mb-2">
-                    <span className="text-xs px-2 py-0.5 rounded-full bg-blue-500/20 text-blue-400 font-semibold">Neutral</span>
-                    <span className="text-xs" style={{ color: 'var(--text-muted)' }}>Bloomberg</span>
-                  </div>
-                  <p className="text-sm font-semibold mb-2" style={{ color: 'var(--text-primary)' }}>Federal Reserve hints at potential rate cuts in Q2 2025</p>
-                  <p className="text-xs mb-3" style={{ color: 'var(--text-secondary)' }}>Fed Chair signals dovish stance as inflation moderates below target...</p>
-                  <div className="flex items-center justify-between">
-                    <p className="text-xs" style={{ color: 'var(--text-muted)' }}>15 minutes ago</p>
-                    <div className="flex gap-1">
-                      <span className="text-xs px-2 py-0.5 rounded glass-morphism">TLT</span>
-                      <span className="text-xs px-2 py-0.5 rounded glass-morphism">DXY</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* News Item 3 */}
-            <div className="glass-morphism p-6 rounded-xl market-update-card cursor-pointer hover:border-green-500/30 border border-white/5 transition-all duration-200">
-              <div className="flex items-start">
-                <div className="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: 'var(--gradient-accent)' }}>
-                  <span className="text-white font-bold text-xs">BTC</span>
-                </div>
-                <div className="flex-1">
-                  <div className="flex items-center gap-2 mb-2">
-                    <span className="text-xs px-2 py-0.5 rounded-full bg-green-500/20 text-green-400 font-semibold">Bullish</span>
-                    <span className="text-xs" style={{ color: 'var(--text-muted)' }}>Reuters</span>
-                  </div>
-                  <p className="text-sm font-semibold mb-2" style={{ color: 'var(--text-primary)' }}>Bitcoin surges 8% following institutional adoption news</p>
-                  <p className="text-xs mb-3" style={{ color: 'var(--text-secondary)' }}>Major investment firms announce cryptocurrency integration plans...</p>
-                  <div className="flex items-center justify-between">
-                    <p className="text-xs" style={{ color: 'var(--text-muted)' }}>32 minutes ago</p>
-                    <div className="flex gap-1">
-                      <span className="text-xs px-2 py-0.5 rounded glass-morphism">BTC</span>
-                      <span className="text-xs px-2 py-0.5 rounded glass-morphism">COIN</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* News Item 4 */}
-            <div className="glass-morphism p-6 rounded-xl market-update-card cursor-pointer hover:border-green-500/30 border border-white/5 transition-all duration-200">
-              <div className="flex items-start">
-                <div className="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: 'var(--success)' }}>
-                  <span className="text-white font-bold text-xs">ER</span>
-                </div>
-                <div className="flex-1">
-                  <div className="flex items-center gap-2 mb-2">
-                    <span className="text-xs px-2 py-0.5 rounded-full bg-green-500/20 text-green-400 font-semibold">Bullish</span>
-                    <span className="text-xs" style={{ color: 'var(--text-muted)' }}>MarketWatch</span>
-                  </div>
-                  <p className="text-sm font-semibold mb-2" style={{ color: 'var(--text-primary)' }}>AAPL beats Q4 earnings expectations by 12%</p>
-                  <p className="text-xs mb-3" style={{ color: 'var(--text-secondary)' }}>Apple reports record revenue driven by iPhone and services growth...</p>
-                  <div className="flex items-center justify-between">
-                    <p className="text-xs" style={{ color: 'var(--text-muted)' }}>1 hour ago</p>
-                    <div className="flex gap-1">
-                      <span className="text-xs px-2 py-0.5 rounded glass-morphism">AAPL</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* News Item 5 */}
-            <div className="glass-morphism p-6 rounded-xl market-update-card cursor-pointer hover:border-green-500/30 border border-white/5 transition-all duration-200">
-              <div className="flex items-start">
-                <div className="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: 'var(--primary-purple)' }}>
-                  <span className="text-white font-bold text-xs">AI</span>
-                </div>
-                <div className="flex-1">
-                  <div className="flex items-center gap-2 mb-2">
-                    <span className="text-xs px-2 py-0.5 rounded-full bg-green-500/20 text-green-400 font-semibold">Bullish</span>
-                    <span className="text-xs" style={{ color: 'var(--text-muted)' }}>TechCrunch</span>
-                  </div>
-                  <p className="text-sm font-semibold mb-2" style={{ color: 'var(--text-primary)' }}>AI stocks rally as NVIDIA announces new chip architecture</p>
-                  <p className="text-xs mb-3" style={{ color: 'var(--text-secondary)' }}>Next-gen GPU promises 40% performance boost for AI workloads...</p>
-                  <div className="flex items-center justify-between">
-                    <p className="text-xs" style={{ color: 'var(--text-muted)' }}>2 hours ago</p>
-                    <div className="flex gap-1">
-                      <span className="text-xs px-2 py-0.5 rounded glass-morphism">NVDA</span>
-                      <span className="text-xs px-2 py-0.5 rounded glass-morphism">AMD</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* News Item 6 */}
-            <div className="glass-morphism p-6 rounded-xl market-update-card cursor-pointer hover:border-red-500/30 border border-white/5 transition-all duration-200">
-              <div className="flex items-start">
-                <div className="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: 'var(--error)' }}>
-                  <span className="text-white font-bold text-sm">⚠️</span>
-                </div>
-                <div className="flex-1">
-                  <div className="flex items-center gap-2 mb-2">
-                    <span className="text-xs px-2 py-0.5 rounded-full bg-red-500/20 text-red-400 font-semibold">Bearish</span>
-                    <span className="text-xs" style={{ color: 'var(--text-muted)' }}>WSJ</span>
-                  </div>
-                  <p className="text-sm font-semibold mb-2" style={{ color: 'var(--text-primary)' }}>Energy sector faces volatility amid geopolitical tensions</p>
-                  <p className="text-xs mb-3" style={{ color: 'var(--text-secondary)' }}>Oil prices fluctuate as Middle East conflicts escalate concerns...</p>
-                  <div className="flex items-center justify-between">
-                    <p className="text-xs" style={{ color: 'var(--text-muted)' }}>3 hours ago</p>
-                    <div className="flex gap-1">
-                      <span className="text-xs px-2 py-0.5 rounded glass-morphism">XLE</span>
-                      <span className="text-xs px-2 py-0.5 rounded glass-morphism">USO</span>
-                    </div>
-                  </div>
+              <div className="card-body space-y-3">
+                <div className="flex justify-between text-sm"><span style={{ color: 'var(--text-secondary)' }}>Current Price</span><span className="font-bold" style={{ color: 'var(--text-primary)' }}>${selectedOrder.currentPrice.toFixed(2)}</span></div>
+                <div className="flex justify-between text-sm"><span style={{ color: 'var(--text-secondary)' }}>Previous Qty</span><span className="font-bold" style={{ color: 'var(--text-primary)' }}>{selectedOrder.quantity}</span></div>
+                <div className="flex gap-3 pt-2">
+                  <button onClick={() => { alert(`Buy order placed for ${selectedOrder.quantity} shares of ${selectedOrder.symbol}`); setShowBuyModal(false); }} className="btn-primary flex-1">Confirm Purchase</button>
+                  <button onClick={() => setShowBuyModal(false)} className="btn-secondary flex-1">Cancel</button>
                 </div>
               </div>
             </div>
           </div>
-        </div>
-      </div>
+        )}
+
+        {/* Sell Modal */}
+        {showSellModal && selectedOrder && (
+          <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+            <div className="card max-w-md w-full">
+              <div className="card-header border-b" style={{ borderColor: 'var(--glass-border-color)' }}>
+                <h3 className="text-xl font-bold text-gradient">Sell {selectedOrder.symbol}</h3>
+              </div>
+              <div className="card-body space-y-3">
+                <div className="flex justify-between text-sm"><span style={{ color: 'var(--text-secondary)' }}>Current Price</span><span className="font-bold" style={{ color: 'var(--text-primary)' }}>${selectedOrder.currentPrice.toFixed(2)}</span></div>
+                <div className="flex justify-between text-sm"><span style={{ color: 'var(--text-secondary)' }}>Quantity</span><span className="font-bold" style={{ color: 'var(--text-primary)' }}>{selectedOrder.quantity}</span></div>
+                <div className="flex justify-between text-sm"><span style={{ color: 'var(--text-secondary)' }}>Estimated Total</span><span className="font-bold text-green-400">${(selectedOrder.quantity * selectedOrder.currentPrice).toFixed(2)}</span></div>
+                <div className="flex gap-3 pt-2">
+                  <button onClick={() => { alert(`Sell order placed for ${selectedOrder.quantity} shares of ${selectedOrder.symbol}`); setShowSellModal(false); }} className="flex-1 px-4 py-2.5 rounded-xl font-semibold text-white bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 transition-all">Confirm Sale</button>
+                  <button onClick={() => setShowSellModal(false)} className="btn-secondary flex-1">Cancel</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Trading Modal */}
         {showTradingModal && selectedStock && (
@@ -1194,8 +1098,6 @@ export default function OverviewDashboard() {
             }}
           />
         )}
-      </div>
-
     </div>
   );
 }

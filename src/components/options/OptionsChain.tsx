@@ -1,16 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import { OptionsChainData, OptionContract } from '@/types/options';
-import { TrendingUp, TrendingDown } from 'lucide-react';
-import OptionsTradeModal from './OptionsTradeModal';
-
-interface OptionsChainProps {
-  symbol: string;
-  onTrade?: (type: 'call' | 'put', strike: number, expiration: string) => void;
-}
-
-interface SelectedOption {
+import { OptionContract } from '@/types/options';
+export interface SelectedOption {
   symbol: string;
   type: 'call' | 'put';
   strike: number;
@@ -20,80 +12,77 @@ interface SelectedOption {
   ask: number;
 }
 
-export default function OptionsChain({ symbol, onTrade }: OptionsChainProps) {
-  const [selectedExpiration, setSelectedExpiration] = useState<string>('2024-03-15');
-  const [selectedOption, setSelectedOption] = useState<SelectedOption | null>(null);
+interface OptionsChainProps {
+  symbol: string;
+  onSelectOption?: (option: SelectedOption) => void;
+}
 
-  // Mock data for visual prototype
-  const stockPrice = symbol === 'AAPL' ? 175.43 :
-                     symbol === 'TSLA' ? 248.42 :
-                     symbol === 'NVDA' ? 875.28 : 175.43;
+export default function OptionsChain({ symbol, onSelectOption }: OptionsChainProps) {
+  const [selectedExpiration, setSelectedExpiration] = useState<string>('2024-03-22');
+  const [activeStrike, setActiveStrike] = useState<{ strike: number; type: 'call' | 'put' } | null>(null);
 
-  const stockChange = symbol === 'AAPL' ? 2.15 :
-                      symbol === 'TSLA' ? -5.23 :
-                      symbol === 'NVDA' ? 15.67 : 2.15;
+  const stockPrice =
+    symbol === 'AAPL' ? 175.43 :
+    symbol === 'TSLA' ? 248.42 :
+    symbol === 'NVDA' ? 875.28 :
+    symbol === 'SPY'  ? 523.14 :
+    symbol === 'MSFT' ? 412.67 :
+    symbol === 'AMZN' ? 188.52 : 175.43;
 
   const expirationDates = [
-    { date: '2024-03-15', label: 'Mar 15', cycle: 'weekly' },
-    { date: '2024-03-22', label: 'Mar 22', cycle: 'weekly' },
-    { date: '2024-03-29', label: 'Mar 29', cycle: 'weekly' },
-    { date: '2024-04-05', label: 'Apr 5', cycle: 'weekly' },
-    { date: '2024-04-19', label: 'Apr 19', cycle: 'monthly' },
-    { date: '2024-05-17', label: 'May 17', cycle: 'monthly' },
+    { date: '2024-03-15', label: 'Mar 15' },
+    { date: '2024-03-22', label: 'Mar 22' },
+    { date: '2024-03-29', label: 'Mar 29' },
+    { date: '2024-04-05', label: 'Apr 5' },
+    { date: '2024-04-19', label: 'Apr 19' },
+    { date: '2024-05-17', label: 'May 17' },
   ];
 
-  // Generate mock options chain (5 strikes above and below current price)
   const generateOptionsChain = (): { calls: OptionContract[], puts: OptionContract[] } => {
-    const strikes = [];
-    const strikeInterval = 2.5;
+    const strikeInterval = stockPrice > 500 ? 10 : 2.5;
     const atmStrike = Math.round(stockPrice / strikeInterval) * strikeInterval;
+    const strikes: number[] = [];
+    for (let i = -5; i <= 4; i++) strikes.push(atmStrike + i * strikeInterval);
 
-    for (let i = -5; i <= 4; i++) {
-      strikes.push(atmStrike + (i * strikeInterval));
-    }
+    const baseIV = 26.5;
 
-    const calls: OptionContract[] = strikes.map(strike => {
-      const distance = strike - stockPrice;
-      const itm = strike < stockPrice;
-      const lastPrice = Math.max(0.05, stockPrice - strike + (Math.random() * 3));
+    const calls: OptionContract[] = strikes.map((strike, idx) => {
+      const distance = Math.abs(strike - stockPrice);
+      const iv = baseIV + (distance / stockPrice) * 60;
+      const lastPrice = Math.max(0.05, stockPrice - strike + 1.5);
       const bid = Math.max(0.05, lastPrice - 0.10);
       const ask = lastPrice + 0.10;
-      const volume = Math.floor(Math.random() * 15000) + 100;
-      const openInterest = Math.floor(Math.random() * 20000) + 200;
-      const percentChange = (Math.random() - 0.5) * 30;
-
       return {
         strike,
         expiration: selectedExpiration,
         lastPrice: Number(lastPrice.toFixed(2)),
         bid: Number(bid.toFixed(2)),
         ask: Number(ask.toFixed(2)),
-        volume,
-        openInterest,
-        percentChange: Number(percentChange.toFixed(1)),
-        inTheMoney: itm
+        volume: Math.max(100, 8000 - idx * 700),
+        openInterest: Math.max(200, 35000 - idx * 3000),
+        percentChange: 0,
+        impliedVolatility: Number(iv.toFixed(1)),
+        inTheMoney: strike < stockPrice,
       };
     });
 
-    const puts: OptionContract[] = strikes.map(strike => {
-      const itm = strike > stockPrice;
-      const lastPrice = Math.max(0.05, strike - stockPrice + (Math.random() * 3));
+    const puts: OptionContract[] = strikes.map((strike, idx) => {
+      const distance = Math.abs(strike - stockPrice);
+      const iv = baseIV + (distance / stockPrice) * 60;
+      const lastPrice = Math.max(0.05, strike - stockPrice + 1.5);
       const bid = Math.max(0.05, lastPrice - 0.10);
       const ask = lastPrice + 0.10;
-      const volume = Math.floor(Math.random() * 10000) + 100;
-      const openInterest = Math.floor(Math.random() * 15000) + 200;
-      const percentChange = (Math.random() - 0.5) * 30;
-
       return {
         strike,
         expiration: selectedExpiration,
         lastPrice: Number(lastPrice.toFixed(2)),
         bid: Number(bid.toFixed(2)),
         ask: Number(ask.toFixed(2)),
-        volume,
-        openInterest,
-        percentChange: Number(percentChange.toFixed(1)),
-        inTheMoney: itm
+        volume: Math.max(100, 6000 - idx * 500),
+        openInterest: Math.max(200, 22000 - idx * 2000),
+        percentChange: 0,
+        impliedVolatility: Number(iv.toFixed(1)),
+        inTheMoney: strike > stockPrice,
       };
     });
 
@@ -102,178 +91,173 @@ export default function OptionsChain({ symbol, onTrade }: OptionsChainProps) {
 
   const { calls, puts } = generateOptionsChain();
 
-  const formatVolume = (vol: number) => {
-    if (vol >= 1000) return `${(vol / 1000).toFixed(1)}K`;
-    return vol.toString();
-  };
+  const totalCallOI = calls.reduce((sum, c) => sum + c.openInterest, 0);
+  const totalPutOI  = puts.reduce((sum, p) => sum + p.openInterest, 0);
+  const avgIV = calls.reduce((sum, c) => sum + (c.impliedVolatility ?? 0), 0) / calls.length;
+  const pcRatio = (totalPutOI / totalCallOI).toFixed(2);
+  const maxPain = calls[Math.floor(calls.length / 2)].strike;
 
-  const atmStrike = Math.round(stockPrice / 2.5) * 2.5;
+  const strikeInterval = stockPrice > 500 ? 10 : 2.5;
+  const atmStrikePrice = Math.round(stockPrice / strikeInterval) * strikeInterval;
+
+  const fmt = (val: number) => val >= 1000 ? `${(val / 1000).toFixed(1)}K` : val.toString();
 
   return (
-    <div className="space-y-4">
-      {/* Header */}
-      <div className="flex items-center justify-between mb-4">
-        <h2 className="text-xl font-bold" style={{ color: 'var(--text-primary)' }}>
-          {symbol} Options Chain
-        </h2>
-
-        {/* Expiration Selector - Dropdown Only */}
-        <div className="flex items-center gap-2">
-          <span className="text-sm font-medium" style={{ color: 'var(--text-secondary)' }}>Expiration:</span>
-          <select
-            value={selectedExpiration}
-            onChange={(e) => setSelectedExpiration(e.target.value)}
-            className="px-4 py-2 text-sm font-semibold rounded-lg glass-morphism"
-            style={{ color: 'var(--text-primary)' }}
+    <div>
+      {/* Expiry pills */}
+      <div className="flex items-center gap-1.5 mb-3 flex-wrap">
+        <span className="text-xs font-semibold mr-1" style={{ color: 'var(--text-tertiary)' }}>Expiry:</span>
+        {expirationDates.map(exp => (
+          <button
+            key={exp.date}
+            onClick={() => setSelectedExpiration(exp.date)}
+            className="px-3 py-1 rounded text-xs font-semibold transition-all"
+            style={{
+              background: selectedExpiration === exp.date ? 'rgba(59,130,246,0.2)' : 'transparent',
+              color: selectedExpiration === exp.date ? 'var(--text-accent)' : 'var(--text-tertiary)',
+              border: selectedExpiration === exp.date ? '1px solid rgba(59,130,246,0.4)' : '1px solid transparent',
+            }}
           >
-            {expirationDates.map(exp => (
-              <option key={exp.date} value={exp.date}>{exp.label}</option>
-            ))}
-          </select>
-        </div>
+            {exp.label}
+          </button>
+        ))}
       </div>
 
-      {/* Options Chain Table */}
-      <div className="card overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead>
-              <tr style={{ background: 'var(--glass-bg)', borderBottom: '2px solid var(--glass-border)' }}>
-                <th colSpan={7} className="text-center py-3 text-sm font-bold text-green-400 border-r-2" style={{ borderColor: 'var(--glass-border)' }}>
-                  CALLS
-                </th>
-                <th className="py-3 px-3 text-xs font-bold text-center" style={{ color: 'var(--text-tertiary)' }}>
-                  STRIKE
-                </th>
-                <th colSpan={7} className="text-center py-3 text-sm font-bold text-red-400 border-l-2" style={{ borderColor: 'var(--glass-border)' }}>
-                  PUTS
-                </th>
-              </tr>
-              <tr style={{ background: 'rgba(88, 40, 130, 0.2)' }}>
-                {/* Calls columns */}
-                <th className="px-2 py-2 text-xs font-semibold text-left" style={{ color: 'var(--text-tertiary)' }}>Last</th>
-                <th className="px-2 py-2 text-xs font-semibold text-left" style={{ color: 'var(--text-tertiary)' }}>Bid</th>
-                <th className="px-2 py-2 text-xs font-semibold text-left" style={{ color: 'var(--text-tertiary)' }}>Ask</th>
-                <th className="px-2 py-2 text-xs font-semibold text-left" style={{ color: 'var(--text-tertiary)' }}>Vol</th>
-                <th className="px-2 py-2 text-xs font-semibold text-left" style={{ color: 'var(--text-tertiary)' }}>OI</th>
-                <th className="px-2 py-2 text-xs font-semibold text-left" style={{ color: 'var(--text-tertiary)' }}>Δ%</th>
-                <th className="px-2 py-2 text-xs font-semibold border-r-2" style={{ color: 'var(--text-tertiary)', borderColor: 'var(--glass-border)' }}></th>
+      {/* Summary strip */}
+      <div className="flex items-center gap-6 px-4 py-2 border-y" style={{ borderColor: 'var(--glass-border-color)', background: 'rgba(255,255,255,0.02)' }}>
+        {[
+          { label: 'Max Pain',      value: `$${maxPain.toFixed(2)}`,    cls: '',              style: { color: 'var(--text-primary)' } },
+          { label: 'P/C Ratio',     value: pcRatio,                      cls: '',              style: { color: '#a78bfa' } },
+          { label: 'IV30',          value: `${avgIV.toFixed(1)}%`,       cls: '',              style: { color: 'var(--text-primary)' } },
+          { label: 'Total Call OI', value: fmt(totalCallOI),             cls: 'text-green-400', style: {} },
+          { label: 'Total Put OI',  value: fmt(totalPutOI),              cls: 'text-red-400',   style: {} },
+        ].map(stat => (
+          <div key={stat.label} className="flex items-center gap-1.5">
+            <span className="text-xs" style={{ color: 'var(--text-tertiary)' }}>{stat.label}</span>
+            <span className={`text-xs font-bold ${stat.cls}`} style={stat.style}>{stat.value}</span>
+          </div>
+        ))}
+      </div>
 
-                {/* Strike */}
-                <th className="px-3 py-2 text-xs font-semibold" style={{ color: 'var(--text-tertiary)' }}></th>
+      {/* Table */}
+      <div className="overflow-x-auto">
+        <table className="w-full text-xs border-collapse">
+          <thead className="sticky top-0" style={{ background: 'var(--glass-bg)' }}>
+            <tr style={{ borderBottom: '1px solid var(--glass-border-color)' }}>
+              <th colSpan={7} className="py-2 text-center font-bold text-green-400 text-sm border-r" style={{ borderColor: 'var(--glass-border-color)' }}>CALLS</th>
+              <th className="py-2 px-3 text-center font-bold text-sm border-r" style={{ color: 'var(--text-primary)', borderColor: 'var(--glass-border-color)' }}>STRIKE</th>
+              <th colSpan={7} className="py-2 text-center font-bold text-red-400 text-sm">PUTS</th>
+            </tr>
+            <tr style={{ borderBottom: '1px solid var(--glass-border-color)' }}>
+              {['IV', 'OI', 'Vol', 'Ask', 'Bid', 'Last', ''].map((h, i) => (
+                <th
+                  key={`c-${i}`}
+                  className="py-1.5 px-2 text-right font-semibold"
+                  style={{ color: 'var(--text-tertiary)', ...(i === 6 ? { borderRight: '1px solid var(--glass-border-color)', width: '60px' } : {}) }}
+                >
+                  {h}
+                </th>
+              ))}
+              <th className="py-1.5 px-3 text-center font-semibold" style={{ color: 'var(--text-tertiary)', borderLeft: '1px solid var(--glass-border-color)', borderRight: '1px solid var(--glass-border-color)' }}>—</th>
+              {['', 'Last', 'Bid', 'Ask', 'Vol', 'OI', 'IV'].map((h, i) => (
+                <th
+                  key={`p-${i}`}
+                  className="py-1.5 px-2 text-right font-semibold"
+                  style={{ color: 'var(--text-tertiary)', ...(i === 0 ? { borderLeft: '1px solid var(--glass-border-color)', width: '60px' } : {}) }}
+                >
+                  {h}
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {calls.map((call, index) => {
+              const put = puts[index];
+              const atm = call.strike === atmStrikePrice;
+              const callSelected = activeStrike?.strike === call.strike && activeStrike.type === 'call';
+              const putSelected  = activeStrike?.strike === put.strike  && activeStrike.type === 'put';
+              const rowSelected  = callSelected || putSelected;
 
-                {/* Puts columns */}
-                <th className="px-2 py-2 text-xs font-semibold border-l-2" style={{ color: 'var(--text-tertiary)', borderColor: 'var(--glass-border)' }}></th>
-                <th className="px-2 py-2 text-xs font-semibold text-left" style={{ color: 'var(--text-tertiary)' }}>Δ%</th>
-                <th className="px-2 py-2 text-xs font-semibold text-left" style={{ color: 'var(--text-tertiary)' }}>Vol</th>
-                <th className="px-2 py-2 text-xs font-semibold text-left" style={{ color: 'var(--text-tertiary)' }}>OI</th>
-                <th className="px-2 py-2 text-xs font-semibold text-left" style={{ color: 'var(--text-tertiary)' }}>Bid</th>
-                <th className="px-2 py-2 text-xs font-semibold text-left" style={{ color: 'var(--text-tertiary)' }}>Ask</th>
-                <th className="px-2 py-2 text-xs font-semibold text-left" style={{ color: 'var(--text-tertiary)' }}>Last</th>
-              </tr>
-            </thead>
-            <tbody>
-              {calls.map((call, index) => {
-                const put = puts[index];
-                const isATM = call.strike === atmStrike;
+              const rowBg = rowSelected
+                ? atm ? 'rgba(59,130,246,0.16)' : 'rgba(255,255,255,0.07)'
+                : atm ? 'rgba(59,130,246,0.08)' : 'transparent';
 
-                return (
-                  <tr
-                    key={call.strike}
-                    className="group hover:bg-white/5 transition-all cursor-pointer"
+              return (
+                <tr
+                  key={call.strike}
+                  className="group hover:bg-white/5 transition-colors"
+                  style={{
+                    background: rowBg,
+                    borderBottom: '1px solid rgba(255,255,255,0.04)',
+                    borderLeft: rowSelected
+                      ? `2px solid ${callSelected ? '#22c55e' : '#ef4444'}`
+                      : atm ? '2px solid #3b82f6' : '2px solid transparent',
+                  }}
+                >
+                  {/* Call cells */}
+                  <td className="px-2 py-2 text-right" style={{ color: 'var(--text-tertiary)' }}>{call.impliedVolatility?.toFixed(1)}%</td>
+                  <td className="px-2 py-2 text-right" style={{ color: 'var(--text-secondary)' }}>{fmt(call.openInterest)}</td>
+                  <td className="px-2 py-2 text-right" style={{ color: 'var(--text-secondary)' }}>{fmt(call.volume)}</td>
+                  <td className="px-2 py-2 text-right text-green-400">{call.ask.toFixed(2)}</td>
+                  <td className="px-2 py-2 text-right text-green-400">{call.bid.toFixed(2)}</td>
+                  <td className="px-2 py-2 text-right font-semibold" style={{ color: 'var(--text-primary)' }}>{call.lastPrice.toFixed(2)}</td>
+                  <td className="px-2 py-2" style={{ borderRight: '1px solid var(--glass-border-color)' }}>
+                    <button
+                      onClick={() => {
+                        setActiveStrike({ strike: call.strike, type: 'call' });
+                        onSelectOption?.({ symbol, type: 'call', strike: call.strike, expiration: call.expiration, lastPrice: call.lastPrice, bid: call.bid, ask: call.ask });
+                      }}
+                      className="text-xs px-2 py-1 rounded transition-all whitespace-nowrap hover:bg-green-500/20"
+                      style={{ color: '#22c55e' }}
+                    >
+                      Buy
+                    </button>
+                  </td>
+
+                  {/* Strike */}
+                  <td
+                    className="px-3 py-2 text-center font-bold"
                     style={{
-                      background: isATM ? 'rgba(59, 130, 246, 0.1)' : 'transparent',
-                      borderBottom: '1px solid var(--glass-border)'
+                      color: atm ? '#60a5fa' : 'var(--text-primary)',
+                      borderLeft: '1px solid var(--glass-border-color)',
+                      borderRight: '1px solid var(--glass-border-color)',
+                      whiteSpace: 'nowrap',
                     }}
                   >
-                    {/* CALLS */}
-                    <td className="px-2 py-2.5 text-xs font-medium" style={{ color: call.inTheMoney ? 'var(--success)' : 'var(--text-secondary)' }}>
-                      ${call.lastPrice.toFixed(2)}
-                    </td>
-                    <td className="px-2 py-2.5 text-xs" style={{ color: 'var(--text-secondary)' }}>${call.bid.toFixed(2)}</td>
-                    <td className="px-2 py-2.5 text-xs" style={{ color: 'var(--text-secondary)' }}>${call.ask.toFixed(2)}</td>
-                    <td className="px-2 py-2.5 text-xs" style={{ color: 'var(--text-tertiary)' }}>{formatVolume(call.volume)}</td>
-                    <td className="px-2 py-2.5 text-xs" style={{ color: 'var(--text-tertiary)' }}>{formatVolume(call.openInterest)}</td>
-                    <td className={`px-2 py-2.5 text-xs font-semibold ${call.percentChange >= 0 ? 'text-green-400' : 'text-red-400'}`}>
-                      {call.percentChange >= 0 ? '+' : ''}{call.percentChange}%
-                    </td>
-                    <td className="px-2 py-2.5 border-r-2" style={{ borderColor: 'var(--glass-border)' }}>
-                      <button
-                        onClick={() => setSelectedOption({
-                          symbol,
-                          type: 'call',
-                          strike: call.strike,
-                          expiration: call.expiration,
-                          lastPrice: call.lastPrice,
-                          bid: call.bid,
-                          ask: call.ask
-                        })}
-                        className="opacity-0 group-hover:opacity-100 text-xs px-2 py-1 rounded bg-green-500/20 text-green-400 hover:bg-green-500/30 transition-all"
-                      >
-                        Trade
-                      </button>
-                    </td>
-
-                    {/* STRIKE */}
-                    <td className="px-3 py-2.5 text-center">
-                      <span className="text-xs font-bold" style={{ color: 'var(--text-primary)' }}>
-                        {call.strike.toFixed(2)}
-                        {isATM && <span className="text-blue-400">*</span>}
+                    {call.strike.toFixed(2)}
+                    {atm && (
+                      <span className="ml-1.5 text-[9px] font-bold px-1 py-0.5 rounded" style={{ background: 'rgba(59,130,246,0.25)', color: '#93c5fd' }}>
+                        ATM
                       </span>
-                    </td>
+                    )}
+                  </td>
 
-                    {/* PUTS */}
-                    <td className="px-2 py-2.5 border-l-2" style={{ borderColor: 'var(--glass-border)' }}>
-                      <button
-                        onClick={() => setSelectedOption({
-                          symbol,
-                          type: 'put',
-                          strike: put.strike,
-                          expiration: put.expiration,
-                          lastPrice: put.lastPrice,
-                          bid: put.bid,
-                          ask: put.ask
-                        })}
-                        className="opacity-0 group-hover:opacity-100 text-xs px-2 py-1 rounded bg-red-500/20 text-red-400 hover:bg-red-500/30 transition-all"
-                      >
-                        Trade
-                      </button>
-                    </td>
-                    <td className={`px-2 py-2.5 text-xs font-semibold ${put.percentChange >= 0 ? 'text-green-400' : 'text-red-400'}`}>
-                      {put.percentChange >= 0 ? '+' : ''}{put.percentChange}%
-                    </td>
-                    <td className="px-2 py-2.5 text-xs" style={{ color: 'var(--text-tertiary)' }}>{formatVolume(put.volume)}</td>
-                    <td className="px-2 py-2.5 text-xs" style={{ color: 'var(--text-tertiary)' }}>{formatVolume(put.openInterest)}</td>
-                    <td className="px-2 py-2.5 text-xs" style={{ color: 'var(--text-secondary)' }}>${put.bid.toFixed(2)}</td>
-                    <td className="px-2 py-2.5 text-xs" style={{ color: 'var(--text-secondary)' }}>${put.ask.toFixed(2)}</td>
-                    <td className="px-2 py-2.5 text-xs font-medium" style={{ color: put.inTheMoney ? 'var(--success)' : 'var(--text-secondary)' }}>
-                      ${put.lastPrice.toFixed(2)}
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
-
-        {/* Footer */}
-        <div className="px-4 py-3 border-t" style={{ borderColor: 'var(--glass-border)', background: 'var(--glass-bg)' }}>
-          <div className="flex items-center gap-6 text-xs" style={{ color: 'var(--text-tertiary)' }}>
-            <span>* At-the-money</span>
-            <span>Vol = Volume</span>
-            <span>OI = Open Interest</span>
-            <span>Δ% = Percent Change</span>
-          </div>
-        </div>
+                  {/* Put cells */}
+                  <td className="px-2 py-2" style={{ borderLeft: '1px solid var(--glass-border-color)' }}>
+                    <button
+                      onClick={() => {
+                        setActiveStrike({ strike: put.strike, type: 'put' });
+                        onSelectOption?.({ symbol, type: 'put', strike: put.strike, expiration: put.expiration, lastPrice: put.lastPrice, bid: put.bid, ask: put.ask });
+                      }}
+                      className="text-xs px-2 py-1 rounded transition-all whitespace-nowrap hover:bg-red-500/20"
+                      style={{ color: '#ef4444' }}
+                    >
+                      Buy
+                    </button>
+                  </td>
+                  <td className="px-2 py-2 text-right font-semibold" style={{ color: 'var(--text-primary)' }}>{put.lastPrice.toFixed(2)}</td>
+                  <td className="px-2 py-2 text-right text-red-400">{put.bid.toFixed(2)}</td>
+                  <td className="px-2 py-2 text-right text-red-400">{put.ask.toFixed(2)}</td>
+                  <td className="px-2 py-2 text-right" style={{ color: 'var(--text-secondary)' }}>{fmt(put.volume)}</td>
+                  <td className="px-2 py-2 text-right" style={{ color: 'var(--text-secondary)' }}>{fmt(put.openInterest)}</td>
+                  <td className="px-2 py-2 text-right" style={{ color: 'var(--text-tertiary)' }}>{put.impliedVolatility?.toFixed(1)}%</td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
       </div>
 
-      {/* Options Trade Modal */}
-      {selectedOption && (
-        <OptionsTradeModal
-          option={selectedOption}
-          onClose={() => setSelectedOption(null)}
-        />
-      )}
     </div>
   );
 }

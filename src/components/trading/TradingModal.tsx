@@ -418,13 +418,7 @@ export default function TradingModal({ stock, onClose }: TradingModalProps) {
           {/* Options Tab Content */}
           {activeTab === 'options' && (
             <div className="max-h-[600px] overflow-y-auto">
-              <OptionsChain
-                symbol={stock.symbol}
-                onTrade={(type, strike, expiration) => {
-                  console.log('Options trade:', { type, strike, expiration });
-                  alert(`Option trade simulation:\n${type.toUpperCase()} ${stock.symbol} $${strike} ${expiration}`);
-                }}
-              />
+              <OptionsChain symbol={stock.symbol} />
             </div>
           )}
         </div>

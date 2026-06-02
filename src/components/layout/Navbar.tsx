@@ -88,11 +88,9 @@ export default function Navbar() {
               {/* User Controls - Right */}
               <div className="hidden lg:flex items-center space-x-1 flex-shrink-0 text-sm">
                 <Link href="/overview" className={`nav-link px-2.5 py-1.5 ${pathname === '/overview' ? 'active' : ''}`}>Overview</Link>
-                <Link href="/search" className={`nav-link px-2.5 py-1.5 ${pathname === '/search' ? 'active' : ''}`}>Search</Link>
-                <Link href="/market" className={`nav-link px-2.5 py-1.5 ${pathname === '/market' ? 'active' : ''}`}>Market</Link>
+<Link href="/market" className={`nav-link px-2.5 py-1.5 ${pathname === '/market' ? 'active' : ''}`}>Market</Link>
                 <Link href="/options" className={`nav-link px-2.5 py-1.5 ${pathname === '/options' ? 'active' : ''}`}>Options</Link>
                 <Link href="/copy-trading" className={`nav-link px-2.5 py-1.5 ${pathname === '/copy-trading' ? 'active' : ''}`}>Copy Trading</Link>
-                <Link href="/orders" className={`nav-link px-2.5 py-1.5 ${pathname === '/orders' ? 'active' : ''}`}>Orders</Link>
                 <Link href="/profile" className={`nav-link px-2.5 py-1.5 ${pathname === '/profile' ? 'active' : ''}`}>Profile</Link>
 
                 {/* Resources Dropdown */}

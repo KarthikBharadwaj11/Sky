@@ -7,11 +7,9 @@ import { useState } from 'react';
 import {
   LayoutDashboard,
   LineChart,
-  Search,
   TrendingUp,
   BarChart2,
   Users,
-  ClipboardList,
   User,
   BookOpen,
   HelpCircle,
@@ -24,10 +22,8 @@ const navItems = [
   { href: '/overview', icon: LineChart, label: 'Trading' },
   { href: '/options', icon: BarChart2, label: 'Options' },
   { href: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
-  { href: '/search', icon: Search, label: 'Search' },
   { href: '/market', icon: TrendingUp, label: 'Market' },
   { href: '/copy-trading', icon: Users, label: 'Copy Trading' },
-  { href: '/orders', icon: ClipboardList, label: 'Orders' },
   { href: '/profile', icon: User, label: 'Profile' },
 ];
 

@@ -199,6 +199,21 @@ const POSITIONS = [
   { symbol: 'MSFT', qty: 8, avg: 390.00, current: 378.92, pnl: -88.64, pnlPct: -2.84 },
 ];
 
+const OPTIONS_EXPIRIES = ['May 23', 'May 30', 'Jun 6', 'Jun 20', 'Jul 18'];
+
+const OPTIONS_DATA = [
+  { strike: 180.00, call: { last: 9.80, bid: 9.75, ask: 9.90, vol: 1240, oi: 8430, iv: 28.4 }, put: { last: 0.45, bid: 0.42, ask: 0.48, vol: 890, oi: 5210, iv: 27.1 } },
+  { strike: 182.50, call: { last: 7.40, bid: 7.35, ask: 7.50, vol: 2100, oi: 11200, iv: 27.8 }, put: { last: 0.70, bid: 0.67, ask: 0.74, vol: 1340, oi: 6780, iv: 26.9 } },
+  { strike: 185.00, call: { last: 5.20, bid: 5.15, ask: 5.25, vol: 3850, oi: 18900, iv: 27.2 }, put: { last: 1.10, bid: 1.07, ask: 1.13, vol: 2200, oi: 9400, iv: 26.5 } },
+  { strike: 187.50, call: { last: 3.30, bid: 3.25, ask: 3.35, vol: 5120, oi: 24300, iv: 26.8 }, put: { last: 1.75, bid: 1.72, ask: 1.78, vol: 3100, oi: 12600, iv: 26.2 } },
+  { strike: 189.00, call: { last: 2.45, bid: 2.40, ask: 2.50, vol: 6800, oi: 31200, iv: 26.5 }, put: { last: 2.30, bid: 2.27, ask: 2.33, vol: 4800, oi: 19800, iv: 26.0 } },
+  { strike: 190.00, call: { last: 1.90, bid: 1.87, ask: 1.93, vol: 7400, oi: 35600, iv: 26.3 }, put: { last: 2.80, bid: 2.77, ask: 2.83, vol: 5200, oi: 22400, iv: 25.8 } },
+  { strike: 192.50, call: { last: 0.95, bid: 0.92, ask: 0.98, vol: 4300, oi: 21000, iv: 26.1 }, put: { last: 4.10, bid: 4.07, ask: 4.14, vol: 2900, oi: 14200, iv: 25.5 } },
+  { strike: 195.00, call: { last: 0.45, bid: 0.42, ask: 0.48, vol: 2100, oi: 13400, iv: 25.9 }, put: { last: 5.60, bid: 5.55, ask: 5.65, vol: 1600, oi: 9800, iv: 25.3 } },
+  { strike: 197.50, call: { last: 0.18, bid: 0.16, ask: 0.20, vol: 980,  oi: 7200,  iv: 25.7 }, put: { last: 7.30, bid: 7.25, ask: 7.35, vol: 740,  oi: 5400, iv: 25.1 } },
+  { strike: 200.00, call: { last: 0.08, bid: 0.06, ask: 0.10, vol: 430,  oi: 3900,  iv: 25.5 }, put: { last: 9.10, bid: 9.05, ask: 9.15, vol: 310,  oi: 2800, iv: 24.9 } },
+];
+
 const OPEN_ORDERS = [
   { id: 1, symbol: 'NVDA', side: 'Buy', qty: 2, type: 'Limit', price: 475.00, status: 'Pending' },
   { id: 2, symbol: 'AMZN', side: 'Sell', qty: 3, type: 'Limit', price: 185.00, status: 'Pending' },
@@ -231,9 +246,28 @@ export default function TradingTerminal() {
   const [showAccountMenu, setShowAccountMenu] = useState(false);
   const [selectedAccount, setSelectedAccount] = useState('Demo Account');
   const [rightPanel, setRightPanel] = useState<'watchlist' | 'signals'>('watchlist');
+  const [showOptionsChain, setShowOptionsChain] = useState(false);
+  const [optionsExpiry, setOptionsExpiry] = useState('May 30');
   const [showSkyIntel, setShowSkyIntel] = useState(false);
   const [intelInput, setIntelInput] = useState('');
+  const [orderSection, setOrderSection] = useState<'stocks' | 'options'>('stocks');
+  const [selectedOptionOrder, setSelectedOptionOrder] = useState<{
+    type: 'call' | 'put'; strike: number; expiry: string; bid: number; ask: number; last: number;
+  } | null>(null);
+  const [optionContracts, setOptionContracts] = useState('');
+  const [optionOrderType, setOptionOrderType] = useState<'market' | 'limit'>('market');
+  const [optionLimitPrice, setOptionLimitPrice] = useState('');
+  const [optionSide, setOptionSide] = useState<'buy' | 'sell'>('buy');
   const ACCOUNTS = ['Demo Account', 'Trading Account'];
+
+  const selectOptionForOrder = (type: 'call' | 'put', row: typeof OPTIONS_DATA[0]) => {
+    const data = type === 'call' ? row.call : row.put;
+    setSelectedOptionOrder({ type, strike: row.strike, expiry: optionsExpiry, bid: data.bid, ask: data.ask, last: data.last });
+    setOptionSide('buy');
+    setOptionContracts('');
+    setOptionLimitPrice('');
+    setOrderSection('options');
+  };
 
   const chartRef = useRef<HTMLDivElement>(null);
   const { width: chartW, height: chartH } = useContainerSize(chartRef);
@@ -246,6 +280,12 @@ export default function TradingTerminal() {
 
       {/* ── Top bar ─────────────────────────────────────────────────────── */}
       <div className="flex items-center gap-6 px-4 border-b shrink-0" style={{ height: '48px', borderColor: 'var(--glass-border-color)', background: 'var(--navbar-bg, rgba(10,10,20,0.95))' }}>
+        {/* Search bar (placeholder) */}
+        <div className="flex items-center gap-2 rounded-md px-2.5 shrink-0" style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid var(--glass-border-color)', width: '220px', height: '32px' }}>
+          <Search className="w-3.5 h-3.5 shrink-0" style={{ color: 'var(--text-tertiary)' }} />
+          <span className="text-sm" style={{ color: 'var(--text-tertiary)' }}>Search ticker…</span>
+        </div>
+
         {/* Symbol selector */}
         <div className="flex items-center gap-2">
           <span className="text-base font-bold" style={{ color: 'var(--text-primary)' }}>{selectedSymbol}</span>
@@ -261,8 +301,8 @@ export default function TradingTerminal() {
           </span>
         </div>
 
-        {/* Divider */}
-        <div className="w-px h-5" style={{ background: 'var(--glass-border-color)' }} />
+        {/* Spacer */}
+        <div className="flex-1" />
 
         {/* Market indices */}
         <div className="hidden lg:flex items-center gap-5">
@@ -503,6 +543,153 @@ export default function TradingTerminal() {
               )}
             </div>
           </div>
+
+          {/* ── Options chain toggle bar ────────────────────────────── */}
+          <button
+            onClick={() => setShowOptionsChain(!showOptionsChain)}
+            className="flex items-center gap-2 px-4 w-full shrink-0 transition-colors hover:bg-white/5"
+            style={{ height: '36px', borderTop: '1px solid var(--glass-border-color)', borderBottom: showOptionsChain ? '1px solid var(--glass-border-color)' : 'none', background: showOptionsChain ? 'rgba(59,130,246,0.05)' : 'transparent' }}
+          >
+            <ChevronDown
+              className="w-4 h-4 transition-transform duration-200"
+              style={{ color: showOptionsChain ? 'var(--text-accent)' : 'var(--text-tertiary)', transform: showOptionsChain ? 'rotate(180deg)' : 'none' }}
+            />
+            <span className="text-sm font-bold" style={{ color: showOptionsChain ? 'var(--text-primary)' : 'var(--text-secondary)' }}>Options Chain</span>
+            <span className="text-xs ml-1 px-2 py-0.5 rounded font-semibold" style={{ color: 'var(--text-accent)', background: 'rgba(59,130,246,0.12)', border: '1px solid rgba(59,130,246,0.25)' }}>{selectedSymbol}</span>
+          </button>
+
+          {/* ── Options chain table ─────────────────────────────────── */}
+          {showOptionsChain && (
+            <div className="shrink-0 flex flex-col">
+              {/* Expiry selector */}
+              <div className="flex items-center gap-1.5 px-4 py-2.5 shrink-0 border-b" style={{ borderColor: 'var(--glass-border-color)' }}>
+                <span className="text-xs font-semibold mr-2" style={{ color: 'var(--text-tertiary)' }}>Expiry:</span>
+                {OPTIONS_EXPIRIES.map(exp => (
+                  <button
+                    key={exp}
+                    onClick={() => setOptionsExpiry(exp)}
+                    className="px-3 py-1 rounded text-xs font-semibold transition-all"
+                    style={{
+                      background: optionsExpiry === exp ? 'rgba(59,130,246,0.2)' : 'transparent',
+                      color: optionsExpiry === exp ? 'var(--text-accent)' : 'var(--text-tertiary)',
+                      border: optionsExpiry === exp ? '1px solid rgba(59,130,246,0.4)' : '1px solid transparent',
+                    }}
+                  >
+                    {exp}
+                  </button>
+                ))}
+              </div>
+
+              {/* Summary strip */}
+              <div className="flex items-center gap-6 px-4 py-2 border-b shrink-0" style={{ borderColor: 'var(--glass-border-color)', background: 'rgba(255,255,255,0.02)' }}>
+                {[
+                  { label: 'Max Pain', value: '$190.00', color: 'var(--text-primary)' },
+                  { label: 'P/C Ratio', value: '0.74', color: '#a78bfa' },
+                  { label: 'IV30', value: '26.4%', color: 'var(--text-primary)' },
+                  { label: 'Total Call OI', value: '145.1K', color: 'text-green-400' },
+                  { label: 'Total Put OI', value: '107.5K', color: 'text-red-400' },
+                ].map(stat => (
+                  <div key={stat.label} className="flex items-center gap-1.5">
+                    <span className="text-xs" style={{ color: 'var(--text-tertiary)' }}>{stat.label}</span>
+                    <span className={`text-xs font-bold ${stat.color.startsWith('text-') ? stat.color : ''}`} style={!stat.color.startsWith('text-') ? { color: stat.color } : {}}>{stat.value}</span>
+                  </div>
+                ))}
+              </div>
+
+              {/* Table */}
+              <div className="overflow-x-auto">
+                <table className="w-full text-xs border-collapse">
+                  <thead className="sticky top-0" style={{ background: '#080c14' }}>
+                    <tr style={{ borderBottom: '1px solid var(--glass-border-color)' }}>
+                      <th colSpan={7} className="py-2 text-center font-bold text-green-400 border-r text-sm" style={{ borderColor: 'var(--glass-border-color)' }}>CALLS</th>
+                      <th className="py-2 px-3 text-center font-bold border-r text-sm" style={{ color: 'var(--text-primary)', borderColor: 'var(--glass-border-color)' }}>STRIKE</th>
+                      <th colSpan={7} className="py-2 text-center font-bold text-red-400 text-sm">PUTS</th>
+                    </tr>
+                    <tr style={{ borderBottom: '1px solid var(--glass-border-color)' }}>
+                      {['IV', 'OI', 'Vol', 'Ask', 'Bid', 'Last', ''].map(h => (
+                        <th key={`c-${h}`} className="py-1.5 px-2 text-right font-semibold" style={{ color: 'var(--text-tertiary)' }}>{h}</th>
+                      ))}
+                      <th className="py-1.5 px-3 text-center font-semibold border-x" style={{ color: 'var(--text-tertiary)', borderColor: 'var(--glass-border-color)' }}>—</th>
+                      {['', 'Last', 'Bid', 'Ask', 'Vol', 'OI', 'IV'].map(h => (
+                        <th key={`p-${h}`} className="py-1.5 px-2 text-right font-semibold" style={{ color: 'var(--text-tertiary)' }}>{h}</th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {OPTIONS_DATA.map(row => {
+                      const price = 189.30;
+                      const atm = Math.abs(row.strike - price) < 1.5;
+                      const isSelectedCall = selectedOptionOrder?.type === 'call' && selectedOptionOrder.strike === row.strike;
+                      const isSelectedPut  = selectedOptionOrder?.type === 'put'  && selectedOptionOrder.strike === row.strike;
+                      return (
+                        <tr
+                          key={row.strike}
+                          className="group hover:bg-white/5 transition-colors"
+                          style={{
+                            background: atm ? 'rgba(59,130,246,0.08)' : 'transparent',
+                            borderBottom: '1px solid rgba(255,255,255,0.04)',
+                            borderLeft: atm ? '2px solid #3b82f6' : '2px solid transparent',
+                          }}
+                        >
+                          {/* Call cells */}
+                          <td className="px-2 py-2 text-right" style={{ color: 'var(--text-tertiary)' }}>{row.call.iv.toFixed(1)}%</td>
+                          <td className="px-2 py-2 text-right" style={{ color: 'var(--text-secondary)' }}>{row.call.oi.toLocaleString()}</td>
+                          <td className="px-2 py-2 text-right" style={{ color: 'var(--text-secondary)' }}>{row.call.vol.toLocaleString()}</td>
+                          <td className="px-2 py-2 text-right text-green-400">{row.call.ask.toFixed(2)}</td>
+                          <td className="px-2 py-2 text-right text-green-400">{row.call.bid.toFixed(2)}</td>
+                          <td className="px-2 py-2 text-right font-semibold border-r" style={{ color: 'var(--text-primary)', borderColor: 'var(--glass-border-color)' }}>{row.call.last.toFixed(2)}</td>
+                          {/* Call buy button */}
+                          <td className="px-1 py-1 border-r" style={{ borderColor: 'var(--glass-border-color)', width: '48px' }}>
+                            <button
+                              onClick={() => selectOptionForOrder('call', row)}
+                              className="w-full text-[10px] font-bold px-1.5 py-1 rounded transition-all"
+                              style={{
+                                background: isSelectedCall ? 'rgba(34,197,94,0.3)' : 'rgba(34,197,94,0.1)',
+                                color: '#22c55e',
+                                border: isSelectedCall ? '1px solid rgba(34,197,94,0.5)' : '1px solid transparent',
+                                opacity: isSelectedCall ? 1 : undefined,
+                              }}
+                              title="Buy Call"
+                            >
+                              {isSelectedCall ? '✓' : 'Buy'}
+                            </button>
+                          </td>
+                          {/* Strike */}
+                          <td className="px-3 py-2 text-center font-bold border-r" style={{ color: atm ? '#60a5fa' : 'var(--text-primary)', borderColor: 'var(--glass-border-color)', whiteSpace: 'nowrap' }}>
+                            {row.strike.toFixed(2)}
+                            {atm && <span className="ml-1.5 text-[9px] font-bold px-1 py-0.5 rounded" style={{ background: 'rgba(59,130,246,0.25)', color: '#93c5fd' }}>ATM</span>}
+                          </td>
+                          {/* Put buy button */}
+                          <td className="px-1 py-1 border-r" style={{ borderColor: 'var(--glass-border-color)', width: '48px' }}>
+                            <button
+                              onClick={() => selectOptionForOrder('put', row)}
+                              className="w-full text-[10px] font-bold px-1.5 py-1 rounded transition-all"
+                              style={{
+                                background: isSelectedPut ? 'rgba(239,68,68,0.3)' : 'rgba(239,68,68,0.1)',
+                                color: '#ef4444',
+                                border: isSelectedPut ? '1px solid rgba(239,68,68,0.5)' : '1px solid transparent',
+                                opacity: isSelectedPut ? 1 : undefined,
+                              }}
+                              title="Buy Put"
+                            >
+                              {isSelectedPut ? '✓' : 'Buy'}
+                            </button>
+                          </td>
+                          {/* Put cells */}
+                          <td className="px-2 py-2 text-right font-semibold" style={{ color: 'var(--text-primary)' }}>{row.put.last.toFixed(2)}</td>
+                          <td className="px-2 py-2 text-right text-red-400">{row.put.bid.toFixed(2)}</td>
+                          <td className="px-2 py-2 text-right text-red-400">{row.put.ask.toFixed(2)}</td>
+                          <td className="px-2 py-2 text-right" style={{ color: 'var(--text-secondary)' }}>{row.put.vol.toLocaleString()}</td>
+                          <td className="px-2 py-2 text-right" style={{ color: 'var(--text-secondary)' }}>{row.put.oi.toLocaleString()}</td>
+                          <td className="px-2 py-2 text-right" style={{ color: 'var(--text-tertiary)' }}>{row.put.iv.toFixed(1)}%</td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* ── Right panel ─────────────────────────────────────────────── */}
@@ -601,84 +788,163 @@ export default function TradingTerminal() {
             )}
           </div>
 
-          {/* Order form */}
-          <div className="shrink-0 border-t p-3" style={{ borderColor: 'var(--glass-border-color)' }}>
-            {/* Buy / Sell toggle */}
-            <div className="flex rounded-lg overflow-hidden mb-3" style={{ border: '1px solid var(--glass-border-color)' }}>
+          {/* ── Order section ───────────────────────────────────────── */}
+          <div className="shrink-0 border-t" style={{ borderColor: 'var(--glass-border-color)' }}>
+            {/* Section tab bar */}
+            <div className="flex border-b" style={{ borderColor: 'var(--glass-border-color)', background: 'rgba(255,255,255,0.02)' }}>
               <button
-                onClick={() => setSide('buy')}
-                className="flex-1 py-2 text-xs font-bold transition-all duration-150"
-                style={{ background: side === 'buy' ? 'rgba(34,197,94,0.2)' : 'transparent', color: side === 'buy' ? '#22c55e' : 'var(--text-tertiary)' }}
+                onClick={() => setOrderSection('stocks')}
+                className="flex-1 py-2 text-xs font-bold transition-colors"
+                style={{
+                  color: orderSection === 'stocks' ? 'var(--text-primary)' : 'var(--text-tertiary)',
+                  borderBottom: orderSection === 'stocks' ? '2px solid #3b82f6' : '2px solid transparent',
+                }}
               >
-                Buy
+                Stocks
               </button>
               <button
-                onClick={() => setSide('sell')}
-                className="flex-1 py-2 text-xs font-bold transition-all duration-150"
-                style={{ background: side === 'sell' ? 'rgba(239,68,68,0.2)' : 'transparent', color: side === 'sell' ? '#ef4444' : 'var(--text-tertiary)' }}
+                onClick={() => setOrderSection('options')}
+                className="flex-1 py-2 text-xs font-bold transition-colors relative"
+                style={{
+                  color: orderSection === 'options' ? 'var(--text-primary)' : 'var(--text-tertiary)',
+                  borderBottom: orderSection === 'options' ? '2px solid #a78bfa' : '2px solid transparent',
+                }}
               >
-                Sell
+                Options
+                {selectedOptionOrder && (
+                  <span className="ml-1 inline-flex items-center justify-center w-1.5 h-1.5 rounded-full bg-violet-400" />
+                )}
               </button>
             </div>
 
-            {/* Order type */}
-            <div className="flex gap-2 mb-3">
-              {(['market', 'limit'] as const).map(t => (
-                <button
-                  key={t}
-                  onClick={() => setOrderType(t)}
-                  className="flex-1 py-1.5 rounded-lg text-xs font-semibold capitalize transition-all"
-                  style={{
-                    background: orderType === t ? 'rgba(59,130,246,0.15)' : 'var(--glass-bg)',
-                    color: orderType === t ? 'var(--text-accent)' : 'var(--text-tertiary)',
-                    border: `1px solid ${orderType === t ? 'rgba(59,130,246,0.4)' : 'var(--glass-border-color)'}`,
-                  }}
-                >
-                  {t}
-                </button>
-              ))}
-            </div>
+            <div className="p-3">
+              {/* ── Stocks order form ── */}
+              {orderSection === 'stocks' && (
+                <>
+                  {/* Active stock indicator */}
+                  <div className="rounded-lg px-3 py-2 mb-3 flex items-center justify-between" style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid var(--glass-border-color)' }}>
+                    <div>
+                      <span className="text-xs font-bold" style={{ color: 'var(--text-primary)' }}>{selectedSymbol}</span>
+                      <span className="text-[10px] ml-1.5" style={{ color: 'var(--text-tertiary)' }}>{currentStock.name}</span>
+                    </div>
+                    <div className="text-right">
+                      <div className="text-xs font-semibold" style={{ color: 'var(--text-primary)' }}>${currentStock.price.toFixed(2)}</div>
+                      <div className={`text-[10px] font-semibold ${priceUp ? 'text-green-400' : 'text-red-400'}`}>
+                        {priceUp ? '+' : ''}{currentStock.pct.toFixed(2)}%
+                      </div>
+                    </div>
+                  </div>
 
-            {/* Qty */}
-            <div className="mb-2">
-              <label className="block text-[10px] font-semibold mb-1" style={{ color: 'var(--text-tertiary)' }}>Quantity</label>
-              <input
-                type="number"
-                placeholder="0"
-                value={qty}
-                onChange={e => setQty(e.target.value)}
-                className="w-full px-3 py-2 rounded-lg text-xs outline-none"
-                style={{ background: 'var(--glass-bg)', border: '1px solid var(--glass-border-color)', color: 'var(--text-primary)' }}
-              />
-            </div>
+                  <div className="flex rounded-lg overflow-hidden mb-3" style={{ border: '1px solid var(--glass-border-color)' }}>
+                    <button onClick={() => setSide('buy')} className="flex-1 py-2 text-xs font-bold transition-all duration-150" style={{ background: side === 'buy' ? 'rgba(34,197,94,0.2)' : 'transparent', color: side === 'buy' ? '#22c55e' : 'var(--text-tertiary)' }}>Buy</button>
+                    <button onClick={() => setSide('sell')} className="flex-1 py-2 text-xs font-bold transition-all duration-150" style={{ background: side === 'sell' ? 'rgba(239,68,68,0.2)' : 'transparent', color: side === 'sell' ? '#ef4444' : 'var(--text-tertiary)' }}>Sell</button>
+                  </div>
+                  <div className="flex gap-2 mb-3">
+                    {(['market', 'limit'] as const).map(t => (
+                      <button key={t} onClick={() => setOrderType(t)} className="flex-1 py-1.5 rounded-lg text-xs font-semibold capitalize transition-all" style={{ background: orderType === t ? 'rgba(59,130,246,0.15)' : 'var(--glass-bg)', color: orderType === t ? 'var(--text-accent)' : 'var(--text-tertiary)', border: `1px solid ${orderType === t ? 'rgba(59,130,246,0.4)' : 'var(--glass-border-color)'}` }}>{t}</button>
+                    ))}
+                  </div>
+                  <div className="mb-2">
+                    <label className="block text-[10px] font-semibold mb-1" style={{ color: 'var(--text-tertiary)' }}>Quantity</label>
+                    <input type="number" placeholder="0" value={qty} onChange={e => setQty(e.target.value)} className="w-full px-3 py-2 rounded-lg text-xs outline-none" style={{ background: 'var(--glass-bg)', border: '1px solid var(--glass-border-color)', color: 'var(--text-primary)' }} />
+                  </div>
+                  {orderType === 'limit' && (
+                    <div className="mb-2">
+                      <label className="block text-[10px] font-semibold mb-1" style={{ color: 'var(--text-tertiary)' }}>Limit Price</label>
+                      <input type="number" placeholder={currentStock.price.toFixed(2)} value={limitPrice} onChange={e => setLimitPrice(e.target.value)} className="w-full px-3 py-2 rounded-lg text-xs outline-none" style={{ background: 'var(--glass-bg)', border: '1px solid var(--glass-border-color)', color: 'var(--text-primary)' }} />
+                    </div>
+                  )}
+                  <button className="w-full py-2.5 rounded-lg text-xs font-bold mt-1 transition-all duration-150 hover:opacity-90" style={{ background: side === 'buy' ? 'rgba(34,197,94,0.85)' : 'rgba(239,68,68,0.85)', color: '#fff' }}>
+                    {side === 'buy' ? 'Place Buy Order' : 'Place Sell Order'}
+                  </button>
+                  <div className="flex items-center justify-between mt-2">
+                    <span className="text-[10px]" style={{ color: 'var(--text-tertiary)' }}>Buying power</span>
+                    <span className="text-[10px] font-semibold" style={{ color: 'var(--text-secondary)' }}>${user?.balance?.toLocaleString() ?? '—'}</span>
+                  </div>
+                </>
+              )}
 
-            {/* Limit price */}
-            {orderType === 'limit' && (
-              <div className="mb-2">
-                <label className="block text-[10px] font-semibold mb-1" style={{ color: 'var(--text-tertiary)' }}>Limit Price</label>
-                <input
-                  type="number"
-                  placeholder={currentStock.price.toFixed(2)}
-                  value={limitPrice}
-                  onChange={e => setLimitPrice(e.target.value)}
-                  className="w-full px-3 py-2 rounded-lg text-xs outline-none"
-                  style={{ background: 'var(--glass-bg)', border: '1px solid var(--glass-border-color)', color: 'var(--text-primary)' }}
-                />
-              </div>
-            )}
+              {/* ── Options order form ── */}
+              {orderSection === 'options' && (
+                <>
+                  {!selectedOptionOrder ? (
+                    <div className="py-6 text-center">
+                      <p className="text-xs mb-1" style={{ color: 'var(--text-secondary)' }}>No option selected</p>
+                      <p className="text-[10px]" style={{ color: 'var(--text-tertiary)' }}>Click Buy on a row in the options chain</p>
+                    </div>
+                  ) : (
+                    <>
+                      {/* Selected option summary */}
+                      <div className="rounded-lg px-3 py-2 mb-3" style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid var(--glass-border-color)' }}>
+                        <div className="flex items-center justify-between mb-1">
+                          <div className="flex items-center gap-1.5">
+                            <span className="text-xs font-bold" style={{ color: 'var(--text-primary)' }}>{selectedSymbol}</span>
+                            <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${selectedOptionOrder.type === 'call' ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'}`}>
+                              {selectedOptionOrder.type.toUpperCase()}
+                            </span>
+                          </div>
+                          <button onClick={() => setSelectedOptionOrder(null)} className="text-[10px] hover:text-red-400 transition-colors" style={{ color: 'var(--text-tertiary)' }}>✕</button>
+                        </div>
+                        <div className="text-[10px]" style={{ color: 'var(--text-tertiary)' }}>
+                          ${selectedOptionOrder.strike.toFixed(2)} · {selectedOptionOrder.expiry}
+                        </div>
+                        <div className="flex gap-3 mt-1.5 text-[10px]">
+                          <span style={{ color: 'var(--text-tertiary)' }}>Bid <span className="font-semibold" style={{ color: 'var(--text-secondary)' }}>${selectedOptionOrder.bid.toFixed(2)}</span></span>
+                          <span style={{ color: 'var(--text-tertiary)' }}>Ask <span className="font-semibold" style={{ color: 'var(--text-secondary)' }}>${selectedOptionOrder.ask.toFixed(2)}</span></span>
+                          <span style={{ color: 'var(--text-tertiary)' }}>Last <span className="font-semibold" style={{ color: 'var(--text-secondary)' }}>${selectedOptionOrder.last.toFixed(2)}</span></span>
+                        </div>
+                      </div>
 
-            {/* Submit */}
-            <button
-              className="w-full py-2.5 rounded-lg text-xs font-bold mt-1 transition-all duration-150 hover:opacity-90"
-              style={{ background: side === 'buy' ? 'rgba(34,197,94,0.85)' : 'rgba(239,68,68,0.85)', color: '#fff' }}
-            >
-              {side === 'buy' ? 'Place Buy Order' : 'Place Sell Order'}
-            </button>
+                      {/* Buy / Sell */}
+                      <div className="flex rounded-lg overflow-hidden mb-3" style={{ border: '1px solid var(--glass-border-color)' }}>
+                        <button onClick={() => setOptionSide('buy')} className="flex-1 py-2 text-xs font-bold transition-all" style={{ background: optionSide === 'buy' ? 'rgba(34,197,94,0.2)' : 'transparent', color: optionSide === 'buy' ? '#22c55e' : 'var(--text-tertiary)' }}>Buy to Open</button>
+                        <button onClick={() => setOptionSide('sell')} className="flex-1 py-2 text-xs font-bold transition-all" style={{ background: optionSide === 'sell' ? 'rgba(239,68,68,0.2)' : 'transparent', color: optionSide === 'sell' ? '#ef4444' : 'var(--text-tertiary)' }}>Sell to Open</button>
+                      </div>
 
-            {/* Buying power */}
-            <div className="flex items-center justify-between mt-2">
-              <span className="text-[10px]" style={{ color: 'var(--text-tertiary)' }}>Buying power</span>
-              <span className="text-[10px] font-semibold" style={{ color: 'var(--text-secondary)' }}>${user?.balance?.toLocaleString() ?? '—'}</span>
+                      {/* Order type */}
+                      <div className="flex gap-2 mb-3">
+                        {(['market', 'limit'] as const).map(t => (
+                          <button key={t} onClick={() => setOptionOrderType(t)} className="flex-1 py-1.5 rounded-lg text-xs font-semibold capitalize transition-all" style={{ background: optionOrderType === t ? 'rgba(59,130,246,0.15)' : 'var(--glass-bg)', color: optionOrderType === t ? 'var(--text-accent)' : 'var(--text-tertiary)', border: `1px solid ${optionOrderType === t ? 'rgba(59,130,246,0.4)' : 'var(--glass-border-color)'}` }}>{t}</button>
+                        ))}
+                      </div>
+
+                      {/* Contracts */}
+                      <div className="mb-2">
+                        <label className="block text-[10px] font-semibold mb-1" style={{ color: 'var(--text-tertiary)' }}>Contracts</label>
+                        <input type="number" placeholder="1" value={optionContracts} onChange={e => setOptionContracts(e.target.value)} className="w-full px-3 py-2 rounded-lg text-xs outline-none" style={{ background: 'var(--glass-bg)', border: '1px solid var(--glass-border-color)', color: 'var(--text-primary)' }} />
+                      </div>
+
+                      {/* Limit price */}
+                      {optionOrderType === 'limit' && (
+                        <div className="mb-2">
+                          <label className="block text-[10px] font-semibold mb-1" style={{ color: 'var(--text-tertiary)' }}>Limit Price</label>
+                          <input type="number" placeholder={selectedOptionOrder.ask.toFixed(2)} value={optionLimitPrice} onChange={e => setOptionLimitPrice(e.target.value)} className="w-full px-3 py-2 rounded-lg text-xs outline-none" style={{ background: 'var(--glass-bg)', border: '1px solid var(--glass-border-color)', color: 'var(--text-primary)' }} />
+                        </div>
+                      )}
+
+                      {/* Cost estimate */}
+                      {optionContracts && (
+                        <div className="flex items-center justify-between mb-2 text-[10px]" style={{ color: 'var(--text-tertiary)' }}>
+                          <span>Est. cost</span>
+                          <span className="font-semibold" style={{ color: 'var(--text-secondary)' }}>
+                            ${(Number(optionContracts) * 100 * (optionOrderType === 'market' ? selectedOptionOrder.ask : Number(optionLimitPrice) || selectedOptionOrder.ask)).toFixed(2)}
+                          </span>
+                        </div>
+                      )}
+
+                      {/* Submit */}
+                      <button className="w-full py-2.5 rounded-lg text-xs font-bold transition-all hover:opacity-90" style={{ background: optionSide === 'buy' ? 'rgba(34,197,94,0.85)' : 'rgba(239,68,68,0.85)', color: '#fff' }}>
+                        {optionSide === 'buy' ? 'Buy to Open' : 'Sell to Open'}
+                      </button>
+
+                      <div className="flex items-center justify-between mt-2">
+                        <span className="text-[10px]" style={{ color: 'var(--text-tertiary)' }}>Buying power</span>
+                        <span className="text-[10px] font-semibold" style={{ color: 'var(--text-secondary)' }}>${user?.balance?.toLocaleString() ?? '—'}</span>
+                      </div>
+                    </>
+                  )}
+                </>
+              )}
             </div>
           </div>
         </div>
