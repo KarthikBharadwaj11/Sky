@@ -407,12 +407,6 @@ export default function Profile() {
       description: 'Your brokerage accounts'
     },
     {
-      id: 'funding-sources',
-      label: 'Funding Sources',
-      icon: CreditCard,
-      description: 'Linked banks and cards'
-    },
-    {
       id: 'settings',
       label: 'Settings',
       icon: Settings,
