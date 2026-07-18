@@ -99,7 +99,7 @@ export default function SideNavbar() {
       }}
     >
       {/* Logo */}
-      <Link href="/overview" className="flex items-center justify-center mb-4 mt-1">
+      <Link href="/landing" className="flex items-center justify-center mb-4 mt-1">
         <Image
           src="/logo.png"
           alt="Sky"
