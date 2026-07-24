@@ -6,7 +6,6 @@ import LineChart from '../charts/LineChart';
 import ComparisonChart from '../charts/ComparisonChart';
 import PieChart from '../charts/PieChart';
 import TradingSignals from '../trading/TradingSignals';
-import Link from 'next/link';
 
 interface Stock {
   symbol: string;
@@ -563,11 +562,6 @@ export default function Dashboard() {
               </div>
               Recent Activity
             </h2>
-            <Link href="/portfolio">
-              <button className="px-3 py-1.5 rounded-lg text-sm font-medium transition-all duration-200 glass-morphism border border-white/10 hover:border-blue-500/50">
-                View All
-              </button>
-            </Link>
           </div>
 
           <div className="space-y-3">
