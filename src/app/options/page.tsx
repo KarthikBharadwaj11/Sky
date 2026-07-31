@@ -367,6 +367,16 @@ export default function OptionsPage() {
                   <OptionsChain symbol={selectedSymbol} onSelectOption={handleSelectOption} />
                 </div>
               </div>
+
+              {/* Option Strategies */}
+              <div className="rounded-xl border mt-4" style={{ background: 'var(--glass-bg)', borderColor: 'var(--glass-border-color)' }}>
+                <div className="px-4 py-3 border-b" style={{ borderColor: 'var(--glass-border-color)' }}>
+                  <h3 className="text-sm font-bold" style={{ color: 'var(--text-primary)' }}>Option Strategies</h3>
+                </div>
+                <div className="px-4 py-10 flex items-center justify-center">
+                  <p className="text-sm font-semibold" style={{ color: 'var(--text-secondary)' }}>Strategies Coming Soon</p>
+                </div>
+              </div>
             </div>
 
             {/* Right Sidebar - Order Form */}
